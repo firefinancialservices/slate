@@ -340,9 +340,18 @@ html, body {
     clear: both;
   }
 
-  &>h1, &>h2, &>h3, &>h4, &>h5, &>h6, &>p, &>table, &>ul, &>ol, &>aside, &>dl {
+  &>h1, &>h2, &>h3, &>h4, &>h5, &>h6, &>table, &>ul, &>ol, &>aside, &>dl {
     margin-right: $examples-width;
     padding: 0 $main-padding;
+    @include box-sizing(border-box);
+    display: block;
+    @include text-shadow($main-embossed-text-shadow);
+    @extend %left-col;
+  }
+
+  &>p {
+    margin-right: $examples-width;
+    padding: 1em $main-padding;
     @include box-sizing(border-box);
     display: block;
     @include text-shadow($main-embossed-text-shadow);
@@ -531,7 +540,7 @@ html, body {
     background-color: $code-bg;
     color: #fff;
 
-    padding: 0px $main-padding 2em $main-padding;
+    padding: 1em $main-padding 2em $main-padding;
     margin: 0;
     width: $examples-width;
 
@@ -612,6 +621,11 @@ html, body {
 
   .page-wrapper .lang-selector {
     display: none;
+  }
+
+  .content code {
+    font-size: 8px !important;
+    line-height: normal !important;
   }
 
   %right-col {

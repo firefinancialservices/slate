@@ -227,55 +227,6 @@ Parameter | Description
 --------- | -----------
 `externalAccountId` | This is the ID of the external account Id to be returned.
 
-## Pay by Bank Transfer
-
-```shell
-# TODO: More detail needed
-# cat paymentdetails.json
-{
-    "amount": 3748,
-    "currency": "EUR",
-    "narrative": "REF 2347839",
-    "comment": "Paid for March Bill"
-}
-
-# Post that to the API
-curl https://paywithfire.com/business/v1/me/externalaccounts/379487
-  -X POST
-  -d @paymentdetails.json
-  -H "Authorization: privateToken"
-
-```
-
-```java
-PayWithFireSDK businessAccount 
-	= new PayWithFireSDK(Environment.SANDBOX, "privateToken");
-
-Payment payment = new Payment()
-	.setAmount(3748)
-	.setCurrency("EUR")
-	.setNarrative("REF 2347839")
-	.setComment("Paid for March Bill");
-
-try {
-	GenericResult res 
-		= businessAccount.externalAccounts().pay(payment);
-} catch (PaymentExceedsLimitException pele) {
-	// Check the status for reason
-	pel.getStatus();
-} catch (NoSuchExternalAccountException nseae) {
-	// dang
-}
-
-```
-
-You can pay from any of your Fire Accounts to an existing External Bank Account. 
-
-Depending on the authorisation rules configured by your account administrator, the API call may only set up the transfer rather than actually execute it. Check the status of the response to know what happened. 
-
-Some administrators may not allow payments via the API at all, and others can place retrrictions on the total value of payments over a period of time. If you receive an error 403, check the status of the response for more information.
-
-
 ## Delete an External Bank Account
 
 ```shell
@@ -298,3 +249,64 @@ try {
 ```
 
 Delete an external account from your profile.
+
+# Payments and Transfers
+
+## Pay by Bank Transfer
+
+```shell
+# TODO: More detail needed
+# cat paymentdetails.json
+{
+    "amount": 3748,
+    "currency": "EUR",
+    "narrative": "REF 2347839",
+    "comment": "Paid for March Bill"
+}
+
+# Post that to the API
+curl https://paywithfire.com/business/v1/me/makePayment?fromAccount=379487&toAccount=84654
+  -X POST
+  -d @paymentdetails.json
+  -H "Authorization: privateToken"
+
+```
+
+```java
+PayWithFireSDK businessAccount 
+	= new PayWithFireSDK(Environment.SANDBOX, "privateToken");
+
+// Set up the payment
+Payment payment = new Payment()
+	.setAmount(3748)
+	.setCurrency("EUR")
+	.setNarrative("REF 2347839")
+	.setComment("Paid for March Bill");
+
+// Set the account to pay from - a Fire Account in this case
+FireAccount fromAccount 
+	= new FireAccount().setId(84654);
+
+// Set the account to pay to - an External Account in this case
+ExternalAccount toAccount 
+	= new ExternalAccount().setId(379487);
+
+try {
+	GenericResult res 
+		= businessAccount.makePayment(payment, fromAccount, toAccount);
+} catch (PaymentExceedsLimitException pele) {
+	// Check the status for reason
+	pel.getStatus();
+} catch (NoSuchExternalAccountException nseae) {
+	// dang
+}
+
+```
+
+You can pay from any of your Fire Accounts to an existing External Bank Account. 
+
+Depending on the authorisation rules configured by your account administrator, the API call may only set up the transfer rather than actually execute it. Check the status of the response to know what happened. 
+
+Some administrators may not allow payments via the API at all, and others can place retrrictions on the total value of payments over a period of time. If you receive an error 403, check the status of the response for more information.
+
+
