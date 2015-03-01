@@ -284,11 +284,11 @@ Payment payment = new Payment()
 	.setComment("Paid for March Bill");
 
 // Set the account to pay from - a Fire Account in this case
-FireAccount fromAccount 
+Account fromAccount 
 	= new FireAccount().setId(84654);
 
 // Set the account to pay to - an External Account in this case
-ExternalAccount toAccount 
+Account toAccount 
 	= new ExternalAccount().setId(379487);
 
 try {
