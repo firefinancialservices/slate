@@ -78,7 +78,6 @@ html, body {
   width: $nav-width;
   background-color: $nav-bg;
   font-size: 13px;
-  font-weight: bold;
 
   // language selector for mobile devices
   .lang-selector {
@@ -198,8 +197,6 @@ html, body {
       font-size: 12px;
     }
 
-    // for embossed look:
-    @include embossed-bg;
     &>li:last-child {
       box-shadow: none; // otherwise it'll overflow out of the subheader
     }
@@ -349,7 +346,6 @@ html, body {
     @include box-sizing(border-box);
     display: block;
     @include text-shadow($main-embossed-text-shadow);
-
     @extend %left-col;
   }
 
@@ -364,16 +360,13 @@ html, body {
 
   h1 {
     @extend %header-font;
-    font-size: 30px;
+    font-size: 25px;
     padding-top: 0.5em;
     padding-bottom: 0.5em;
     border-bottom: 1px solid #ccc;
     margin-bottom: $h1-margin-bottom;
     margin-top: 2em;
     border-top: 1px solid #ddd;
-    @include background-image(
-      linear-gradient(top, #fff, #f9f9f9)
-    );
   }
 
   h1:first-child, div:first-child + h1 {
@@ -472,7 +465,6 @@ html, body {
     background-color: rgba(0,0,0,0.05);
     padding: 3px;
     border-radius: 3px;
-    @extend %break-words;
     @extend %code-font;
   }
 
@@ -539,7 +531,7 @@ html, body {
     background-color: $code-bg;
     color: #fff;
 
-    padding: 2em $main-padding;
+    padding: 0px $main-padding 2em $main-padding;
     margin: 0;
     width: $examples-width;
 
