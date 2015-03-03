@@ -1,5 +1,5 @@
 ---
-title: Pay with Fire Business Account API Reference
+title: Fire Business Account API Reference
 
 language_tabs:
   - shell: cURL
@@ -14,7 +14,7 @@ includes:
 search: true
 ---
 
-# Getting Started with the Pay with Fire Business Account API
+# Integrating to the Pay with Fire Business Account API
 
 The Pay with Fire API allows you to deeply integrate our account features into your application.
 
@@ -211,6 +211,7 @@ curl https://paywithfire.com/business/v1/me/accounts
 {
 	"cban": 924733, 
 	"currency": "GBP",
+	"balance": 0,
 	"sortCode": "232221",
 	"accountNumber": "34658388",
 	"nameOnAccount": "Tim's Pen Shop"
@@ -305,7 +306,7 @@ $businessAccount = new PayWithFireSDK(array(
 try {
 	$account 
 		= $businessAccount->accounts()->get(924733);
-} catch (Exception $nsfae) {
+} catch (PayWithFire_Exception_NoSuchFireAccount $nsfae) {
 	# dang
 }
 
@@ -583,7 +584,7 @@ $businessAccount = new PayWithFireSDK(array(
 try {
 	$account 
 		= $businessAccount->externalAccounts()->get(379487);
-} catch (Exception $nsfae) {
+} catch (PayWithFire_Exception_NoSuchFireAccount $nsfae) {
 	# dang
 }
 
@@ -600,7 +601,7 @@ You can retrieve the details of an external account by its `externalAccountId`.
 
 Parameter | Description
 --------- | -----------
-`externalAccountId` | This is the ID of the external account Id to be returned.
+`externalAccountId` | This is the ID of the external account to be returned.
 
 ## Delete an External Bank Account
 
@@ -631,13 +632,21 @@ $businessAccount = new PayWithFireSDK(array(
 
 try {
 	$res = $businessAccount->externalAccounts()->delete(379487);
-} catch (Exception $nseae) {
+} catch (PayWithFire_Exception_NoSuchFireAccount $nseae) {
 	# dang
 }
 ?>
 ```
 
 Delete an external account from your profile.
+
+### HTTP Request
+
+`DELETE https://paywithfire.com/business/v1/me/externalaccounts/{externalAccountId}`
+
+Parameter | Description
+--------- | -----------
+`externalAccountId` | This is the ID of the external account to be deleted.
 
 # Payments and Transfers
 
@@ -719,7 +728,7 @@ try {
 		"fromAccount" => $fromAccount, 
 		"toAccount" => $toAccount
 	));
-} catch (Exception $e) {
+} catch (PayWithFire_Exception_PaymentExceedsLimit $e) {
 	# Check the status for reason
 	$e->getMessage();
 }
