@@ -731,6 +731,9 @@ try {
 } catch (PayWithFire_Exception_PaymentExceedsLimit $e) {
 	# Check the status for reason
 	$e->getMessage();
+
+} catch (PayWithFire_Exception_NoSuchExternalAccount $nseae) {
+	# dang
 }
 ?>
 ```
