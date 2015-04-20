@@ -21,6 +21,31 @@ The Pay with Fire API allows you to deeply integrate our account features into y
 # Authentication
 
 ```shell
+# cat logindetails.json
+{
+	"businessClientId": "<BUSINESSID>",
+	"emailAddress": "<EMAIL>",
+	"password": "<PASSWORD>"
+}
+
+# Post that to the API
+curl https://business.realexfire.com/api/login \
+  -X POST \
+  -d @logindetails.json
+
+{
+	"cban": 924733, 
+	"currency": "GBP",
+	"balance": 0,
+	"sortCode": "232221",
+	"accountNumber": "34658388",
+	"nameOnAccount": "Tim's Pen Shop"
+}
+```
+
+
+
+```shell
 # With shell, you can just pass the correct header with each request
 curl <https://paywithfire.com/business/v1/me>
   -H "Authorization: privateToken"
@@ -43,7 +68,11 @@ $businessAccount = new PayWithFireSDK(array(
 ));
 ?>
 ```
+BETA
+In the BETA period, the authentication process piggybacks the Business Fire Account web application login. This
+will change to a dedicated API token once the API is implemented.
 
+Get an authentication token by passing your business id, email and password.
 Replace `privateToken` in the code samples with your private token from your Business Account Profile page.
 
 
