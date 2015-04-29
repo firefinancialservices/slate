@@ -447,7 +447,7 @@ Parameter | Description
 You can transfer instantly between any two of your Fire Accounts in either currency, or perform a bank transfer to 
 a pre-existing External Bank account. 
 
-## Transfer between two of your Fire Accounts in the same currency
+## Transfer between Fire Accounts in the same currency
 
 ```shell
 # cat transferdetails.json
@@ -479,7 +479,7 @@ To transfer between two of your Fire Accounts in the same currency, post the det
 ### Returns
 The `refId` of the resulting transfer.
 
-## Transfer between two of your Fire Accounts in different currencies
+## Transfer between Fire Accounts in different currencies
 
 ```shell
 # First, get the fee details object for FX transfers from this account.
@@ -500,7 +500,22 @@ curl https://business.realexfire.com/api/businesses/v1/services/FX_INTERNAL_TRAN
    }
 }
 
-# Then use that feeRuleId in the transfer object to agree to the fees.
+# ------- This seems all wrong????? ------
+# To get an estimate of the currency conversion rate that will be used:
+curl https://business.realexfire.com/api/businesses/v1/fx/rate?buyCurrency=GBP&sellCurrency=EUR&fixedSide=BUY&amount=10000 \
+    -x GET \
+    -H "Authorization: $AUTHORIZATION_TOKEN"
+    
+{
+    "buyCurrency":"GBP",
+    "sellCurrency":"EUR",
+    "fixedSide":"BUY",
+    "buyAmount":10000,
+    "sellAmount":13883,
+    "rate4d": 13883
+}
+
+# Then use the feeRuleId in the transfer object to agree to the fees.
 # cat transferdetails.json
 {
     "icanFrom": 1954, 
