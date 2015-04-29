@@ -34,7 +34,7 @@ curl https://business.realexfire.com/api/login \
   -D -
   -d @logindetails.json
 ```
-```javascript
+```json
 {
    "userProfile" : {
       "firstName" : "Brian",
