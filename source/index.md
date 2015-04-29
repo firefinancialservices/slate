@@ -81,7 +81,7 @@ Date: Wed, 29 Apr 2015 21:27:17 GMT
 }
 ```
 
-```BETA```
+`BETA`
 In the BETA period, the authentication process piggybacks the Business Fire Account web application login. This
 will change to a dedicated API token once the API is implemented.
 
