@@ -31,15 +31,83 @@ The Pay with Fire API allows you to deeply integrate our account features into y
 # Post that to the API
 curl https://business.realexfire.com/api/login \
   -X POST \
+  -D -
   -d @logindetails.json
-
+```
+```json
 {
-	"cban": 924733, 
-	"currency": "GBP",
-	"balance": 0,
-	"sortCode": "232221",
-	"accountNumber": "34658388",
-	"nameOnAccount": "Tim's Pen Shop"
+   "userProfile" : {
+      "cvl" : "FULL",
+      "permissions" : [
+         "PERM_BUSINESSES_GET_ACCOUNT_PERFERENCES_AND_FEES",
+         "PERM_BUSINESSES_GET_ACCOUNTS",
+         "PERM_BUSINESSES_POST_ACCOUNTS",
+         "PERM_BUSINESSES_GET_ACCOUNT",
+         "PERM_BUSINESSES_PUT_ACCOUNT",
+         "PERM_BUSINESSES_GET_PAYMENT",
+         "PERM_BUSINESSES_GET_ACCOUNT_PAYMENTS",
+         "PERM_BUSINESSES_GET_ACCOUNT_PAYMENTS_FILTER",
+         "PERM_BUSINESSES_GET_CONNECTIONS",
+         "PERM_BUSINESSES_GET_CONNECTION",
+         "PERM_BUSINESSES_PUT_CONNECTION",
+         "PERM_BUSINESSES_POST_CONNECTIONS",
+         "PERM_BUSINESSES_DELETE_CONNECTION",
+         "PERM_BUSINESSES_POST_CONNECTION_PAY",
+         "PERM_BUSINESSES_POST_CONNECTION_EXTERNAL_ACCOUNT_PAY",
+         "PERM_BUSINESSES_POST_CONNECTION_PAYMENT_REQUESTS",
+         "PERM_BUSINESSES_GET_FUNDING_SOURCES",
+         "PERM_BUSINESSES_POST_FUNDING_SOURCES",
+         "PERM_BUSINESSES_GET_FUNDING_SOURCE",
+         "PERM_BUSINESSES_GET_FUNDING_SOURCE_PAYMENTS",
+         "PERM_BUSINESSES_POST_ACCOUNTS_TRANSFER",
+         "PERM_BUSINESSES_POST_MY_PIN_RESET_INITIATE",
+         "PERM_BUSINESSES_POST_MY_PIN_RESET",
+         "PERM_BUSINESSES_GET_OPERATING_COUNTRIES",
+         "PERM_BUSINESSES_GET_COLOURS",
+         "PERM_BUSINESSES_GET_ME",
+         "PERM_BUSINESSES_GET_MY_PINGRID",
+         "PERM_BUSINESSES_POST_WEBHOOKS",
+         "PERM_BUSINESSES_GET_WEBHOOKS",
+         "PERM_BUSINESSES_GET_WEBHOOK_EVENT_TEST",
+         "PERM_BUSINESSES_DELETE_WEBHOOK",
+         "PERM_BUSINESSES_POST_ACCOUNT_WITHDRAWAL",
+         "PERM_BUSINESSES_GET_MY_AUTHENTICATORSECRET",
+         "PERM_BUSINESSES_PUT_MY_AUTHENTICATORSECRET",
+         "PERM_BUSINESSES_GET_LIMITS",
+         "PERM_BUSINESSES_GET_RATES",
+         "PERM_BUSINESSES_GET_FX_RATE",
+         "PERM_BUSINESSES_POST_FX_TRANSFER"
+      ],
+      "lastName" : "Dude",
+      "lastLogin" : "2015-04-29T21:28:13.233Z",
+      "firstName" : "Brian",
+      "userEmail" : "brian@website.com",
+      "mobileNumber" : "+353871111111"
+   },
+   "businessProfile" : {
+      "businessWebsite" : "https://www.website.com",
+      "businessAddress" : {
+         "country" : {
+            "code" : "IE",
+            "description" : "Ireland"
+         },
+         "city" : "Dublin 2",
+         "address1" : "7-11 Sir John Rogerson's Quay"
+      },
+      "businessDetailsSubmitted" : true,
+      "businessType" : "OTHER",
+      "businessClientId" : "aAS",
+      "apiTokens" : [
+         {
+            "privateToken" : "<PRIVATE-TOKEN>",
+            "dateCreated" : 1423749242837,
+            "publicToken" : "<PUBLIC-TOKEN>",
+            "active" : true,
+            "tokenId" : 2
+         }
+      ],
+      "businessName" : "Brian's Company"
+   }
 }
 ```
 
