@@ -11,9 +11,9 @@ includes:
 search: true
 ---
 
-# Integrating to the Pay with Fire Business Account API
+# Integrating to the Fire Business Account API
 
-The Pay with Fire API allows you to deeply integrate our account features into your application.
+The Fire API allows you to deeply integrate our account features into your application.
 
 # Authentication
 
@@ -96,14 +96,13 @@ Get an authorization token by passing your business id, email and password to th
 `https://business.realexfire.com/api/login`
 
 The authorization token is returned as a header (`at`). This token will expire after 5 minutes 
-of inactivity, so a regular call (once every minute say) to an inexpensive endpoint (say Operating Countries) 
+of inactivity, so a regular call (once every minute say) to an inexpensive endpoint (say `Operating Countries`) 
 is needed until you sign out.
 
 Once you have the authorization token, pass it as a header for every call. 
-
 `Authorization: $AUTHORIZATION_TOKEN`
 
-### Query Parameters
+### JSON Input
 
 Parameter | Description
 --------- | -----------
@@ -111,79 +110,62 @@ Parameter | Description
 `emailAddress` | The email address of the authorized user.
 `password` | The password for the authorized user.
 
+### Returns
+The user and business profiles as returned by the `Me` endpoint (`/api/businesses/v1/me`). 
+
 # Fire Accounts 
 
 ```shell
 # JSON representation of a Fire Account
 {
-	"cban": 64783,
-	"alias": "Main Account",
-	"currency": "EUR",
-	"balance": 434050,
-	"bic": "CPAYID2D",
-	"iban": "IE73CPAY99119982718273",
-	"nameOnAccount": "Tim's Pen Shop"
+     "ican" : 1951,
+     "name" : "Main Account",
+     "balance" : 434050,
+     "ciban" : "IE54CPAY99119911111111",
+     "cbic" : "CPAYIE2D",
+     "cnsc" : "991199",
+     "ccan" : "11111111",
+     "currency" : {
+        "description" : "Euro",
+        "code" : "EUR"
+     },
+     "defaultAccount" : true,
+     "status" : {
+        "type" : "LIVE",
+        "description" : "Live"
+     },
+     "colour" : {
+        "name" : "ORANGE"
+     }   
 }
 ```    
 
-```java
-import com.paywithfire.api.business.FireAccount;
-
-// Java Object representing a Fire Account
-FireAccount account = new FireAccount();
-
-int id               = account.getCBAN();
-String alias         = account.getAlias();
-String currency      = account.getCurrency();
-long balance         = account.getBalance();
-String bic           = account.getBIC();
-String iban          = account.getIBAN();
-String accountNumber = account.getAccountNumber();
-String sortCode      = account.getSortCode();
-String nameOnAccount = account.getNameOnAccount();
-```
-
-```php
-<?php
-# PHP Object representing a Fire Account
-$account = new PayWithFire_FireAccount();
-
-$id            = $account->cban;
-$alias         = $account->alias;
-$currency      = $account->currency;
-$balance       = $account->balance;
-$bic           = $account->bic;
-$iban          = $account->iban;
-$accountNumber = $account->accountNumber;
-$sortCode      = $account->sortCode;
-$nameOnAccount = $account->nameOnAccount;
-?>
-```
-
-Fire Accounts are the Pay with Fire equivalent of a bank account from bank, but with extra features you won't find anywhere else. 
+Fire Accounts are the Fire equivalent of a bank account from bank, but with extra features you won't find anywhere else. 
 
 The resource has the following attributes: 
 
 Field | Description
 --------- | -----------
-`cban` | identifier for the Fire account _(assigned by Pay with Fire)_ 
-`alias` | the name the user gives to the account to help them identify it. 
-`currency` | the currency of the account - either `EUR` or `GBP`.
+`ican` | identifier for the Fire account _(assigned by Fire)_ 
+`name` | the name the user gives to the account to help them identify it. 
+`currency` | a JSON entity with the currency code (`currency.code`) and English name (`currency.description`) of the currency for the account - either `EUR` or `GBP`.
 `balance` | the balance of the account (in minor currency units - pence, cent etc. `434050` == `4,340.50 GBP` for a GBP account).
-`bic` | the BIC of the account if currency is `EUR`. 
-`iban` | the IBAN of the account if currency is `EUR`. 
-`sortCode` | the Sort Code of the account if currency is `GBP`. 
-`accountNumber` | the Account Number of the account if currency is `GBP`. 
-`nameOnAccount` | the name on the account - will be set as your business name. 
+`cbic` | the BIC of the account (provided if currency is `EUR`). 
+`ciban` | the IBAN of the account (provided if currency is `EUR`). 
+`cnsc` | the Sort Code of the account. 
+`ccan` | the Account Number of the account. 
+`defaultAccount` | `true` if this is the default account for this currency. This will be the account that general fees are taken from (as opposed to per-transaction fees). 
+`status` | _Not used at present_
+`color` | _Not used at present_
 
 ## List all Fire Accounts
 
 ```shell
-curl https://paywithfire.com/business/v1/me/accounts
+curl https://business.realexfire.com/api/businesses/v1/accounts
   -X GET
   -d "page=2"
   -d "count=20"
-  -H "Authorization: privateToken"
+  -H "Authorization: $AUTHORIZATION_TOKEN"
 
 
 {
@@ -270,7 +252,7 @@ Parameter | Default | Description
 curl https://paywithfire.com/business/v1/me/accounts
   -X POST
   -d @newaccount.json
-  -H "Authorization: privateToken"
+  -H "Authorization: $AUTHORIZATION_TOKEN"
 
 {
 	"cban": 924733, 
@@ -334,7 +316,7 @@ To add a new Fire Account you just need a name and a currency. The details of th
 ```shell
 curl https://paywithfire.com/business/v1/me/accounts/924733
   -X GET
-  -H "Authorization: privateToken"
+  -H "Authorization: $AUTHORIZATION_TOKEN"
 
 {
 	"cban": 924733, 
@@ -459,7 +441,7 @@ curl https://paywithfire.com/business/v1/me/externalAccounts
   -X GET
   -d "page=2"
   -d "count=20"
-  -H "Authorization: privateToken"
+  -H "Authorization: $AUTHORIZATION_TOKEN"
 
 
 {
@@ -548,7 +530,7 @@ Parameter | Default | Description
 curl https://paywithfire.com/business/v1/me/externalaccounts
   -X POST
   -d @newaccount.json
-  -H "Authorization: privateToken"
+  -H "Authorization: $AUTHORIZATION_TOKEN"
 
 {
 	"externalAccountId": 379487
@@ -611,7 +593,7 @@ To add a new bank account, post the details of the bank account as a JSON object
 ```shell
 curl https://paywithfire.com/business/v1/me/externalaccounts/379487
   -X GET
-  -H "Authorization: privateToken"
+  -H "Authorization: $AUTHORIZATION_TOKEN"
 
 {
 	"externalAccountId": 379487
@@ -672,7 +654,7 @@ Parameter | Description
 ```shell
 curl https://paywithfire.com/business/v1/me/externalaccounts/379487
   -X DELETE
-  -H "Authorization: privateToken"
+  -H "Authorization: $AUTHORIZATION_TOKEN"
 ```
 
 ```java
@@ -730,7 +712,7 @@ Parameter | Description
 curl https://paywithfire.com/business/v1/me/makePayment?fromAccount=379487&toAccount=84654
   -X POST
   -d @paymentdetails.json
-  -H "Authorization: privateToken"
+  -H "Authorization: $AUTHORIZATION_TOKEN"
 
 ```
 
