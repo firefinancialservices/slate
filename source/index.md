@@ -93,7 +93,7 @@ Get an authorization token by passing your business id, email and password to th
 
 ### HTTP Request
 
-`https://business.realexfire.com/api/login`
+`POST https://business.realexfire.com/api/login`
 
 The authorization token is returned as a header (`at`). This token will expire after 5 minutes 
 of inactivity, so a regular call (once every minute say) to an inexpensive endpoint (say `Operating Countries`) 
@@ -118,24 +118,24 @@ The user and business profiles as returned by the `Me` endpoint (`/api/businesse
 ```shell
 # JSON representation of a Fire Account
 {
-     "ican" : 1951,
-     "name" : "Main Account",
-     "balance" : 434050,
-     "ciban" : "IE54CPAY99119911111111",
-     "cbic" : "CPAYIE2D",
-     "cnsc" : "991199",
-     "ccan" : "11111111",
-     "currency" : {
-        "description" : "Euro",
-        "code" : "EUR"
+     "ican": 1951,
+     "name": "Main Account",
+     "balance": 434050,
+     "ciban": "IE54CPAY99119911111111",
+     "cbic": "CPAYIE2D",
+     "cnsc": "991199",
+     "ccan": "11111111",
+     "currency": {
+        "description": "Euro",
+        "code": "EUR"
      },
-     "defaultAccount" : true,
-     "status" : {
-        "type" : "LIVE",
-        "description" : "Live"
+     "defaultAccount": true,
+     "status": {
+        "type": "LIVE",
+        "description": "Live"
      },
-     "colour" : {
-        "name" : "ORANGE"
+     "colour": {
+        "name": "ORANGE"
      }   
 }
 ```    
@@ -161,83 +161,48 @@ Field | Description
 ## List all Fire Accounts
 
 ```shell
-curl https://business.realexfire.com/api/businesses/v1/accounts
-  -X GET
-  -d "page=2"
-  -d "count=20"
+curl https://business.realexfire.com/api/businesses/v1/accounts \
+  -X GET \
   -H "Authorization: $AUTHORIZATION_TOKEN"
 
 
 {
-	"total": 1,
 	"accounts": [
-	    {
-		"cban": 64783,
-		"alias": "Main Account",
-		"currency": "EUR",
-		"balance": 434050,
-		"bic": "CPAYID2D",
-		"iban": "IE73CPAY99119982718273",
-		"nameOnAccount": "Tim's Pen Shop"
-	    }
+		{
+		     "ican": 1951,
+		     "name": "Main Account",
+		     "balance": 434050,
+		     "ciban": "IE54CPAY99119911111111",
+		     "cbic": "CPAYIE2D",
+		     "cnsc": "991199",
+		     "ccan": "11111111",
+		     "currency": {
+		        "description": "Euro",
+		        "code": "EUR"
+		     },
+		     "defaultAccount": true,
+		     "status": {
+		        "type": "LIVE",
+		        "description": "Live"
+		     },
+		     "colour": {
+		        "name": "ORANGE"
+		     }   
+		}
 	]
 }
 ```
 
-```java
-PayWithFireSDK businessAccount 
-	= new PayWithFireSDK(Environment.SANDBOX, "privateToken");
-
-List<FireAccount> accounts 
-	= businessAccount.accounts().list();
-
-// you can also configure parameters...
-Config params = new Config()
-	.setCount(20)
-	.setPage(2);
-
-List<FireAccount> accounts 
-	= businessAccount.accounts().list(params);
-
-// Now you can retrieve values from the accounts
-String iban = accounts.get(0).getIBAN();
-```
-
-```php
-<?php
-$businessAccount = new PayWithFireSDK(array(
-	"environment" => "SANDBOX",
-	"privateToken" => "privateToken"
-));
-
-$accounts = $businessAccount->accounts()->list();
-
-# you can also configure parameters...
-$params = array(
-	"count" => 20,
-	"page" => 2
-);
-
-$accounts = $businessAccount->accounts()->list($params);
-
-// Now you can retrieve values from the accounts
-$iban = accounts[0]->iban;
-?>
-```
 
 Returns all your Fire Accounts. Ordered by Alias ascending. Can be paginated. 
 
 ### HTTP Request
 
-`GET https://paywithfire.com/business/v1/me/accounts`
+`GET https://business.realexfire.com/api/businesses/v1/accounts`
 
-### Query Parameters
+### Returns
 
-Parameter | Default | Description
---------- | ------- | -----------
-`page` | 1 | The page offset to return if paginating the results.
-`count` | 20 | The count of requests to return per page if paginating the results.
-
+An array of account objects.
 
 ## Create a new Fire Account
 
@@ -264,46 +229,6 @@ curl https://paywithfire.com/business/v1/me/accounts
 }
 ```
 
-```java
-PayWithFireSDK businessAccount 
-	= new PayWithFireSDK(Environment.SANDBOX, "privateToken");
-
-FireAccount ukinvoicing = new FireAccount()
-	.setAlias("UK Invoicing Account")
-	.setCurrency("GBP");
-
-GenericResult res = businessAccount.accounts().add(ukinvoicing);
-
-// Should be a positive result
-if (Result.CREATED_OK == res.getResult()) {
-	int sortCode = res.getSortCode();
-	long balance = res.getBalance(); // 0
-	// ....
-}
-```
-
-```php
-<?php
-$businessAccount = new PayWithFireSDK(array(
-	"environment" => "SANDBOX",
-	"privateToken" => "privateToken"
-));
-
-$ukinvoicing = new PayWithFire_FireAccount(array(
-	"alias" => "UK Invoicing Account",
-	"currency" => "GBP"
-));
-
-$res = $businessAccount->accounts()->add($ukinvoicing);
-
-# Should be a positive result
-if (res->result == "CREATED_OK") {
-	$sortCode = res->sortCode;
-	$balance = res->balance; # 0
-	# ....
-}
-?>
-```
 
 To add a new Fire Account you just need a name and a currency. The details of the new account will be returned to you.
 
@@ -314,108 +239,71 @@ To add a new Fire Account you just need a name and a currency. The details of th
 ## Retrieve the details of a Fire Account 
 
 ```shell
-curl https://paywithfire.com/business/v1/me/accounts/924733
-  -X GET
+curl https://business.realexfire.com/api/businesses/v1/accounts/1951 \
+  -X GET \
   -H "Authorization: $AUTHORIZATION_TOKEN"
 
 {
-	"cban": 924733, 
-	"currency": "GBP",
-	"sortCode": "232221",
-	"accountNumber": "34658388",
-	"nameOnAccount": "Tim's Pen Shop"
+     "ican": 1951,
+     "name": "Main Account",
+     "balance": 434050,
+     "ciban": "IE54CPAY99119911111111",
+     "cbic": "CPAYIE2D",
+     "cnsc": "991199",
+     "ccan": "11111111",
+     "currency": {
+        "description": "Euro",
+        "code": "EUR"
+     },
+     "defaultAccount": true,
+     "status": {
+        "type": "LIVE",
+        "description": "Live"
+     },
+     "colour": {
+        "name": "ORANGE"
+     }   
 }
 ```
 
-```java
-PayWithFireSDK businessAccount 
-	= new PayWithFireSDK(Environment.SANDBOX, "privateToken");
 
-try {
-	FireAccount account 
-		= businessAccount.accounts().get(924733);
-} catch (NoSuchFireAccountException nsfae) {
-	// dang
-}
-
-// Now you can retrieve values from the account
-String iban = account.getIBAN();
-```
-
-```php
-<?php
-$businessAccount = new PayWithFireSDK(array(
-	"environment" => "SANDBOX",
-	"privateToken" => "privateToken"
-));
-
-try {
-	$account 
-		= $businessAccount->accounts()->get(924733);
-} catch (PayWithFire_Exception_NoSuchFireAccount $nsfae) {
-	# dang
-}
-
-# Now you can retrieve values from the account
-$iban = $account->iban;
-?>
-```
-You can retrieve the details of a Fire Account by its `cban`. 
+You can retrieve the details of a Fire Account by its `ican`. 
 
 ### HTTP Request
 
-`GET https://paywithfire.com/business/v1/me/accounts/{cban}`
+`GET https://business.realexfire.com/api/businesses/v1/accounts/{ican}`
 
 Parameter | Description
 --------- | -----------
-`cban` | This is the CBAN of the Fire Account to be returned.
+`ican` | This is the internal account ID of the Fire Account to be returned.
 
 # External Bank Accounts 
 
 ```shell
 # JSON representation of an External Account
 {
-	"externalAccountId": 23492,
-	"alias": "BoI Current Account",
-	"currency": "EUR",
-	"balance": 0,
-	"bic": "BOFIIE2D",
-	"iban": "IE23BOFI90001782718273",
-	"nameOnAccount": "Tim's Pen Shop"
+   "id": 742,
+   "accountName": "BoI Current Account",
+   "bic": "BOFIIE2DXXX",
+   "iban": "IE86BOFI90535211111111",
+   "nsc": null,
+   "accountNumber": null,
+   "accountHolderName": "Brian Johnson",
+   "currency": {
+      "code": "EUR",
+      "description": "Euro"
+   },
+   "dateCreated" : 1423751574577,
+   "status": {
+      "description": "Validated",
+      "type": "LIVE"
+   },
+   "country": {
+      "description": "Ireland",
+      "code": "IE"
+   }
 }
 ```    
-
-```java
-import com.paywithfire.api.business.ExternalAccount;
-
-// Java Object representing an External Account
-ExternalAccount account = new ExternalAccount();
-
-int id               = account.getId();
-String alias         = account.getAlias();
-String currency      = account.getCurrency();
-String bic           = account.getBIC();
-String iban          = account.getIBAN();
-String accountNumber = account.getAccountNumber();
-String sortCode      = account.getSortCode();
-String nameOnAccount = account.getNameOnAccount();
-```
-
-```php
-<?php
-# PHP Object representing an External Account
-$account = new PayWithFire_ExternalAccount();
-
-$id            = $account->cban;
-$alias         = $account->alias;
-$currency      = $account->currency;
-$bic           = $account->bic;
-$iban          = $account->iban;
-$accountNumber = $account->accountNumber;
-$sortCode      = $account->sortCode;
-$nameOnAccount = $account->nameOnAccount;
-?>
-```
 
 You can add bank accounts from other banks to your profile and transfer to these by bank transfer. These can either be your accounts in other banks or can be suppliers or customers you need to pay by bank transfer. 
 
@@ -423,96 +311,64 @@ The resource has the following attributes:
 
 Field | Description
 --------- | -----------
-`externalAccountId` | identifier for the Bank account _(assigned by Pay with Fire)_ 
-`alias` | the name the user gives to the bank account to help them identify the account. 
-`currency` | the currency of the bank account - either `EUR` or `GBP`.
+`id` | identifier for the Bank account _(assigned by Pay with Fire)_ 
+`accountName` | the name the user gives to the bank account to help them identify the account. 
 `bic` | the BIC of the account if currency is `EUR`. 
 `iban` | the IBAN of the account if currency is `EUR`. 
-`sortCode` | the Sort Code of the account if currency is `GBP`. 
+`nsc` | the Sort Code of the account if currency is `GBP`. 
 `accountNumber` | the Account Number of the account if currency is `GBP`. 
-`nameOnAccount` | the name on the external bank account. 
-
-
+`accountHolderName` | the name on the external bank account. 
+`currency` | a JSON entity with the currency code (`currency.code`) and English name (`currency.description`) of the currency for the account - either `EUR` or `GBP`
+`dateCreated` | the date/time the external account was added. Milliseconds since the epoch (1970).
+`status` | the status of the external account. When the account is first added it is in `PENDING` state until the valided by clicking the link in the email sent to the authorized user's email address. `status.description` is the English text to describe the `status.type`.
+`country` | the country of the account. `country.description` is the English version of the 2-letter code in `country.code`.
 
 ## List all External Bank Accounts
 
 ```shell
-curl https://paywithfire.com/business/v1/me/externalAccounts
-  -X GET
-  -d "page=2"
-  -d "count=20"
-  -H "Authorization: $AUTHORIZATION_TOKEN"
+curl https://business.realexfire.com/api/businesses/v1/fundingsources \
+  -X GET \
+  -H "Authorization: $AUTHORIZATION_TOKEN" 
 
 
 {
-	"total": 1,
-	"externalaccounts": [
-	    {
-		"externalAccountId": 23492,
-		"alias": "Bank of Ireland Account",
-		"currency": "EUR",
-		"bic": "BOFIIE2D",
-		"iban": "IE23BOFI90001782718273",
-		"nameOnAccount": "Tim's Pen Shop"
-	    }
+	"fundingSources": [
+		{
+		   "id": 742,
+		   "accountName": "BoI Current Account",
+		   "bic": "BOFIIE2DXXX",
+		   "iban": "IE86BOFI90535211111111",
+		   "nsc": null,
+		   "accountNumber": null,
+		   "accountHolderName": "Brian Johnson",
+		   "currency": {
+		      "code": "EUR",
+		      "description": "Euro"
+		   },
+		   "dateCreated" : 1423751574577,
+		   "status": {
+		      "description": "Validated",
+		      "type": "LIVE"
+		   },
+		   "country": {
+		      "description": "Ireland",
+		      "code": "IE"
+		   }
+		}
 	]
 }
 ```
 
-```java
-PayWithFireSDK businessAccount 
-	= new PayWithFireSDK(Environment.SANDBOX, "privateToken");
-
-List<ExternalAccount> accounts 
-	= businessAccount.externalAccounts().list();
-
-// you can also configure parameters...
-Config params = new Config()
-	.setCount(20)
-	.setPage(2);
-
-List<ExternalAccount> accounts 
-	= businessAccount.externalAccounts().list(params);
-
-// Now you can retrieve values from the accounts
-String iban = accounts.get(0).getIBAN();
-```
-
-```php
-<?php
-$businessAccount = new PayWithFireSDK(array(
-	"environment" => "SANDBOX",
-	"privateToken" => "privateToken"
-));
-
-$accounts = $businessAccount->externalAccounts()->list();
-
-# you can also configure parameters...
-$params = array(
-	"count" => 20,
-	"page" => 2
-);
-
-$accounts = $businessAccount->externalAccounts()->list($params);
-
-// Now you can retrieve values from the accounts
-$iban = accounts[0]->iban;
-?>
-```
 
 Returns all your external bank accounts. Ordered by Alias ascending. Can be paginated. 
 
 ### HTTP Request
 
-`GET https://paywithfire.com/business/v1/me/externalaccounts`
+`GET https://business.realexfire.com/api/businesses/v1/fundingsources`
 
-### Query Parameters
+### Returns
 
-Parameter | Default | Description
---------- | ------- | -----------
-`page` | 1 | The page offset to return if paginating the results.
-`count` | 20 | The count of requests to return per page if paginating the results.
-
+An array of external Bank accounts (referenced as `fundingSources` for legacy reasons).
 
 ## Create a new External Bank Account
 
@@ -537,50 +393,6 @@ curl https://paywithfire.com/business/v1/me/externalaccounts
 }
 ```
 
-```java
-PayWithFireSDK businessAccount 
-	= new PayWithFireSDK(Environment.SANDBOX, "privateToken");
-
-ExternalAccount signsrus = new ExternalAccount()
-	.setAlias("Signs'R'Us")
-	.setCurrency("GBP")
-	.setSortCode("201922")
-	.setAccountNumber("37928374")
-	.setNameOnAccount("SignsRUs");
-
-GenericResult res = businessAccount.externalAccounts().add(signsrus);
-
-// Should be a positive result
-if (Result.CREATED_OK == res.getResult()) {
-	int accountId = res.getId();
-	// ....
-}
-```
-
-```php
-<?php
-$businessAccount = new PayWithFireSDK(array(
-	"environment" => "SANDBOX",
-	"privateToken" => "privateToken"
-));
-
-$signsrus = new PayWithFire_ExternalAccount(array(
-	"alias" => "Signs'R'Us",
-	"currency" => "GBP",
-	"sortCode" => "201922",
-	"accountNumber" => "37928374",
-	"nameOnAccount" => "SignsRUs"
-));
-
-$res = $businessAccount->externalAccounts()->add($signsrus);
-
-# Should be a positive result
-if (res->result == "CREATED_OK") {
-	$d = res->id;
-	# ....
-}
-?>
-```
 
 To add a new bank account, post the details of the bank account as a JSON object. The `externalAccountId` of the account will be returned as a JSON object for you.
 
@@ -591,108 +403,45 @@ To add a new bank account, post the details of the bank account as a JSON object
 ## Retrieve the details of an External Bank Account 
 
 ```shell
-curl https://paywithfire.com/business/v1/me/externalaccounts/379487
-  -X GET
+curl https://business.realexfire.com/api/businesses/v1/fundingsources/742 \
+  -X GET \
   -H "Authorization: $AUTHORIZATION_TOKEN"
 
 {
-	"externalAccountId": 379487
-	"alias": "Signs'R'Us",
-	"currency": "GBP",
-	"sortCode": "201922",
-	"accountNumber": "37928374",
-	"nameOnAccount": "SignsRUs"
+   "id": 742,
+   "accountName": "BoI Current Account",
+   "bic": "BOFIIE2DXXX",
+   "iban": "IE86BOFI90535211111111",
+   "nsc": null,
+   "accountNumber": null,
+   "accountHolderName": "Brian Johnson",
+   "currency": {
+      "code": "EUR",
+      "description": "Euro"
+   },
+   "dateCreated" : 1423751574577,
+   "status": {
+      "description": "Validated",
+      "type": "LIVE"
+   },
+   "country": {
+      "description": "Ireland",
+      "code": "IE"
+   }
 }
 ```
 
-```java
-PayWithFireSDK businessAccount 
-	= new PayWithFireSDK(Environment.SANDBOX, "privateToken");
 
-try {
-	ExternalAccount account 
-		= businessAccount.externalAccounts().get(379487);
-} catch (NoSuchExternalAccountException nseae) {
-	// dang
-}
-
-// Now you can retrieve values from the account
-String iban = account.getIBAN();
-```
-
-```php
-<?php
-$businessAccount = new PayWithFireSDK(array(
-	"environment" => "SANDBOX",
-	"privateToken" => "privateToken"
-));
-
-try {
-	$account 
-		= $businessAccount->externalAccounts()->get(379487);
-} catch (PayWithFire_Exception_NoSuchFireAccount $nsfae) {
-	# dang
-}
-
-# Now you can retrieve values from the account
-$iban = $account->iban;
-?>
-```
-
-You can retrieve the details of an external account by its `externalAccountId`. 
+You can retrieve the details of an external account by its `id`. 
 
 ### HTTP Request
 
-`GET https://paywithfire.com/business/v1/me/externalaccounts/{externalAccountId}`
+`GET https://business.realexfire.com/api/businesses/v1/fundingsources/{id}`
 
 Parameter | Description
 --------- | -----------
-`externalAccountId` | This is the ID of the external account to be returned.
+`id` | This is the ID of the external account to be returned.
 
-## Delete an External Bank Account
-
-```shell
-curl https://paywithfire.com/business/v1/me/externalaccounts/379487
-  -X DELETE
-  -H "Authorization: $AUTHORIZATION_TOKEN"
-```
-
-```java
-PayWithFireSDK businessAccount 
-	= new PayWithFireSDK(Environment.SANDBOX, "privateToken");
-
-try {
-	GenericResult res 
-		= businessAccount.externalAccounts().delete(379487);
-} catch (NoSuchExternalAccountException nseae) {
-	// dang
-}
-```
-
-```php
-<?php
-$businessAccount = new PayWithFireSDK(array(
-	"environment" => "SANDBOX",
-	"privateToken" => "privateToken"
-));
-
-try {
-	$res = $businessAccount->externalAccounts()->delete(379487);
-} catch (PayWithFire_Exception_NoSuchFireAccount $nseae) {
-	# dang
-}
-?>
-```
-
-Delete an external account from your profile.
-
-### HTTP Request
-
-`DELETE https://paywithfire.com/business/v1/me/externalaccounts/{externalAccountId}`
-
-Parameter | Description
---------- | -----------
-`externalAccountId` | This is the ID of the external account to be deleted.
 
 # Payments and Transfers
 
