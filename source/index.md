@@ -3,11 +3,8 @@ title: Fire Business Account API Reference
 
 language_tabs:
   - shell: cURL
-  - java: Java
-  - php: PHP
 
 toc_footers:
-  - <a href='#'>Sign Up for a Developer Key</a>
 
 includes:
 
@@ -31,7 +28,7 @@ The Pay with Fire API allows you to deeply integrate our account features into y
 # Post that to the API
 curl https://business.realexfire.com/api/login \
   -X POST \
-  -D -
+  -D - \
   -d @logindetails.json
 
 # Grab the Authentication Token from the headers (at)
@@ -80,13 +77,22 @@ Date: Wed, 29 Apr 2015 21:27:17 GMT
    }
 }
 ```
+```shell
+# Keepalive example
+$ AUTHORIZATION_TOKEN=<AUTHORIZATION-TOKEN>
+curl https://business.realexfire.com/api/businesses/v1/operatingcountries \
+  -H "Authorization: $AUTHORIZATION_TOKEN"
+```
 
-`BETA`
-In the BETA period, the authentication process piggybacks the Business Fire Account web application login. This
+`[BETA]`
+In the BETA period, the authentication process uses the Fire Business Account web application login. This
 will change to a dedicated API token once the API is implemented.
 
-Get an authentication token by passing your business id, email and password.
-Replace `privateToken` in the code samples with your private token from your Business Account Profile page.
+Get an authorization token by passing your business id, email and password. The authorization token is 
+returned as a header (`at`). This token will expire after 5 minutes of inactivity, so a regular call (once 
+every minute) to an inexpensive endpoint (say Operating Countries) is needed until you sign out.
+
+Once you have the authorization token, pass it as a header for every call. 
 
 
 # Fire Accounts 
