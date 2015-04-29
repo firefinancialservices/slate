@@ -91,6 +91,8 @@ will change to a dedicated API token once the API is implemented.
 
 Get an authorization token by passing your business id, email and password to the login endpoint
 
+### HTTP Request
+
 `https://business.realexfire.com/api/login`
 
 The authorization token is returned as a header (`at`). This token will expire after 5 minutes 
@@ -100,6 +102,14 @@ is needed until you sign out.
 Once you have the authorization token, pass it as a header for every call. 
 
 `Authorization: $AUTHORIZATION_TOKEN`
+
+### Query Parameters
+
+Parameter | Description
+--------- | -----------
+`businessClientId` | The alpha-numeric business ID you set during sign up, and used to log into the Business Account application.
+`emailAddress` | The email address of the authorized user.
+`password` | The password for the authorized user.
 
 # Fire Accounts 
 
