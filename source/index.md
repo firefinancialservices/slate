@@ -444,6 +444,146 @@ Parameter | Description
 
 
 # Payments and Transfers
+You can transfer instantly between any two of your Fire Accounts in either currency, or perform a bank transfer to 
+a pre-existing External Bank account. 
+
+## Transfer between two of your Fire Accounts in the same currency
+
+```shell
+# cat transferdetails.json
+{
+    "icanFrom": 1951, 
+    "icanTo": 1979, 
+    "currency": "EUR", 
+    "amount": 50, 
+    "ref": "Cover the bills for April 2015"
+}
+
+# Post that to the API
+curl https://business.realexfire.com/api/businesses/v1/accounts/transfer \
+  -X POST \
+  -d @transferdetails.json \
+  -H "Authorization: $AUTHORIZATION_TOKEN"
+
+{
+    "refId": 32424
+}
+```
+
+To transfer between two of your Fire Accounts in the same currency, post the details of the transfer as a JSON object. The `refId` of the transfer will be returned to you.
+
+### HTTP Request
+
+`POST https://business.realexfire.com/api/businesses/v1/accounts/transfer`
+
+### Returns
+The `refId` of the resulting transfer.
+
+## Transfer between two of your Fire Accounts in different currencies
+
+```shell
+# First, get the fee details object for FX transfers from this account.
+curl https://business.realexfire.com/api/businesses/v1/services/FX_INTERNAL_TRANSFER?ican=1954 \
+  -X GET \
+  -H "Authorization: $AUTHORIZATION_TOKEN"
+
+{
+   "feeRule": {
+      "feeRuleId": 19,
+      "fixed": 0,
+      "percentage4d": 12500,
+      "minimum": 125
+   },
+   "currency": {
+      "code": "GBP",
+      "description": "Sterling"
+   }
+}
+
+# Then use that feeRuleId in the transfer object to agree to the fees.
+# cat transferdetails.json
+{
+    "icanFrom": 1954, 
+    "icanTo": 1951, 
+    "amount": "500000", 
+    "amountCurrency": "GBP", 
+    "ref": "Transfer invoice payments back to Euro", 
+    "feeRuleId": 19
+}
+
+# Post that to the API
+curl https://business.realexfire.com/api/businesses/v1/fx/transfer \
+  -X POST \
+  -d @transferdetails.json \
+  -H "Authorization: $AUTHORIZATION_TOKEN"
+
+{
+   "refId":26835,
+   "txnId":30261,
+   "txnType":{
+      "type":"FX_INTERNAL_TRANSFER_FROM",
+      "description":"Fx Internal Transfer From"
+   },
+   "from":{
+      "type":"FIRE_ACCOUNT",
+      "account":{
+         "id":1954,
+         "alias":"GBP",
+         "nsc":"232221",
+         "accountNumber":"05379385"
+      }
+   },
+   "to":{
+      "type":"FIRE_ACCOUNT",
+      "account":{
+         "id":1951,
+         "alias":"EUR"
+      }
+   },
+   "currency":{
+      "code":"GBP",
+      "description":"Sterling"
+   },
+   "amountBeforeFee":500000,
+   "feeAmount":,
+   "amountAfterFee":506250,
+   "balance":31000,
+   "myRef":"Transfer invoice payments back to Euro",
+   "date":1430348793650,
+   "fxTradeDetails":{
+      "buyCurrency":"EUR",
+      "sellCurrency":"GBP",
+      "fixedSide":"SELL",
+      "buyAmount":694000,
+      "sellAmount":500000,
+      "rate4d":13880
+   },
+   "feeDetails":[
+      {
+         "percentage4d":12500,
+         "fixed":0,
+         "minimum":125,
+         "amountCharged":6250
+      }
+   ]
+}
+```
+
+To transfer between two of your Fire Accounts in different currencies, you must first know what fee applies. You can get this by requesting the `FX_INTERNAL_TRANSFER` service for the source account.
+
+`GET https://business.realexfire.com/api/businesses/v1/services/FX_INTERNAL_TRANSFER?ican={ican}`
+
+This returns a fee details object which you can use to determine the fees you will be charged. 
+
+Include this `feeRuleId` in the POST request to explicitly agree to the fees you will be charged. 
+
+### HTTP Request
+
+`POST https://business.realexfire.com/api/businesses/v1/fx/transfer`
+
+### Returns
+The payment object for the resulting transfer.
+
 
 ## Pay by Bank Transfer
 
