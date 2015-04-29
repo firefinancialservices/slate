@@ -81,32 +81,7 @@ Date: Wed, 29 Apr 2015 21:27:17 GMT
 }
 ```
 
-
-
-```shell
-# With shell, you can just pass the correct header with each request
-curl <https://paywithfire.com/business/v1/me>
-  -H "Authorization: privateToken"
-```
-
-```java
-import com.paywithfire.api.business.PayWithFireSDK;
-
-PayWithFireSDK businessAccount 
-	= new PayWithFireSDK(Environment.SANDBOX, "privateToken");
-```
-
-```php
-<?php
-require_once "PATH_TO_PAYWITHFIRE/lib/PayWithFireSDK.php";
-
-$businessAccount = new PayWithFireSDK(array(
-	"environment" => "SANDBOX",
-	"privateToken" => "privateToken"
-));
-?>
-```
-BETA
+```BETA```
 In the BETA period, the authentication process piggybacks the Business Fire Account web application login. This
 will change to a dedicated API token once the API is implemented.
 
