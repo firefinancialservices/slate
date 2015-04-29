@@ -31,7 +31,7 @@ curl https://business.realexfire.com/api/login \
   -D - \
   -d @logindetails.json
 
-# Grab the Authentication Token from the headers (at)
+# Grab the Authorization Token from the headers (at)
 
 HTTP/1.1 200 OK
 ...
@@ -79,7 +79,8 @@ Date: Wed, 29 Apr 2015 21:27:17 GMT
 ```
 ```shell
 # Keepalive example
-$ AUTHORIZATION_TOKEN=<AUTHORIZATION-TOKEN>
+AUTHORIZATION_TOKEN=<AUTHORIZATION-TOKEN>
+
 curl https://business.realexfire.com/api/businesses/v1/operatingcountries \
   -H "Authorization: $AUTHORIZATION_TOKEN"
 ```
@@ -88,12 +89,17 @@ curl https://business.realexfire.com/api/businesses/v1/operatingcountries \
 In the BETA period, the authentication process uses the Fire Business Account web application login. This
 will change to a dedicated API token once the API is implemented.
 
-Get an authorization token by passing your business id, email and password. The authorization token is 
-returned as a header (`at`). This token will expire after 5 minutes of inactivity, so a regular call (once 
-every minute) to an inexpensive endpoint (say Operating Countries) is needed until you sign out.
+Get an authorization token by passing your business id, email and password to the login endpoint
+
+`https://business.realexfire.com/api/login`
+
+The authorization token is returned as a header (`at`). This token will expire after 5 minutes 
+of inactivity, so a regular call (once every minute say) to an inexpensive endpoint (say Operating Countries) 
+is needed until you sign out.
 
 Once you have the authorization token, pass it as a header for every call. 
 
+`Authorization: $AUTHORIZATION_TOKEN`
 
 # Fire Accounts 
 
