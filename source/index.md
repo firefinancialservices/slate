@@ -33,6 +33,18 @@ curl https://business.realexfire.com/api/login \
   -X POST \
   -D -
   -d @logindetails.json
+
+HTTP/1.1 200 OK
+Server: Apache-Coyote/1.1
+Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+Pragma: no-cache
+Expires: 0
+X-Content-Type-Options: nosniff
+X-Frame-Options: DENY
+X-XSS-Protection: 1; mode=block
+at: aeb5fdf3-eee2-4e80-b605-7e2fac2add36
+Content-Length: 2112
+Date: Wed, 29 Apr 2015 21:27:17 GMT
 ```
 ```json
 {
