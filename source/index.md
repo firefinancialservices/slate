@@ -36,36 +36,36 @@ curl https://business.realexfire.com/api/login \
 ```
 ```json
 {
-   "userProfile" : {
-      "firstName" : "Brian",
-      "lastName" : "Dude",
-      "userEmail" : "brian@website.com",
-      "mobileNumber" : "+353871111111",
-      "cvl" : "FULL",
-      "permissions" : [],
-      "lastLogin" : "2015-04-29T21:28:13.233Z"
+   "userProfile": {
+      "firstName": "Brian",
+      "lastName": "Johnson",
+      "userEmail": "brian@website.com",
+      "mobileNumber": "+353871111111",
+      "cvl": "FULL",
+      "permissions": [],
+      "lastLogin": "2015-04-29T21:28:13.233Z"
    },
-   "businessProfile" : {
-      "businessName" : "Brian's Company",
-      "businessClientId" : "brianscompany",
-      "businessWebsite" : "https://www.website.com",
-      "businessAddress" : {
-         "address1" : "7-11 Sir John Rogerson's Quay",
-         "city" : "Dublin 2",
-         "country" : {
-            "code" : "IE",
-            "description" : "Ireland"
+   "businessProfile": {
+      "businessName": "Brian's Company",
+      "businessClientId": "brianscompany",
+      "businessWebsite": "https://www.website.com",
+      "businessAddress": {
+         "address1": "7-11 Sir John Rogerson's Quay",
+         "city": "Dublin 2",
+         "country": {
+            "code": "IE",
+            "description": "Ireland"
          }
       },
-      "businessDetailsSubmitted" : true,
-      "businessType" : "OTHER",
-      "apiTokens" : [
+      "businessDetailsSubmitted": true,
+      "businessType": "OTHER",
+      "apiTokens": [
          {
-            "privateToken" : "<PRIVATE-TOKEN>",
-            "dateCreated" : 1423749242837,
-            "publicToken" : "<PUBLIC-TOKEN>",
-            "active" : true,
-            "tokenId" : 2
+            "privateToken": "<PRIVATE-TOKEN>",
+            "dateCreated": 1423749242837,
+            "publicToken": "<PUBLIC-TOKEN>",
+            "active": true,
+            "tokenId": 2
          }
       ]
    }
