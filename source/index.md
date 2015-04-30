@@ -230,6 +230,14 @@ To add a new Fire Account you just need a name and a currency.
 
 `POST https://business.realexfire.com/api/businesses/v1/accounts`
 
+### JSON Input
+
+Parameter | Description
+--------- | -----------
+`accountName` | A name to give to this Fire Account. This is not the same as the Name on the Account - that will always be your offical company name. This is an alias or nickname to help you identify the account. 
+`currency` | Either "EUR" or "GBP"
+`colour` | not used at present - set to "ORANGE" for now.
+
 ## Retrieve the details of a Fire Account 
 
 ```shell
@@ -416,11 +424,28 @@ HTTP 204 No Content
 ```
 
 Adding a new external bank account is a highly sensitive action and is protected by digits of your PIN and the 2FA code from your phone. 
-To add a new bank account, post the details of the bank account as a JSON object. The `externalAccountId` of the account will be returned as a JSON object for you.
+To add a new bank account, first retrieve a PIN Grid object, and then post the details of the bank account as a JSON object. 
 
 ### HTTP Request
 
+`POST https://business.realexfire.com/api/businesses/v1/me/pingrid`
 `POST https://business.realexfire.com/api/businesses/v1/fundingsources`
+
+### JSON Input 
+
+Parameter | Description
+--------- | -----------
+`accountName` | A name to give to this external Bank Account. This is not the same as the Name on the Account - this is an alias or nickname to help you identify the account. 
+`currency` | Either `EUR` or `GBP`
+`nsc` | If a GBP account, provide the Sort Code.
+`accountNumber` | If a GBP account, provide the Account Number.
+`bic` | If a EUR account, provide the BIC.
+`iban` | If a EUR account, provide the IBAN.
+`accountHolderName` | The name on the account. 
+`country` | Either `IE` or `GB`  
+`authenticatorToken` | The 6 digit code from your 2FA app on your phone, or create programmatically. 
+`select0`, `select1` and `select2`  | The 3 digits requested from your PIN
+
 
 ## Retrieve the details of an External Bank Account 
 
@@ -606,6 +631,7 @@ curl https://business.realexfire.com/api/businesses/v1/fx/transfer \
 }
 ```
 
+*Work in progress!*
 To transfer between two of your Fire Accounts in different currencies, you must first know what fee applies. You can get this by requesting the `FX_INTERNAL_TRANSFER` service for the source account.
 
 `GET https://business.realexfire.com/api/businesses/v1/services/FX_INTERNAL_TRANSFER?ican={ican}`
@@ -642,74 +668,7 @@ curl https://paywithfire.com/business/v1/me/makePayment?fromAccount=379487&toAcc
 
 ```
 
-```java
-PayWithFireSDK businessAccount 
-	= new PayWithFireSDK(Environment.SANDBOX, "privateToken");
-
-// Set up the payment
-Payment payment = new Payment()
-	.setAmount(3748)
-	.setCurrency("EUR")
-	.setNarrative("REF 2347839")
-	.setComment("Paid for March Bill");
-
-// Set the account to pay from - a Fire Account in this case
-Account fromAccount 
-	= new FireAccount().setId(84654);
-
-// Set the account to pay to - an External Account in this case
-Account toAccount 
-	= new ExternalAccount().setId(379487);
-
-try {
-	GenericResult res 
-		= businessAccount.makePayment(payment, fromAccount, toAccount);
-} catch (PaymentExceedsLimitException pele) {
-	// Check the status for reason
-	pele.getStatus();
-} catch (NoSuchExternalAccountException nseae) {
-	// dang
-}
-
-```
-
-```php
-<?php
-$businessAccount = new PayWithFireSDK(array(
-	"environment" => "SANDBOX",
-	"privateToken" => "privateToken"
-));
-
-# Set up the payment
-$payment = new PayWithFire_Payment(array(
-	"amount" => 3748,
-	"currency" => "EUR",
-	"narative" => "REF 2347839",
-	"comment" => "Paid for March Bill"
-));
-
-# Set the account to pay from - a Fire Account in this case
-$fromAccount = new PayWithFire_FireAccount(array("id" => 84654));
-
-# Set the account to pay to - an External Account in this case
-$toAccount = new PayWithFire_ExternalAccount(array("id" => 379487));
-
-try {
-	$res = $businessAccount->makePayment(array(
-		"payment" => $payment, 
-		"fromAccount" => $fromAccount, 
-		"toAccount" => $toAccount
-	));
-} catch (PayWithFire_Exception_PaymentExceedsLimit $e) {
-	# Check the status for reason
-	$e->getMessage();
-
-} catch (PayWithFire_Exception_NoSuchExternalAccount $nseae) {
-	# dang
-}
-?>
-```
-
+*Work in progress!*
 You can pay from any of your Fire Accounts to an existing External Bank Account. 
 
 Depending on the authorisation rules configured by your account administrator, the API call may only set up the transfer rather than actually execute it. Check the status of the response to know what happened. 
