@@ -13,7 +13,7 @@ search: true
 
 # Integrating to the Fire Business Account API
 
-The Fire API allows you to deeply integrate our account features into your application.
+The Fire API allows you to deeply integrate Fire Account features into your application.
 
 # Authentication
 
@@ -714,7 +714,7 @@ Parameter | Description
 
 ## Receiving a webhook at your server.
 ```shell
-# This is the payload of the message you will receive. 
+# This is the payload of the message you will receive for a lodgement. 
 { 
     "txnId": 1234,
     "refId": 13001,
@@ -762,7 +762,6 @@ A JWT looks like this:
 `0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWV`
 `9.TJVA95OrM7E2cBab30RMHrHDcEfxjoYZgeFONFh7HgQ`
 
-This needs to be decoded and you should ensure that the signature is valid. There are a set of Webhook API Tokens in the Profile / Webhooks section of 
-the Business Fire Account application. The Key ID (`kid`) in the JWT header will be the Webhooks public token, and you should use the Webhooks private token
-as the secret to verify the signature on the JWT.  
+This needs to be decoded using the library from JWT.io. You should ensure that the signature is valid. There are a set of Webhook API Tokens in the Profile / Webhooks section of the Business Fire Account application. The Key ID (`kid`) in the JWT header will be the `Webhooks` public token, and you should use the corresponding private token as the secret to verify the signature on the JWT.  
+
 
