@@ -758,7 +758,7 @@ visibile to anyone, the signature is created using a shared secret that only you
 
 A JWT looks like this:
 
-<div style="padding-left: 28px; word-break: break-all; font-family: Consolas, Menlo, Monaco, "Lucida Console", "Liberation Mono", "DejaVu Sans Mono", "Bitstream Vera Sans Mono", "Courier New", monospace, serif;">eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWV9.TJVA95OrM7E2cBab30RMHrHDcEfxjoYZgeFONFh7HgQ</div>
+<div style="padding-left: 28px; word-break: break-all; font-family: Consolas, Menlo, Monaco, 'Lucida Console', 'Liberation Mono', 'DejaVu Sans Mono', 'Bitstream Vera Sans Mono', 'Courier New', monospace, serif;">eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWV9.TJVA95OrM7E2cBab30RMHrHDcEfxjoYZgeFONFh7HgQ</div>
 
 This needs to be decoded and you should ensure that the signature is valid. There are a set of Webhook API Tokens in the Profile / Webhooks section of 
 the Business Fire Account application. The Key ID (`kid`) in the JWT header will be the Webhooks public token, and you should use the Webhooks private token
