@@ -713,14 +713,6 @@ Parameter | Description
 `events` | An array of Fire Account events that will trigger a call to this webhook. 
 
 ## Receiving a webhook at your server.
-When the data is sent to your webhook it will be signed and encoded using JWT (JSON Web Token). JWT is a compact URL-safe means of representing data to be transferred between two parties (see JWT.io for more details and to get a code library for your programming environment).
-
-A JWT looks like this:
-
-<div style="word-break: break-all; font-family: courier new;">eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWV9.TJVA95OrM7E2cBab30RMHrHDcEfxjoYZgeFONFh7HgQ</div>
-
-
-
 ```shell
 # This is the payload of the message you will receive. 
 { 
@@ -760,3 +752,15 @@ A JWT looks like this:
     "date": 1339511599000 
 }
 ```
+
+When the data is sent to your webhook it will be signed and encoded using JWT (JSON Web Token). JWT is a compact URL-safe means of representing data to be transferred between two parties (see JWT.io for more details and to get a code library for your programming environment). While the data is the message is 
+visibile to anyone, the signature is created using a shared secret that only you and Fire have access to, so you can be sure that it came from us. 
+
+A JWT looks like this:
+
+<div style="padding-left: 28px; word-break: break-all; font-family: Consolas, Menlo, Monaco, "Lucida Console", "Liberation Mono", "DejaVu Sans Mono", "Bitstream Vera Sans Mono", "Courier New", monospace, serif;">eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWV9.TJVA95OrM7E2cBab30RMHrHDcEfxjoYZgeFONFh7HgQ</div>
+
+This needs to be decoded and you should ensure that the signature is valid. There are a set of Webhook API Tokens in the Profile / Webhooks section of 
+the Business Fire Account application. The Key ID (`kid`) in the JWT header will be the Webhooks public token, and you should use the Webhooks private token
+as the secret to verify the signature on the JWT.  
+
