@@ -717,10 +717,10 @@ When the data is sent to your webhook it will be signed and encoded using JWT (J
 
 A JWT looks like this:
 
-`eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOi
-IxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW
-4iOnRydWV9.TJVA95OrM7E2cBab30RMHrHDcEfxjoYZgeFON
-Fh7HgQ`
+`eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI`
+`xMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4`
+`iOnRydWV9.TJVA95OrM7E2cBab30RMHrHDcEfxjoYZgeFONF`
+`h7HgQ`
 
 
 
