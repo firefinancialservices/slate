@@ -675,4 +675,88 @@ Depending on the authorisation rules configured by your account administrator, t
 
 Some administrators may not allow payments via the API at all, and others can place restrictions on the total value of payments over a period of time. If you receive an error 403, check the status of the response for more information.
 
+# Webhooks
+Webhooks allow you to be notified of events as they happen on your Realex Fire accounts. You can set up webhooks in the Business Account web application 
+or use the API to configure them programmatically. 
+ 
 
+## View Webhooks
+```shell
+curl https://business.realexfire.com/api/businesses/v1/webhooks \
+  -X GET \
+  -H "Authorization: $AUTHORIZATION_TOKEN" 
+
+{
+    "webhookEvents": [
+        {
+            "webhook": {
+                "id": 7,
+                "businessId": 2,
+                "webhookUrl": "https://mysite.com/webhook/7384"
+            },
+            "events": [ "LODGEMENT_RECEIVED" ] 
+        }
+    ]
+}
+```
+
+Retrieve a list of your existing webhooks 
+
+`GET https://business.realexfire.com/api/businesses/v1/webhooks`
+
+### Returns
+An array of webhook event configuration objects.
+
+Parameter | Description
+--------- | -----------
+`webhook` | The details of the webhook. `webhook.id` and `webhook.businessId` are identifiers, and `webhook.webhookUrl` is the actual URL of the webhook.
+`events` | An array of Fire Account events that will trigger a call to this webhook. 
+
+## Receiving a webhook at your server.
+When the data is sent to your webhook it will be signed and encoded using JWT (JSON Web Token). JWT is a compact URL-safe means of representing data to be transferred between two parties (see JWT.io for more details and to get a code library for your programming environment).
+
+A JWT looks like this:
+
+`eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWV9.TJVA95OrM7E2cBab30RMHrHDcEfxjoYZgeFONFh7HgQ`
+
+
+
+```shell
+# This is the payload of the message you will receive. 
+{ 
+    "txnId": 1234,
+    "refId": 13001,
+    "txnType": { 
+        "type": "LODGEMENT",
+        "description": "Lodgement"
+    },
+    "from": { 
+        "type": "WITHDRAWAL_ACCOUNT",
+        "account": { 
+            "id": 123,
+            "alias": "Smyth and Co.",
+            "bic": "DABAIE2D",
+            "iban": "IE29AIBK93115212345654 
+        }
+    },
+    "to": { 
+        "type": "FIRE_ACCOUNT",
+        "account": { 
+            "id": 789,
+            "alias": "Ticket Sales",
+            "bic": "CPAYIE2D",
+            "iban": "IE76CPAY99119900000000" 
+        }
+    },
+    "currency": { 
+        "code": "EUR", 
+        "description": "Euro" 
+    },
+    "amountBeforeFee": 300,
+    "feeAmount": 3,
+    "amountAfterFee": 297,
+    "balance": 397,
+    "myRef": "Money for concert",
+    "date": 1339511599000 
+}
+```
