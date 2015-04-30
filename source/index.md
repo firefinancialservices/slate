@@ -503,7 +503,7 @@ curl https://business.realexfire.com/api/businesses/v1/services/FX_INTERNAL_TRAN
 # ------- This seems all wrong????? ------
 # To get an estimate of the currency conversion rate that will be used:
 curl https://business.realexfire.com/api/businesses/v1/fx/rate?buyCurrency=GBP&sellCurrency=EUR&fixedSide=BUY&amount=10000 \
-    -x GET \
+    -X GET \
     -H "Authorization: $AUTHORIZATION_TOKEN"
     
 {
