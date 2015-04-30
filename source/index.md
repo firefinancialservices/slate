@@ -209,32 +209,26 @@ An array of account objects.
 ```shell
 # cat newaccount.json
 {
-	"alias": "UK Invoicing Account",
-	"currency": "GBP"
+    "accountName": "UK Invoicing Account", 
+    "currency": "EUR", 
+    "colour": "ORANGE"
 }
 
 # Post that to the API
-curl https://paywithfire.com/business/v1/me/accounts
-  -X POST
-  -d @newaccount.json
+curl https://business.realexfire.com/api/businesses/v1/accounts /
+  -X POST /
+  -d @newaccount.json /
   -H "Authorization: $AUTHORIZATION_TOKEN"
 
-{
-	"cban": 924733, 
-	"currency": "GBP",
-	"balance": 0,
-	"sortCode": "232221",
-	"accountNumber": "34658388",
-	"nameOnAccount": "Tim's Pen Shop"
-}
+HTTP 204 No Content
 ```
 
 
-To add a new Fire Account you just need a name and a currency. The details of the new account will be returned to you.
+To add a new Fire Account you just need a name and a currency. 
 
 ### HTTP Request
 
-`POST https://paywithfire.com/business/v1/me/accounts`
+`POST https://business.realexfire.com/api/businesses/v1/accounts`
 
 ## Retrieve the details of a Fire Account 
 
@@ -373,32 +367,60 @@ An array of external Bank accounts (referenced as `fundingSources` for legacy re
 ## Create a new External Bank Account
 
 ```shell
-# cat newaccount.json
-{
-	"alias": "Signs'R'Us",
-	"currency": "GBP",
-	"sortCode": "201922",
-	"accountNumber": "37928374",
-	"nameOnAccount": "SignsRUs"
-}
-
-# Post that to the API
-curl https://paywithfire.com/business/v1/me/externalaccounts
-  -X POST
-  -d @newaccount.json
+# First get the PIN Grid required
+curl https://business.realexfire.com/api/businesses/v1/me/pingrid \
+  -X GET \
   -H "Authorization: $AUTHORIZATION_TOKEN"
 
 {
-	"externalAccountId": 379487
+    "positions": "245",
+    "cap": "Guiness is Good for You!"
 }
+
+# Create the JSON object for the new account with the right digits of your PIN.
+# cat newaccount-eur.json
+{
+    "country": "IE",
+    "accountName": "Signs'R'Us",
+    "currency": "EUR",
+    "accountHolderName": "SignsRUs Limited",
+    "bic": "AIBKIE2D",
+    "iban": "IE41AIBK93338411111111",
+    "authenticatorToken": "825806",
+    "select0": "1",
+    "select1": "2",
+    "select2": "3"
+}
+
+# cat newaccount-gbp.json
+{
+    "country": "GB",
+    "accountName": "Signs'R'Us",
+    "currency": "GBP",
+    "accountHolderName": "SignsRUs Limited",
+    "nsc": "232211",
+    "accountNumber": "12345678",
+    "authenticatorToken": "825806",
+    "select0": "1",
+    "select1": "2",
+    "select2": "3"
+}
+
+# Post that to the API
+curl https://business.realexfire.com/api/businesses/v1/fundingsources \
+  -X POST \
+  -d @newaccount-gbp.json \
+  -H "Authorization: $AUTHORIZATION_TOKEN"
+
+HTTP 204 No Content
 ```
 
-
+Adding a new external bank account is a highly sensitive action and is protected by digits of your PIN and the 2FA code from your phone. 
 To add a new bank account, post the details of the bank account as a JSON object. The `externalAccountId` of the account will be returned as a JSON object for you.
 
 ### HTTP Request
 
-`POST https://paywithfire.com/business/v1/me/externalaccounts`
+`POST https://business.realexfire.com/api/businesses/v1/fundingsources`
 
 ## Retrieve the details of an External Bank Account 
 
