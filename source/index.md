@@ -418,6 +418,149 @@ GET https://business.realexfire.com/api/businesses/v1/accounts/1979/payments \
 }
 ```
 
+# Payments
+```shell
+# Full details of an individual payment.
+{
+	"txnId": 30157,
+	"refId": 26774,
+	"txnType": {
+		"type": "FX_INTERNAL_TRANSFER_FROM",
+		"description": "Fx Internal Transfer From"
+	},
+	"from": {
+		"type": "FIRE_ACCOUNT",
+		"account": {
+			"id": 1979,
+			"alias": "Second EUR",
+			"nsc": "991199",
+			"accountNumber": "80502876",
+			"bic": "CPAYIE2D",
+			"iban": "IE57CPAY99119980502876"
+		}
+	},
+	"to": {
+		"type": "FIRE_ACCOUNT",
+		"account": {
+			"id": 1954,
+			"alias": "GBP"
+		}
+	},
+	"currency": {
+		"code": "EUR",
+		"description": "Euro"
+	},
+	"amountBeforeFee": 500,
+	"feeAmount": 125,
+	"amountAfterFee": 625,
+	"balance": 35,
+	"date": 1429695798917,
+	"fxTradeDetails": { 
+		"buyCurrency": "GBP",
+		"sellCurrency": "EUR",
+		"fixedSide": "SELL",
+		"buyAmount": 359,
+		"sellAmount": 500,
+		"rate4d": 7180
+	},
+	"feeDetails": [ 
+		{ 
+			"percentage4d": 12500,
+			"fixed": 0,
+			"minimum": 125,
+			"amountCharged": 125
+		}
+	]
+}
+
+# Condensed payment details when part of a list.
+{
+	"txnId": 30260,
+	"refId": 26834,
+	"ican": 1979,
+	"txnType": {
+		"type": "INTERNAL_TRANSFER_TO",
+		"description": "Transfer"
+	},
+	"relatedParty": {
+		"alias": "Main Account"
+	},
+	"currency": { 
+		"code": "EUR",
+		"description": "Euro"
+	},
+	"amountBeforeFee": 5000,
+	"feeAmount": 0,
+	"amountAfterFee": 5000,
+	"balance": 8500,
+	"myRef": "Transfer to main account",
+	"date": "2015-04-29T22:56:48.867Z"
+}
+```
+While there are many types of payments, they are all represented by the same JSON object with a different `txnType`.
+
+The payment resource has the following attributes: 
+
+Field | Description
+--------- | -----------
+`txnId` | The id of this side of the payment (each payment has two sides - a to and a from). This is used to get the details of the payment.
+`refId` | The id of the payment.
+`ican` | identifier for the Fire account _(assigned by Fire)_ _This field is only used in the condensed version._
+`txnType` | The type of payment. `txnType.type` is the code, `txnType.description` is an English version.
+`relatedParty` | `relatedParty.alias` is the name of the account on the other side of the payment. _This field is only used in the condensed version._
+`currency` | a JSON entity with the currency code (`currency.code`) and English name (`currency.description`) of the currency for the account - either `EUR` or `GBP`.
+`amountBeforeFee` | the Account Number of the account. 
+`feeAmount` | `true` if this is the default account for this currency. This will be the account that general fees are taken from (as opposed to per-transaction fees). 
+`amountAfterFee` | _Not used at present_
+`balance` | the balance of the account (in minor currency units - pence, cent etc. `434050` == `4,340.50 GBP` for a GBP account).
+`myRef` | _Not used at present_
+`date` | _Not used at present_
+`from` | 
+`to` | 
+`fxTradeDetails` |
+`feeDetails` | 
+
+
+## List payments for an account
+```shell
+GET https://business.realexfire.com/api/businesses/v1/accounts/1979/payments \
+  -X GET \
+  -d "limit=25" \
+  -d "offset=0" \
+  -H "Authorization: $AUTHORIZATION_TOKEN"
+
+{
+	"total": 1,
+	"dateRangeTo": 1430511042924,
+	"payments": [ 
+		{
+			"txnId": 30260,
+			"refId": 26834,
+			"ican": 1979,
+			"txnType": {
+				"type": "INTERNAL_TRANSFER_TO",
+				"description": "Transfer"
+			},
+			"relatedParty": {
+				"alias": "Main Account"
+			},
+			"currency": { 
+				"code": "EUR",
+				"description": "Euro"
+			},
+			"amountBeforeFee": 5000,
+			"feeAmount": 0,
+			"amountAfterFee": 5000,
+			"balance": 8500,
+			"myRef": "Transfer to main account",
+			"date": "2015-04-29T22:56:48.867Z"
+		}
+	]
+}
+```
+
+
+
 
 
 # External Bank Accounts 
