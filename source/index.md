@@ -13,7 +13,7 @@ search: true
 
 # Integrating to the Fire Business Account API
 
-The Fire API allows you to deeply integrate our account features into your application.
+The Fire API allows you to deeply integrate Fire Account features into your application.
 
 # Authentication
 
@@ -209,32 +209,34 @@ An array of account objects.
 ```shell
 # cat newaccount.json
 {
-	"alias": "UK Invoicing Account",
-	"currency": "GBP"
+    "accountName": "UK Invoicing Account", 
+    "currency": "EUR", 
+    "colour": "ORANGE"
 }
 
 # Post that to the API
-curl https://paywithfire.com/business/v1/me/accounts
-  -X POST
-  -d @newaccount.json
+curl https://business.realexfire.com/api/businesses/v1/accounts /
+  -X POST /
+  -d @newaccount.json /
   -H "Authorization: $AUTHORIZATION_TOKEN"
 
-{
-	"cban": 924733, 
-	"currency": "GBP",
-	"balance": 0,
-	"sortCode": "232221",
-	"accountNumber": "34658388",
-	"nameOnAccount": "Tim's Pen Shop"
-}
+HTTP 204 No Content
 ```
 
 
-To add a new Fire Account you just need a name and a currency. The details of the new account will be returned to you.
+To add a new Fire Account you just need a name and a currency. 
 
 ### HTTP Request
 
-`POST https://paywithfire.com/business/v1/me/accounts`
+`POST https://business.realexfire.com/api/businesses/v1/accounts`
+
+### JSON Input
+
+Parameter | Description
+--------- | -----------
+`accountName` | A name to give to this Fire Account. This is not the same as the Name on the Account - that will always be your offical company name. This is an alias or nickname to help you identify the account. 
+`currency` | Either "EUR" or "GBP"
+`colour` | not used at present - set to "ORANGE" for now.
 
 ## Retrieve the details of a Fire Account 
 
@@ -276,292 +278,6 @@ You can retrieve the details of a Fire Account by its `ican`.
 Parameter | Description
 --------- | -----------
 `ican` | This is the internal account ID of the Fire Account to be returned.
-
-# Payments
-```shell
-# Full details of an individual payment.
-{
-	"txnId": 30157,
-	"refId": 26774,
-	"txnType": {
-		"type": "FX_INTERNAL_TRANSFER_FROM",
-		"description": "Fx Internal Transfer From"
-	},
-	"from": {
-		"type": "FIRE_ACCOUNT",
-		"account": {
-			"id": 1979,
-			"alias": "Second EUR",
-			"nsc": "991199",
-			"accountNumber": "80502876",
-			"bic": "CPAYIE2D",
-			"iban": "IE57CPAY99119980502876"
-		}
-	},
-	"to": {
-		"type": "FIRE_ACCOUNT",
-		"account": {
-			"id": 1954,
-			"alias": "GBP"
-		}
-	},
-	"currency": {
-		"code": "EUR",
-		"description": "Euro"
-	},
-	"amountBeforeFee": 500,
-	"feeAmount": 125,
-	"amountAfterFee": 625,
-	"balance": 35,
-	"date": 1429695798917,
-	"fxTradeDetails": { 
-		"buyCurrency": "GBP",
-		"sellCurrency": "EUR",
-		"fixedSide": "SELL",
-		"buyAmount": 359,
-		"sellAmount": 500,
-		"rate4d": 7180
-	},
-	"feeDetails": [ 
-		{ 
-			"percentage4d": 12500,
-			"fixed": 0,
-			"minimum": 125,
-			"amountCharged": 125
-		}
-	]
-}
-
-# Condensed payment details when part of a list.
-{
-	"txnId": 30260,
-	"refId": 26834,
-	"ican": 1979,
-	"txnType": {
-		"type": "INTERNAL_TRANSFER_TO",
-		"description": "Transfer"
-	},
-	"relatedParty": {
-		"alias": "Main Account"
-	},
-	"currency": { 
-		"code": "EUR",
-		"description": "Euro"
-	},
-	"amountBeforeFee": 5000,
-	"feeAmount": 0,
-	"amountAfterFee": 5000,
-	"balance": 8500,
-	"myRef": "Transfer to main account",
-	"date": "2015-04-29T22:56:48.867Z"
-}
-```
-While there are many types of payments, they are all represented by the same JSON object with a different `txnType`.
-
-The payment resource has the following attributes: 
-
-Field | Description
---------- | -----------
-`txnId` | The id of this side of the payment (each payment has two sides - a to and a from). This is used to get the details of the payment.
-`refId` | The id of the payment.
-`ican` | identifier for the Fire account _(assigned by Fire)_ _This field is only used in the condensed version._
-`txnType` | The type of payment. `txnType.type` is the code, `txnType.description` is an English version.
-`relatedParty` | `relatedParty.alias` is the name of the account on the other side of the payment. _This field is only used in the condensed version._
-`currency` | a JSON entity with the currency code (`currency.code`) and English name (`currency.description`) of the currency for the account - either `EUR` or `GBP`.
-`amountBeforeFee` | the Account Number of the account. 
-`feeAmount` | `true` if this is the default account for this currency. This will be the account that general fees are taken from (as opposed to per-transaction fees). 
-`amountAfterFee` | _Not used at present_
-`balance` | the balance of the account (in minor currency units - pence, cent etc. `434050` == `4,340.50 GBP` for a GBP account).
-`myRef` | _Not used at present_
-`date` | _Not used at present_
-`from` | 
-`to` | 
-`fxTradeDetails` |
-`feeDetails` | 
-
-
-## List payments for an account
-```shell
-GET https://business.realexfire.com/api/businesses/v1/accounts/1979/payments \
-  -X GET \
-  -d "limit=25" \
-  -d "offset=0" \
-  -H "Authorization: $AUTHORIZATION_TOKEN"
-
-{
-	"total": 1,
-	"dateRangeTo": 1430511042924,
-	"payments": [ 
-		{
-			"txnId": 30260,
-			"refId": 26834,
-			"ican": 1979,
-			"txnType": {
-				"type": "INTERNAL_TRANSFER_TO",
-				"description": "Transfer"
-			},
-			"relatedParty": {
-				"alias": "Main Account"
-			},
-			"currency": { 
-				"code": "EUR",
-				"description": "Euro"
-			},
-			"amountBeforeFee": 5000,
-			"feeAmount": 0,
-			"amountAfterFee": 5000,
-			"balance": 8500,
-			"myRef": "Transfer to main account",
-			"date": "2015-04-29T22:56:48.867Z"
-		}
-	]
-}
-```
-
-# Payments
-```shell
-# Full details of an individual payment.
-{
-	"txnId": 30157,
-	"refId": 26774,
-	"txnType": {
-		"type": "FX_INTERNAL_TRANSFER_FROM",
-		"description": "Fx Internal Transfer From"
-	},
-	"from": {
-		"type": "FIRE_ACCOUNT",
-		"account": {
-			"id": 1979,
-			"alias": "Second EUR",
-			"nsc": "991199",
-			"accountNumber": "80502876",
-			"bic": "CPAYIE2D",
-			"iban": "IE57CPAY99119980502876"
-		}
-	},
-	"to": {
-		"type": "FIRE_ACCOUNT",
-		"account": {
-			"id": 1954,
-			"alias": "GBP"
-		}
-	},
-	"currency": {
-		"code": "EUR",
-		"description": "Euro"
-	},
-	"amountBeforeFee": 500,
-	"feeAmount": 125,
-	"amountAfterFee": 625,
-	"balance": 35,
-	"date": 1429695798917,
-	"fxTradeDetails": { 
-		"buyCurrency": "GBP",
-		"sellCurrency": "EUR",
-		"fixedSide": "SELL",
-		"buyAmount": 359,
-		"sellAmount": 500,
-		"rate4d": 7180
-	},
-	"feeDetails": [ 
-		{ 
-			"percentage4d": 12500,
-			"fixed": 0,
-			"minimum": 125,
-			"amountCharged": 125
-		}
-	]
-}
-
-# Condensed payment details when part of a list.
-{
-	"txnId": 30260,
-	"refId": 26834,
-	"ican": 1979,
-	"txnType": {
-		"type": "INTERNAL_TRANSFER_TO",
-		"description": "Transfer"
-	},
-	"relatedParty": {
-		"alias": "Main Account"
-	},
-	"currency": { 
-		"code": "EUR",
-		"description": "Euro"
-	},
-	"amountBeforeFee": 5000,
-	"feeAmount": 0,
-	"amountAfterFee": 5000,
-	"balance": 8500,
-	"myRef": "Transfer to main account",
-	"date": "2015-04-29T22:56:48.867Z"
-}
-```
-While there are many types of payments, they are all represented by the same JSON object with a different `txnType`.
-
-The payment resource has the following attributes: 
-
-Field | Description
---------- | -----------
-`txnId` | The id of this side of the payment (each payment has two sides - a to and a from). This is used to get the details of the payment.
-`refId` | The id of the payment.
-`ican` | identifier for the Fire account _(assigned by Fire)_ _This field is only used in the condensed version._
-`txnType` | The type of payment. `txnType.type` is the code, `txnType.description` is an English version.
-`relatedParty` | `relatedParty.alias` is the name of the account on the other side of the payment. _This field is only used in the condensed version._
-`currency` | a JSON entity with the currency code (`currency.code`) and English name (`currency.description`) of the currency for the account - either `EUR` or `GBP`.
-`amountBeforeFee` | the Account Number of the account. 
-`feeAmount` | `true` if this is the default account for this currency. This will be the account that general fees are taken from (as opposed to per-transaction fees). 
-`amountAfterFee` | _Not used at present_
-`balance` | the balance of the account (in minor currency units - pence, cent etc. `434050` == `4,340.50 GBP` for a GBP account).
-`myRef` | _Not used at present_
-`date` | _Not used at present_
-`from` | 
-`to` | 
-`fxTradeDetails` |
-`feeDetails` | 
-
-
-## List payments for an account
-```shell
-GET https://business.realexfire.com/api/businesses/v1/accounts/1979/payments \
-  -X GET \
-  -d "limit=25" \
-  -d "offset=0" \
-  -H "Authorization: $AUTHORIZATION_TOKEN"
-
-{
-	"total": 1,
-	"dateRangeTo": 1430511042924,
-	"payments": [ 
-		{
-			"txnId": 30260,
-			"refId": 26834,
-			"ican": 1979,
-			"txnType": {
-				"type": "INTERNAL_TRANSFER_TO",
-				"description": "Transfer"
-			},
-			"relatedParty": {
-				"alias": "Main Account"
-			},
-			"currency": { 
-				"code": "EUR",
-				"description": "Euro"
-			},
-			"amountBeforeFee": 5000,
-			"feeAmount": 0,
-			"amountAfterFee": 5000,
-			"balance": 8500,
-			"myRef": "Transfer to main account",
-			"date": "2015-04-29T22:56:48.867Z"
-		}
-	]
-}
-```
-
-
-
-
 
 # External Bank Accounts 
 
@@ -659,32 +375,77 @@ An array of external Bank accounts (referenced as `fundingSources` for legacy re
 ## Create a new External Bank Account
 
 ```shell
-# cat newaccount.json
-{
-	"alias": "Signs'R'Us",
-	"currency": "GBP",
-	"sortCode": "201922",
-	"accountNumber": "37928374",
-	"nameOnAccount": "SignsRUs"
-}
-
-# Post that to the API
-curl https://paywithfire.com/business/v1/me/externalaccounts
-  -X POST
-  -d @newaccount.json
+# First get the PIN Grid required
+curl https://business.realexfire.com/api/businesses/v1/me/pingrid \
+  -X GET \
   -H "Authorization: $AUTHORIZATION_TOKEN"
 
 {
-	"externalAccountId": 379487
+    "positions": "245",
+    "cap": "Guiness is Good for You!"
 }
+
+# Create the JSON object for the new account with the right digits of your PIN.
+# cat newaccount-eur.json
+{
+    "country": "IE",
+    "accountName": "Signs'R'Us",
+    "currency": "EUR",
+    "accountHolderName": "SignsRUs Limited",
+    "bic": "AIBKIE2D",
+    "iban": "IE41AIBK93338411111111",
+    "authenticatorToken": "825806",
+    "select0": "1",
+    "select1": "2",
+    "select2": "3"
+}
+
+# cat newaccount-gbp.json
+{
+    "country": "GB",
+    "accountName": "Signs'R'Us",
+    "currency": "GBP",
+    "accountHolderName": "SignsRUs Limited",
+    "nsc": "232211",
+    "accountNumber": "12345678",
+    "authenticatorToken": "825806",
+    "select0": "1",
+    "select1": "2",
+    "select2": "3"
+}
+
+# Post that to the API
+curl https://business.realexfire.com/api/businesses/v1/fundingsources \
+  -X POST \
+  -d @newaccount-gbp.json \
+  -H "Authorization: $AUTHORIZATION_TOKEN"
+
+HTTP 204 No Content
 ```
 
-
-To add a new bank account, post the details of the bank account as a JSON object. The `externalAccountId` of the account will be returned as a JSON object for you.
+Adding a new external bank account is a highly sensitive action and is protected by digits of your PIN and the 2FA code from your phone. 
+To add a new bank account, first retrieve a PIN Grid object, and then post the details of the bank account as a JSON object. 
 
 ### HTTP Request
 
-`POST https://paywithfire.com/business/v1/me/externalaccounts`
+`POST https://business.realexfire.com/api/businesses/v1/me/pingrid`
+`POST https://business.realexfire.com/api/businesses/v1/fundingsources`
+
+### JSON Input 
+
+Parameter | Description
+--------- | -----------
+`accountName` | A name to give to this external Bank Account. This is not the same as the Name on the Account - this is an alias or nickname to help you identify the account. 
+`currency` | Either `EUR` or `GBP`
+`nsc` | If a GBP account, provide the Sort Code.
+`accountNumber` | If a GBP account, provide the Account Number.
+`bic` | If a EUR account, provide the BIC.
+`iban` | If a EUR account, provide the IBAN.
+`accountHolderName` | The name on the account. 
+`country` | Either `IE` or `GB`  
+`authenticatorToken` | The 6 digit code from your 2FA app on your phone, or create programmatically. 
+`select0`, `select1` and `select2`  | The 3 digits requested from your PIN
+
 
 ## Retrieve the details of an External Bank Account 
 
@@ -870,6 +631,7 @@ curl https://business.realexfire.com/api/businesses/v1/fx/transfer \
 }
 ```
 
+*Work in progress!*
 To transfer between two of your Fire Accounts in different currencies, you must first know what fee applies. You can get this by requesting the `FX_INTERNAL_TRANSFER` service for the source account.
 
 `GET https://business.realexfire.com/api/businesses/v1/services/FX_INTERNAL_TRANSFER?ican={ican}`
@@ -906,11 +668,100 @@ curl https://paywithfire.com/business/v1/me/makePayment?fromAccount=379487&toAcc
 
 ```
 
-
+*Work in progress!*
 You can pay from any of your Fire Accounts to an existing External Bank Account. 
 
 Depending on the authorisation rules configured by your account administrator, the API call may only set up the transfer rather than actually execute it. Check the status of the response to know what happened. 
 
 Some administrators may not allow payments via the API at all, and others can place restrictions on the total value of payments over a period of time. If you receive an error 403, check the status of the response for more information.
+
+# Webhooks
+Webhooks allow you to be notified of events as they happen on your Realex Fire accounts. You can set up webhooks in the Business Account web application 
+or use the API to configure them programmatically. 
+ 
+
+## View Webhooks
+```shell
+curl https://business.realexfire.com/api/businesses/v1/webhooks \
+  -X GET \
+  -H "Authorization: $AUTHORIZATION_TOKEN" 
+
+{
+    "webhookEvents": [
+        {
+            "webhook": {
+                "id": 7,
+                "businessId": 2,
+                "webhookUrl": "https://mysite.com/webhook/7384"
+            },
+            "events": [ "LODGEMENT_RECEIVED" ] 
+        }
+    ]
+}
+```
+
+Retrieve a list of your existing webhooks 
+
+`GET https://business.realexfire.com/api/businesses/v1/webhooks`
+
+### Returns
+An array of webhook event configuration objects.
+
+Parameter | Description
+--------- | -----------
+`webhook` | The details of the webhook. `webhook.id` and `webhook.businessId` are identifiers, and `webhook.webhookUrl` is the actual URL of the webhook.
+`events` | An array of Fire Account events that will trigger a call to this webhook. 
+
+## Receiving a webhook at your server.
+```shell
+# This is the payload of the message you will receive for a lodgement. 
+{ 
+    "txnId": 1234,
+    "refId": 13001,
+    "txnType": { 
+        "type": "LODGEMENT",
+        "description": "Lodgement"
+    },
+    "from": { 
+        "type": "WITHDRAWAL_ACCOUNT",
+        "account": { 
+            "id": 123,
+            "alias": "Smyth and Co.",
+            "bic": "DABAIE2D",
+            "iban": "IE29AIBK93115212345654"
+        }
+    },
+    "to": { 
+        "type": "FIRE_ACCOUNT",
+        "account": { 
+            "id": 789,
+            "alias": "Ticket Sales",
+            "bic": "CPAYIE2D",
+            "iban": "IE76CPAY99119900000000" 
+        }
+    },
+    "currency": { 
+        "code": "EUR", 
+        "description": "Euro" 
+    },
+    "amountBeforeFee": 300,
+    "feeAmount": 3,
+    "amountAfterFee": 297,
+    "balance": 397,
+    "myRef": "Money for concert",
+    "date": 1339511599000 
+}
+```
+
+When the data is sent to your webhook it will be signed and encoded using JWT (JSON Web Token). JWT is a compact URL-safe means of representing data to be transferred between two parties (see JWT.io for more details and to get a code library for your programming environment). While the data is the message is 
+visibile to anyone, the signature is created using a shared secret that only you and Fire have access to, so you can be sure that it came from us. 
+
+A JWT looks like this:
+
+`eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM`
+`0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWV`
+`9.TJVA95OrM7E2cBab30RMHrHDcEfxjoYZgeFONFh7HgQ`
+
+This needs to be decoded using the library from JWT.io. You should ensure that the signature is valid. There are a set of Webhook API Tokens in the Profile / Webhooks section of the Business Fire Account application. The Key ID (`kid`) in the JWT header will be the `Webhooks` public token, and you should use the corresponding private token as the secret to verify the signature on the JWT.  
 
 
