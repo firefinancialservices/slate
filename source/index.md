@@ -824,9 +824,6 @@ curl https://paywithfire.com/business/v1/me/makePayment?fromAccount=379487&toAcc
 *Work in progress!*
 You can pay from any of your Fire Accounts to an existing External Bank Account. 
 
-Depending on the authorisation rules configured by your account administrator, the API call may only set up the transfer rather than actually execute it. Check the status of the response to know what happened. 
-
-Some administrators may not allow payments via the API at all, and others can place restrictions on the total value of payments over a period of time. If you receive an error 403, check the status of the response for more information.
 
 # Webhooks
 Webhooks allow you to be notified of events as they happen on your Realex Fire accounts. You can set up webhooks in the Business Account web application 
