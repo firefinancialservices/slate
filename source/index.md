@@ -367,24 +367,24 @@ Field | Description
 `txnId` | The id of this side of the payment (each payment has two sides - a to and a from). This is used to get the details of the payment.
 `refId` | The id of the payment.
 `ican` | identifier for the Fire account _(assigned by Fire)_ _This field is only used in the condensed version._
-`txnType` | The type of payment. `txnType.type` is the code, `txnType.description` is an English version.
+`txnType` | The type of payment. `txnType.type` is the code, `txnType.description` is an English version. Use this to determine the "side" of the payment - e.g. `INTERNAL_TRANSFER_FROM` would be a positive payment from another account, `INTERNAL_TRANSFER_TO` is the negative side.
 `relatedParty` | `relatedParty.alias` is the name of the account on the other side of the payment. _This field is only used in the condensed version._
 `currency` | a JSON entity with the currency code (`currency.code`) and English name (`currency.description`) of the currency for the account - either `EUR` or `GBP`.
 `amountBeforeFee` | Amount of the payment before the fee was applied.
-`feeAmount` | `true` if this is the default account for this currency. This will be the account that general fees are taken from (as opposed to per-transaction fees). 
-`amountAfterFee` | _Not used at present_
+`feeAmount` | The amount of the fee.
+`amountAfterFee` | Net amount lodged or taken from the account after fees applied.
 `balance` | the balance of the account (in minor currency units - pence, cent etc. `434050` == `4,340.50 GBP` for a GBP account).
-`myRef` | _Not used at present_
-`date` | _Not used at present_
-`from` | 
-`to` | 
-`fxTradeDetails` |
-`feeDetails` | 
+`myRef` | The comment/reference on the payment 
+`date` | Date of the payment _(epoch date in full version, ISO date in condensed - will be fixed in a future release)_
+`from` | The "from" side of the payment. `from.type` is the type of the account, and `from.account` is the details of that account. _This field is only present in the full version._
+`to` | The "to" side of the payment. `to.type` is the type of the account, and `to.account` is the details of that account. _This field is only present in the full version._
+`fxTradeDetails` | If this is a currency conversion, this will contain the FX rate and converted amount. _This field is only present in the full version._
+`feeDetails` | The details of any fees applied. _This field is only present in the full version._
 
 
 ## List payments for an account
 ```shell
-GET https://business.realexfire.com/api/businesses/v1/accounts/1979/payments \
+curl https://business.realexfire.com/api/businesses/v1/accounts/1979/payments \
   -X GET \
   -d "limit=25" \
   -d "offset=0" \
@@ -419,6 +419,17 @@ GET https://business.realexfire.com/api/businesses/v1/accounts/1979/payments \
 	]
 }
 ```
+
+Retrieve a list of payments against an account.
+
+### HTTP Request
+
+`GET GET https://business.realexfire.com/api/businesses/v1/accounts/{accountId}/payments`
+
+### Returns
+
+An array of payments with a count (`total`)
+
 
 # External Bank Accounts 
 
