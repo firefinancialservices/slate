@@ -370,7 +370,7 @@ Field | Description
 `txnType` | The type of payment. `txnType.type` is the code, `txnType.description` is an English version.
 `relatedParty` | `relatedParty.alias` is the name of the account on the other side of the payment. _This field is only used in the condensed version._
 `currency` | a JSON entity with the currency code (`currency.code`) and English name (`currency.description`) of the currency for the account - either `EUR` or `GBP`.
-`amountBeforeFee` | the Account Number of the account. 
+`amountBeforeFee` | Amount of the payment before the fee was applied.
 `feeAmount` | `true` if this is the default account for this currency. This will be the account that general fees are taken from (as opposed to per-transaction fees). 
 `amountAfterFee` | _Not used at present_
 `balance` | the balance of the account (in minor currency units - pence, cent etc. `434050` == `4,340.50 GBP` for a GBP account).
