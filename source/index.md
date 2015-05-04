@@ -424,11 +424,11 @@ Retrieve a list of payments against an account.
 
 ### HTTP Request
 
-`GET GET https://business.realexfire.com/api/businesses/v1/accounts/{accountId}/payments`
+`GET  https://business.realexfire.com/api/businesses/v1/accounts/{accountId}/payments`
 
 ### Returns
 
-An array of payments with a count (`total`)
+An array of payments for `accountId` with a count (`total`)
 
 
 # External Bank Accounts 
@@ -642,7 +642,7 @@ Parameter | Description
 `id` | This is the ID of the external account to be returned.
 
 
-# Payments and Transfers
+# Transfers
 You can transfer instantly between any two of your Fire Accounts in either currency, or perform a bank transfer to 
 a pre-existing External Bank account. 
 
@@ -905,7 +905,7 @@ Parameter | Description
 }
 ```
 
-When the data is sent to your webhook it will be signed and encoded using JWT (JSON Web Token). JWT is a compact URL-safe means of representing data to be transferred between two parties (see JWT.io for more details and to get a code library for your programming environment). While the data is the message is 
+When the data is sent to your webhook it will be signed and encoded using JWT (JSON Web Token). JWT is a compact URL-safe means of representing data to be transferred between two parties (see [JWT.io](jwt.io) for more details and to get a code library for your programming environment). While the data is the message is 
 visibile to anyone, the signature is created using a shared secret that only you and Fire have access to, so you can be sure that it came from us. 
 
 A JWT looks like this:
