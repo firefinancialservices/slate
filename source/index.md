@@ -826,9 +826,12 @@ You can pay from any of your Fire Accounts to an existing External Bank Account.
 
 
 # Webhooks
-Webhooks allow you to be notified of events as they happen on your Realex Fire accounts. You can set up webhooks in the Business Account web application 
-or use the API to configure them programmatically. 
- 
+Webhooks allow you to be notified of events as they happen on your Realex Fire accounts. This is useful if you have systems that need to know when things happen on your account, such as payments or withdrawals. 
+
+A webhook is a URL that you set up on your backend. We can then send the details of various events to you at this URL as they happen. You can have many webhooks, and can configure each one to listen for different events in Fire. 
+
+## Configuring your webhook settings
+You can set up webhooks in the Business Account web application or use the API to configure them programmatically. 
 
 ## View Webhooks
 ```shell
