@@ -15,6 +15,8 @@ search: true
 
 The Fire API allows you to deeply integrate Fire Account features into your application.
 
+*These docs are in BETA and subject to change at any moment. Please don't build production apps on the API yet.*
+
 # Authentication
 
 ```shell
