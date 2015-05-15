@@ -891,6 +891,8 @@ Parameter | Description
         "account": { 
             "id": 789,
             "alias": "Ticket Sales",
+            "nsc": "991199",        
+            "accountNumber": "00000000",
             "bic": "CPAYIE2D",
             "iban": "IE76CPAY99119900000000" 
         }
@@ -904,7 +906,15 @@ Parameter | Description
     "amountAfterFee": 297,
     "balance": 397,
     "myRef": "Money for concert",
-    "date": 1339511599000 
+    "date": 1339511599000,
+    "feeDetails": [       
+        {       
+          "amountCharged": 3,      
+          "minimumAmount": 1,       
+          "maximumAmount": 49,      
+          "fixedPercentage4d": 10000        
+        }
+    ] 
 }
 ```
 
