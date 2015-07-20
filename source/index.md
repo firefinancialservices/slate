@@ -144,7 +144,7 @@ curl https://business.realexfire.com/api/login \
 	"expiresIn": 3600,
 	"scope": "all",
 	"tokenType": "bearer",
-	"accessToken": "<ACCESS_TOKEN>",
+	"accessToken": "<ACCESS_TOKEN>"
 }
 ```
 ```shell
@@ -155,28 +155,40 @@ curl https://business.realexfire.com/api/businesses/v1/me \
   -H "Authorization: Bearer $ACCESS_TOKEN"
 ```
 
-In the BETA period, the authentication process uses the Fire Business Account web application login. This
-will change to a dedicated API token once the API is implemented.
+Access to the API is by temporary App Access Bearer Tokens. You must first log into the BUPA application and create a new Application in the Profile > API Tokens page. You will need your PIN digits and 2-Factor Authentication device. Give your application a Name and select the scope  you need the application to have (more on Scopes below). You will be provided with three pieces of information - the `App Refresh Token`, the `App Client ID` and the `App Client Secret`. You may want to take note of the `App Client Secret` when it is displayed - it will not be displayed again without entering your PIN digits and 2-Factor Authentication code again.
 
-Get an authorization token by passing your business id, email and password to the login endpoint
+You now use these pieces of data to retrieve a temporary App Access Token which you can use to access the API. The App Access Token expires within a relatively short time, so even if it is compromised, the attacker will not have long to use it. The `App Client Secret` is the most important piece of information to keep secret. This should only ever be stored on a backend server, and never in a front end client or mobile app. 
+
+If you ever accidentally reveal the Client Secret (or accidentally commit it to Github for instance) it is vital that you log into BUPA and rotate the App Tokens as soon as possible. Anyone who has these three pieces of data can access the API and your data, and potentially make payments from your account (depending on the scope of the tokens).  
 
 ### HTTP Request
 
 `POST https://business.realexfire.com/api/login`
 
-Once you have the authorization token, pass it as a header for every call. Whenever it expires, use the refresh token to get a new one again. 
+Once you have the authorization token, pass it as a header for every call. Whenever it expires, use the refresh token to get a new one again.
+ 
 `Authorization: Bearer $ACCESS_TOKEN`
 
 ### JSON Input
 
 Parameter | Description
 --------- | -----------
-`businessClientId` | The alpha-numeric business ID you set during sign up, and used to log into the Business Account application.
-`emailAddress` | The email address of the authorized user.
-`password` | The password for the authorized user.
+`grantType` | Always `refresh_token`.
+`nonce` | A random alphanumeric string used as a salt for the `clientSecretHash` below.
+`refreshToken` | The `App Refresh Token` from the Application Token page in BUPA.
+`clientId` | The `App Client ID` from the Application Token page in BUPA.
+`clientSecretHash` | The SHA256 hash of the `App Client Secret` from the Application Token page in BUPA concatenated with the `nonce` above.  
+`state` | This can be any data that you can use to retrieve the user session on your side. Only really useful for 3-legged OAuth calls. 	
 
 ### Returns
-The user and business profiles as returned by the `Me` endpoint (`/api/businesses/v1/me`). 
+A temporary App Access Token which can be used to access the API. 
+
+Field | Description
+--------- | -----------
+`expiresIn` | The number of seconds this Access Token is valid. 
+`scope` | The scope of the Access Token as a comma-separated string. This provides information on what API access it is allowed. See the section on Scope below.
+`tokenType` | Always `bearer`.
+`accessToken` | The temporary App Access Token.
 
 # Fire Accounts 
 
