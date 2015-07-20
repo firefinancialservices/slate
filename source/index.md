@@ -160,11 +160,9 @@ curl https://business.realexfire.com/api/businesses/v1/me \
 
 Access to the API is by temporary App Access Bearer Tokens. 
 
-* You must first log into the BUPA application and create a new Application in the Profile > API Tokens page. 
-** You will need your PIN digits and 2-Factor Authentication device. 
-* Give your application a Name and select the scope  you need the application to have (more on Scopes below). 
-* You will be provided with three pieces of information - the `App Refresh Token`, the `App Client ID` and the `App Client Secret`. 
-** You may want to take note of the `App Client Secret` when it is displayed - it will not be displayed again without entering your PIN digits and 2-Factor Authentication code again.
+1. You must first log into the BUPA application and create a new Application in the Profile > API Tokens page. (You will need your PIN digits and 2-Factor Authentication device.) 
+2. Give your application a Name and select the scope  you need the application to have (more on Scopes below). 
+3. You will be provided with three pieces of information - the `App Refresh Token`, the `App Client ID` and the `App Client Secret`.  You may want to take note of the `App Client Secret` when it is displayed - it will not be displayed again without entering your PIN digits and 2-Factor Authentication code again.
 
 You now use these pieces of data to retrieve a temporary App Access Token which you can use to access the API. The App Access Token expires within a relatively short time, so even if it is compromised, the attacker will not have long to use it. The `App Client Secret` is the most important piece of information to keep secret. This should only ever be stored on a backend server, and never in a front end client or mobile app. 
 
