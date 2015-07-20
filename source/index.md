@@ -115,6 +115,69 @@ Parameter | Description
 ### Returns
 The user and business profiles as returned by the `Me` endpoint (`/api/businesses/v1/me`). 
 
+# Future Authentication / OAuth2 Bearer Tokens
+
+```shell
+# cat refreshtoken.json
+```
+```json
+{
+	"grantType": "refresh_token",
+	"nonce": "<NONCE>",
+	"refreshToken": "<APP_REFRESH_TOKEN>",
+	"clientId": "<APP_CLIENT_ID>",
+	"clientSecretHash": "sha256(<APP_CLIENT_SECRET><NONCE>)",
+	"state": "data that will be returned to you"	
+}
+```
+```shell
+# Post that to the API
+curl https://business.realexfire.com/api/login \
+  -X POST \
+  -D - \
+  -d @refreshtoken.json
+  
+# Returns an access token
+```
+```json
+{
+	"expiresIn": 3600,
+	"scope": "all",
+	"tokenType": "bearer",
+	"accessToken": "<ACCESS_TOKEN>",
+}
+```
+```shell
+# Keepalive example
+ACCESS_TOKEN=<ACCESS_TOKEN>
+
+curl https://business.realexfire.com/api/businesses/v1/me \
+  -H "Authorization: Bearer $ACCESS_TOKEN"
+```
+
+In the BETA period, the authentication process uses the Fire Business Account web application login. This
+will change to a dedicated API token once the API is implemented.
+
+Get an authorization token by passing your business id, email and password to the login endpoint
+
+### HTTP Request
+
+`POST https://business.realexfire.com/api/login`
+
+Once you have the authorization token, pass it as a header for every call. Whenever it expires, use the refresh token to get a new one again. 
+`Authorization: Bearer $ACCESS_TOKEN`
+
+### JSON Input
+
+Parameter | Description
+--------- | -----------
+`businessClientId` | The alpha-numeric business ID you set during sign up, and used to log into the Business Account application.
+`emailAddress` | The email address of the authorized user.
+`password` | The password for the authorized user.
+
+### Returns
+The user and business profiles as returned by the `Me` endpoint (`/api/businesses/v1/me`). 
+
 # Fire Accounts 
 
 ```shell
