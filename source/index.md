@@ -200,6 +200,21 @@ Field | Description
 `tokenType` | Always `bearer`.
 `accessToken` | The temporary App Access Token.
 
+## Scopes
+
+Scopes are the list of permissions that you assign to an Application Token when you create it. An Application Access Tokens created from these Application Tokens will only have these permissions.
+
+<aside class="notice">
+It is important to only provide the minimum amount of access to an Application Token when you create it. This limits any potential damage done if the Application Token data is compromised.
+</aside>
+
+The list of scopes allowed for the Business API is as follows.
+
+Scope | Description
+----- | -----------
+`get_accounts` | Read the list of Fire accounts in your profile.
+`get_accounts:45` | Read access to just the specified account ID (`45` in this exmaple). You can add this multiple times to provide access to a specific list of accounts.  
+
 # Fire Accounts 
 
 ```shell
