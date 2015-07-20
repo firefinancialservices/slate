@@ -15,7 +15,9 @@ search: true
 
 The Fire API allows you to deeply integrate Fire Account features into your application.
 
+<aside class="notice">
 *These docs are in BETA and subject to change at any moment. Please don't build production apps on the API yet.*
+</aside>
 
 # Authentication
 
@@ -87,9 +89,10 @@ curl https://business.realexfire.com/api/businesses/v1/operatingcountries \
   -H "Authorization: $AUTHORIZATION_TOKEN"
 ```
 
-`[BETA]`
+<aside class="notice">
 In the BETA period, the authentication process uses the Fire Business Account web application login. This
 will change to a dedicated API token once the API is implemented.
+</aside>
 
 Get an authorization token by passing your business id, email and password to the login endpoint
 
@@ -159,15 +162,18 @@ Access to the API is by temporary App Access Bearer Tokens. You must first log i
 
 You now use these pieces of data to retrieve a temporary App Access Token which you can use to access the API. The App Access Token expires within a relatively short time, so even if it is compromised, the attacker will not have long to use it. The `App Client Secret` is the most important piece of information to keep secret. This should only ever be stored on a backend server, and never in a front end client or mobile app. 
 
+<aside class="warning">
 If you ever accidentally reveal the Client Secret (or accidentally commit it to Github for instance) it is vital that you log into BUPA and rotate the App Tokens as soon as possible. Anyone who has these three pieces of data can access the API and your data, and potentially make payments from your account (depending on the scope of the tokens).  
+</aside>
+
+Once you have the authorization token, pass it as a header for every call. Whenever it expires, use the refresh token to get a new one again.
+ 
+`Authorization: Bearer $ACCESS_TOKEN`
 
 ### HTTP Request
 
 `POST https://business.realexfire.com/api/login`
 
-Once you have the authorization token, pass it as a header for every call. Whenever it expires, use the refresh token to get a new one again.
- 
-`Authorization: Bearer $ACCESS_TOKEN`
 
 ### JSON Input
 
