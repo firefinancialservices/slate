@@ -971,7 +971,7 @@ Parameter | Description
 ```shell
 # This is the payload of the message you will receive for a lodgement. 
 {  
-   "generationTime":"2015-07-23T13:25:43.511Z",
+   "generationTime":1339511604000,
    "status":"LIVE",
    "events":[{
      "type":"lodgement.received",
