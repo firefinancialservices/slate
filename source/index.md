@@ -144,7 +144,7 @@ curl https://business.realexfire.com/api/login \
 ```
 ```json
 {
-	"expiresIn": 3600,
+	"expires": 1423751574577,
 	"scope": "all",
 	"tokenType": "bearer",
 	"accessToken": "<ACCESS_TOKEN>"
@@ -195,7 +195,7 @@ A temporary App Access Token which can be used to access the API.
 
 Field | Description
 --------- | -----------
-`expiresIn` | The number of seconds this Access Token is valid. 
+`expires` | The unixtime that the access token will expire. Based on the server time.  
 `scope` | The scope of the Access Token as a comma-separated string. This provides information on what API access it is allowed. See the section on Scope below.
 `tokenType` | Always `bearer`.
 `accessToken` | The temporary App Access Token.
@@ -970,53 +970,62 @@ Parameter | Description
 ## Receiving a webhook at your server.
 ```shell
 # This is the payload of the message you will receive for a lodgement. 
-{ 
-    "txnId": 1234,
-    "refId": 13001,
-    "txnType": { 
-        "type": "LODGEMENT",
-        "description": "Lodgement"
-    },
-    "from": { 
-        "type": "WITHDRAWAL_ACCOUNT",
-        "account": { 
-            "id": 123,
-            "alias": "Smyth and Co.",
-            "bic": "DABAIE2D",
-            "iban": "IE29AIBK93115212345654"
-        }
-    },
-    "to": { 
-        "type": "FIRE_ACCOUNT",
-        "account": { 
-            "id": 789,
-            "alias": "Ticket Sales",
-            "nsc": "991199",        
-            "accountNumber": "00000000",
-            "bic": "CPAYIE2D",
-            "iban": "IE76CPAY99119900000000" 
-        }
-    },
-    "currency": { 
-        "code": "EUR", 
-        "description": "Euro" 
-    },
-    "amountBeforeFee": 300,
-    "feeAmount": 3,
-    "amountAfterFee": 297,
-    "balance": 397,
-    "myRef": "Money for concert",
-    "date": 1339511599000,
-    "feeDetails": [       
-        {       
-          "amountCharged": 3,      
-          "minimumAmount": 1,       
-          "maximumAmount": 49,      
-          "fixedPercentage4d": 10000        
-        }
-    ] 
+{  
+   "generationTime":"2015-07-23T13:25:43.511Z",
+   "status":"LIVE",
+   "events":[{
+     "type":"lodgement.received",
+     "user": "fire-system",
+     "data":{  
+        "txnId": 1234,
+        "refId": 13001,
+        "txnType": { 
+            "type": "LODGEMENT",
+            "description": "Lodgement"
+        },
+        "from": { 
+            "type": "WITHDRAWAL_ACCOUNT",
+            "account": { 
+                "id": 123,
+                "alias": "Smyth and Co.",
+                "bic": "DABAIE2D",
+                "iban": "IE29AIBK93115212345654"
+            }
+        },
+        "to": { 
+            "type": "FIRE_ACCOUNT",
+            "account": { 
+                "id": 789,
+                "alias": "Ticket Sales",
+                "nsc": "991199",        
+                "accountNumber": "00000000",
+                "bic": "CPAYIE2D",
+                "iban": "IE76CPAY99119900000000" 
+            }
+        },
+        "currency": { 
+            "code": "EUR", 
+            "description": "Euro" 
+        },
+        "amountBeforeFee": 300,
+        "feeAmount": 3,
+        "amountAfterFee": 297,
+        "balance": 397,
+        "myRef": "Money for concert",
+        "date": 1339511599000,
+        "feeDetails": [       
+            {       
+              "amountCharged": 3,      
+              "minimumAmount": 1,       
+              "maximumAmount": 49,      
+              "fixedPercentage4d": 10000        
+            }
+        ] 
+    }]
 }
 ```
+
+You will recieve an array of events as they occur. In general there will be only one event per message, but as your volume increases, we will gather all events in a short time-window into one call to your webhook. This reduces the load on your server. 
 
 When the data is sent to your webhook it will be signed and encoded using JWT (JSON Web Token). JWT is a compact URL-safe means of representing data to be transferred between two parties (see [JWT.io](http://jwt.io) for more details and to get a code library for your programming environment). While the data is the message is 
 visibile to anyone, the signature is created using a shared secret that only you and Fire have access to, so you can be sure that it came from us. 
