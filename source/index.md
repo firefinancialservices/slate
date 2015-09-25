@@ -51,8 +51,6 @@ curl https://business.paywithfire.com/api/businesses/v1/apps/accesstokens \
     -d "{"\""clientId"\"":"\""$CLIENT_ID"\"", "\""refreshToken"\"":"\""$REFRESH_TOKEN"\"","\""nonce"\"":"\""$NONCE"\"","\""grantType"\"":"\""Access Token"\"","\""clientSecret"\"":"\""${SECRET[0]}"\""}"
       
 # Returns an access token
-```
-```json
 {
  "businessId": 23416,
  "applicationId": 113423,
@@ -78,29 +76,27 @@ curl https://business.paywithfire.com/api/businesses/v1/apps/accesstokens \
  ],
  "accessToken": "<ACCESS_TOKEN>"
 }
-```
-```shell
-# Keepalive example
+
+# Example Call
 ACCESS_TOKEN=<ACCESS_TOKEN>
 
-# Use it!
 curl https://business.paywithfire.com/api/businesses/v1/accounts \
   -H "Authorization: BEARER $ACCESS_TOKEN"
 ```
 
-Access to the API is by temporary App Access Bearer Tokens. 
+Access to the API is by Bearer Tokens. The process is somewhat similar to OAuth2.0, but with some changes to improve security. 
 
-1. You must first log into the BUPA application and create a new Application in the Profile > API Tokens page. (You will need your PIN digits and 2-Factor Authentication device.) 
-2. Give your application a Name and select the scope  you need the application to have (more on Scopes below). 
+1. You must first log into the BUPA application ([https://business.paywithfire.com]) and create a new Application in the *Profile* > *API* page. (You will need your PIN digits and 2-Factor Authentication device.) 
+2. Give your application a Name and select the scope/permissions you need the application to have (more on Scopes below). 
 3. You will be provided with three pieces of information - the App `Refresh Token`, `Client ID` and `Client Key`.  You need to take note of the `Client Key` when it is displayed - it will not be shown again.
 
-You now use these pieces of data to retrieve a temporary App Access Token which you can use to access the API. The App Access Token expires within a relatively short time, so even if it is compromised, the attacker will not have long to use it. The `App Client Secret` is the most important piece of information to keep secret. This should only ever be stored on a backend server, and never in a front end client or mobile app. 
+You now use these pieces of data to retrieve a short-term Access Token which you can use to access the API. The Access Token expires within a relatively short time, so even if it is compromised, the attacker will not have long to use it. The `Client Key` is the most important piece of information to keep secret. This should only ever be stored on a backend server, and never in a front end client or mobile app. 
 
 <aside class="warning">
-If you ever accidentally reveal the Client Secret (or accidentally commit it to Github for instance) it is vital that you log into BUPA and rotate the App Tokens as soon as possible. Anyone who has these three pieces of data can access the API and your data, and potentially make payments from your account (depending on the scope of the tokens).  
+If you ever accidentally reveal the Client Key (or accidentally commit it to Github for instance) it is vital that you log into BUPA and delete/recreate the App Tokens as soon as possible. Anyone who has these three pieces of data can access the API and your data, and in future potentially make payments from your account (depending on the scope of the tokens).  
 </aside>
 
-Once you have the authorization token, pass it as a header for every call. Whenever it expires, use the refresh token to get a new one again.
+Once you have the authorization token, pass it as a header for every call. Whenever it expires, create a new nonce and get a new one again.
  
 `Authorization: BEARER $ACCESS_TOKEN`
 
@@ -113,12 +109,11 @@ Once you have the authorization token, pass it as a header for every call. Whene
 
 Parameter | Description
 --------- | -----------
-`grantType` | Always `refresh_token`.
-`nonce` | A random alphanumeric string used as a salt for the `clientSecretHash` below.
-`refreshToken` | The `App Refresh Token` from the Application Token page in BUPA.
-`clientId` | The `App Client ID` from the Application Token page in BUPA.
-`clientSecretHash` | The SHA256 hash of the `App Client Secret` from the Application Token page in BUPA concatenated with the `nonce` above.  
-`state` | This can be any data that you can use to retrieve the user session on your side. Only really useful for 3-legged OAuth calls. 	
+`grantType` | Always `Access Token`. (This will change to `refresh_token` in a future release.)
+`nonce` | A random non-repeating number used as a salt for the `clientSecret` below.
+`refreshToken` | The app's `Refresh Token` from the API page in BUPA.
+`clientId` | The app's `Client ID` from the API page in BUPA.
+`clientSecret` | The SHA256 hash of the `nonce` above and the app's `Client Key` from the API page in BUPA.
 
 ### Returns
 A temporary App Access Token which can be used to access the API. 
