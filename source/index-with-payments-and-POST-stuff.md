@@ -13,25 +13,10 @@ search: true
 
 # Integrating to the Fire Business Account API
 
-The Fire API allows you to deeply integrate Fire Business Account features into your application or back-office systems. 
-
-Currently the API provides read-only access to your profile and accounts. The full transaction API is under development and 
-will provide complete control of your Business Account. Every endpoint has its own permission, and the API will integrate 
-seamlessly with the Role-based Access controls that will be available in a future release. 
-
-The API exposes 3 main areas of functionality: financial functions, service information and service configuration. 
-
-## Financial Functions
-These functions provide access to your account details, payments, beneficiary accounts etc.   
-
-## Service Information
-These provide information about the fees and limits applied to your account. 
-
-## Service Configuration
-These provide information about your service configs - applications, webhooks, API tokens, etc.
+The Fire API allows you to deeply integrate Fire Account features into your application.
 
 <aside class="notice">
-**The API and these docs are in BETA and subject to change at any moment. **
+**These docs are in BETA and subject to change at any moment. **
 </aside>
 
 # Authentication
@@ -59,29 +44,10 @@ curl https://business.paywithfire.com/api/login \
 ```
 ```json
 {
- "businessId": 23416,
- "applicationId": 113423,
- "expiry": 1443180240273,
- "permissions": [
-      "PERM_BUSINESSES_GET_SERVICES",
-      "PERM_BUSINESSES_GET_ACCOUNTS",
-      "PERM_BUSINESSES_GET_ACCOUNT",
-      "PERM_BUSINESSES_GET_PAYMENT",
-      "PERM_BUSINESSES_GET_ACCOUNT_PAYMENTS",
-      "PERM_BUSINESSES_GET_ACCOUNT_PAYMENTS_FILTER",
-      "PERM_BUSINESSES_GET_FUNDING_SOURCES",
-      "PERM_BUSINESSES_GET_FUNDING_SOURCE",
-      "PERM_BUSINESSES_GET_FUNDING_SOURCE_PAYMENTS",
-      "PERM_BUSINESSES_GET_WEBHOOKS",
-      "PERM_BUSINESSES_GET_WEBHOOK_EVENT_TEST",
-      "PERM_BUSINESSES_GET_LIMITS",
-      "PERM_BUSINESSES_GET_FX_RATE",
-      "PERM_BUSINESSES_GET_APPS",
-      "PERM_BUSINESSES_GET_APP_PERMISSIONS",
-      "PERM_BUSINESSES_GET_APPS_PERMISSIONS",
-      "PERM_BUSINESSES_GET_WEBHOOK_TOKENS"
- ],
- "accessToken": "<ACCESS_TOKEN>"
+	"expires": 1423751574577,
+	"scope": "all",
+	"tokenType": "BEARER",
+	"accessToken": "<ACCESS_TOKEN>"
 }
 ```
 ```shell
@@ -96,7 +62,7 @@ Access to the API is by temporary App Access Bearer Tokens.
 
 1. You must first log into the BUPA application and create a new Application in the Profile > API Tokens page. (You will need your PIN digits and 2-Factor Authentication device.) 
 2. Give your application a Name and select the scope  you need the application to have (more on Scopes below). 
-3. You will be provided with three pieces of information - the App `Refresh Token`, `Client ID` and `Client Key`.  You need to take note of the `Client Key` when it is displayed - it will not be shown again.
+3. You will be provided with three pieces of information - the `App Refresh Token`, the `App Client ID` and the `App Client Secret`.  You may want to take note of the `App Client Secret` when it is displayed - it will not be displayed again without entering your PIN digits and 2-Factor Authentication code again.
 
 You now use these pieces of data to retrieve a temporary App Access Token which you can use to access the API. The App Access Token expires within a relatively short time, so even if it is compromised, the attacker will not have long to use it. The `App Client Secret` is the most important piece of information to keep secret. This should only ever be stored on a backend server, and never in a front end client or mobile app. 
 
@@ -240,6 +206,39 @@ Returns all your Fire Accounts. Ordered by Alias ascending. Can be paginated.
 
 An array of account objects.
 
+## Create a new Fire Account
+
+```shell
+# cat newaccount.json
+{
+    "accountName": "UK Invoicing Account", 
+    "currency": "EUR", 
+    "colour": "ORANGE"
+}
+
+# Post that to the API
+curl https://business.paywithfire.com/api/businesses/v1/accounts /
+  -X POST /
+  -d @newaccount.json /
+  -H "Authorization: $AUTHORIZATION_TOKEN"
+
+HTTP 204 No Content
+```
+
+
+To add a new Fire Account you just need a name and a currency. 
+
+### HTTP Request
+
+`POST https://business.paywithfire.com/api/businesses/v1/accounts`
+
+### JSON Input
+
+Parameter | Description
+--------- | -----------
+`accountName` | A name to give to this Fire Account. This is not the same as the Name on the Account - that will always be your offical company name. This is an alias or nickname to help you identify the account. 
+`currency` | Either "EUR" or "GBP"
+`colour` | not used at present - set to "ORANGE" for now.
 
 ## Retrieve the details of a Fire Account 
 
@@ -375,6 +374,122 @@ Returns all your external bank accounts. Ordered by Alias ascending. Can be pagi
 
 An array of external Bank accounts (referenced as `fundingSources` for legacy reasons).
 
+## Create a new External Bank Account
+
+```shell
+# First get the PIN Grid required
+curl https://business.paywithfire.com/api/businesses/v1/me/pingrid \
+  -X GET \
+  -H "Authorization: $AUTHORIZATION_TOKEN"
+
+{
+    "positions": "245",
+    "cap": "Guiness is Good for You!"
+}
+
+# Create the JSON object for the new account with the right digits of your PIN.
+# cat newaccount-eur.json
+{
+    "country": "IE",
+    "accountName": "Signs'R'Us",
+    "currency": "EUR",
+    "accountHolderName": "SignsRUs Limited",
+    "bic": "AIBKIE2D",
+    "iban": "IE41AIBK93338411111111",
+    "authenticatorToken": "825806",
+    "select0": "1",
+    "select1": "2",
+    "select2": "3"
+}
+
+# cat newaccount-gbp.json
+{
+    "country": "GB",
+    "accountName": "Signs'R'Us",
+    "currency": "GBP",
+    "accountHolderName": "SignsRUs Limited",
+    "nsc": "232211",
+    "accountNumber": "12345678",
+    "authenticatorToken": "825806",
+    "select0": "1",
+    "select1": "2",
+    "select2": "3"
+}
+
+# Post that to the API
+curl https://business.paywithfire.com/api/businesses/v1/fundingsources \
+  -X POST \
+  -d @newaccount-gbp.json \
+  -H "Authorization: $AUTHORIZATION_TOKEN"
+
+HTTP 204 No Content
+```
+
+Adding a new external bank account is a highly sensitive action and is protected by digits of your PIN and the 2FA code from your phone. 
+To add a new bank account, first retrieve a PIN Grid object, and then post the details of the bank account as a JSON object. 
+
+### HTTP Request
+
+`POST https://business.paywithfire.com/api/businesses/v1/me/pingrid`
+`POST https://business.paywithfire.com/api/businesses/v1/fundingsources`
+
+### JSON Input 
+
+Parameter | Description
+--------- | -----------
+`accountName` | A name to give to this external Bank Account. This is not the same as the Name on the Account - this is an alias or nickname to help you identify the account. 
+`currency` | Either `EUR` or `GBP`
+`nsc` | If a GBP account, provide the Sort Code.
+`accountNumber` | If a GBP account, provide the Account Number.
+`bic` | If a EUR account, provide the BIC.
+`iban` | If a EUR account, provide the IBAN.
+`accountHolderName` | The name on the account. 
+`country` | Either `IE` or `GB`  
+`authenticatorToken` | The 6 digit code from your 2FA app on your phone, or create programmatically. 
+`select0`, `select1` and `select2`  | The 3 digits requested from your PIN
+
+
+## Retrieve the details of an External Bank Account 
+
+```shell
+curl https://business.paywithfire.com/api/businesses/v1/fundingsources/742 \
+  -X GET \
+  -H "Authorization: $AUTHORIZATION_TOKEN"
+
+{
+   "id": 742,
+   "accountName": "BoI Current Account",
+   "bic": "BOFIIE2DXXX",
+   "iban": "IE86BOFI90535211111111",
+   "nsc": null,
+   "accountNumber": null,
+   "accountHolderName": "Brian Johnson",
+   "currency": {
+      "code": "EUR",
+      "description": "Euro"
+   },
+   "dateCreated" : 1423751574577,
+   "status": {
+      "description": "Validated",
+      "type": "LIVE"
+   },
+   "country": {
+      "description": "Ireland",
+      "code": "IE"
+   }
+}
+```
+
+
+You can retrieve the details of an external account by its `id`. 
+
+### HTTP Request
+
+`GET https://business.paywithfire.com/api/businesses/v1/fundingsources/{id}`
+
+Parameter | Description
+--------- | -----------
+`id` | This is the ID of the external account to be returned.
 
 
 # Payments
@@ -534,6 +649,182 @@ An array of payments for `accountId` with a count (`total`)
 You can transfer instantly between any two of your Fire Accounts in either currency, or perform a bank transfer to 
 a pre-existing External Bank account. 
 
+## Transfer between Fire Accounts in the same currency
+
+```shell
+# cat transferdetails.json
+{
+    "icanFrom": 1951, 
+    "icanTo": 1979, 
+    "currency": "EUR", 
+    "amount": 50, 
+    "ref": "Cover the bills for April 2015"
+}
+
+# Post that to the API
+curl https://business.paywithfire.com/api/businesses/v1/accounts/transfer \
+  -X POST \
+  -d @transferdetails.json \
+  -H "Authorization: $AUTHORIZATION_TOKEN"
+
+{
+    "refId": 32424
+}
+```
+
+To transfer between two of your Fire Accounts in the same currency, post the details of the transfer as a JSON object. The `refId` of the transfer will be returned to you.
+
+### HTTP Request
+
+`POST https://business.paywithfire.com/api/businesses/v1/accounts/transfer`
+
+### Returns
+The `refId` of the resulting transfer.
+
+## Transfer between Fire Accounts in different currencies
+
+```shell
+# First, get the fee details object for FX transfers from this account.
+curl https://business.paywithfire.com/api/businesses/v1/services/FX_INTERNAL_TRANSFER?ican=1954 \
+  -X GET \
+  -H "Authorization: $AUTHORIZATION_TOKEN"
+
+{
+   "feeRule": {
+      "feeRuleId": 19,
+      "fixed": 0,
+      "percentage4d": 12500,
+      "minimum": 125
+   },
+   "currency": {
+      "code": "GBP",
+      "description": "Sterling"
+   }
+}
+
+# ------- This seems all wrong????? ------
+# To get an estimate of the currency conversion rate that will be used:
+curl https://business.paywithfire.com/api/businesses/v1/fx/rate?buyCurrency=GBP&sellCurrency=EUR&fixedSide=BUY&amount=10000 \
+    -X GET \
+    -H "Authorization: $AUTHORIZATION_TOKEN"
+    
+{
+    "buyCurrency":"GBP",
+    "sellCurrency":"EUR",
+    "fixedSide":"BUY",
+    "buyAmount":10000,
+    "sellAmount":13883,
+    "rate4d": 13883
+}
+
+# Then use the feeRuleId in the transfer object to agree to the fees.
+# cat transferdetails.json
+{
+    "icanFrom": 1954, 
+    "icanTo": 1951, 
+    "amount": "500000", 
+    "amountCurrency": "GBP", 
+    "ref": "Transfer invoice payments back to Euro", 
+    "feeRuleId": 19
+}
+
+# Post that to the API
+curl https://business.paywithfire.com/api/businesses/v1/fx/transfer \
+  -X POST \
+  -d @transferdetails.json \
+  -H "Authorization: $AUTHORIZATION_TOKEN"
+
+{
+   "refId":26835,
+   "txnId":30261,
+   "txnType":{
+      "type":"FX_INTERNAL_TRANSFER_FROM",
+      "description":"Fx Internal Transfer From"
+   },
+   "from":{
+      "type":"FIRE_ACCOUNT",
+      "account":{
+         "id":1954,
+         "alias":"GBP",
+         "nsc":"232221",
+         "accountNumber":"05379385"
+      }
+   },
+   "to":{
+      "type":"FIRE_ACCOUNT",
+      "account":{
+         "id":1951,
+         "alias":"EUR"
+      }
+   },
+   "currency":{
+      "code":"GBP",
+      "description":"Sterling"
+   },
+   "amountBeforeFee":500000,
+   "feeAmount":,
+   "amountAfterFee":506250,
+   "balance":31000,
+   "myRef":"Transfer invoice payments back to Euro",
+   "date":1430348793650,
+   "fxTradeDetails":{
+      "buyCurrency":"EUR",
+      "sellCurrency":"GBP",
+      "fixedSide":"SELL",
+      "buyAmount":694000,
+      "sellAmount":500000,
+      "rate4d":13880
+   },
+   "feeDetails":[
+      {
+         "percentage4d":12500,
+         "fixed":0,
+         "minimum":125,
+         "amountCharged":6250
+      }
+   ]
+}
+```
+
+*Work in progress!*
+To transfer between two of your Fire Accounts in different currencies, you must first know what fee applies. You can get this by requesting the `FX_INTERNAL_TRANSFER` service for the source account.
+
+`GET https://business.paywithfire.com/api/businesses/v1/services/FX_INTERNAL_TRANSFER?ican={ican}`
+
+This returns a fee details object which you can use to determine the fees you will be charged. 
+
+Include this `feeRuleId` in the POST request to explicitly agree to the fees you will be charged. 
+
+### HTTP Request
+
+`POST https://business.paywithfire.com/api/businesses/v1/fx/transfer`
+
+### Returns
+The payment object for the resulting transfer.
+
+
+## Pay by Bank Transfer
+
+```shell
+# TODO: More detail needed
+# cat paymentdetails.json
+{
+    "amount": 3748,
+    "currency": "EUR",
+    "narrative": "REF 2347839",
+    "comment": "Paid for March Bill"
+}
+
+# Post that to the API
+curl https://paywithfire.com/business/v1/me/makePayment?fromAccount=379487&toAccount=84654
+  -X POST
+  -d @paymentdetails.json
+  -H "Authorization: $AUTHORIZATION_TOKEN"
+
+```
+
+*Work in progress!*
+You can pay from any of your Fire Accounts to an existing External Bank Account. 
 
 
 # Webhooks
