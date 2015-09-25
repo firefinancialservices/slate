@@ -46,7 +46,7 @@ curl https://business.paywithfire.com/api/login \
 {
 	"expires": 1423751574577,
 	"scope": "all",
-	"tokenType": "bearer",
+	"tokenType": "BEARER",
 	"accessToken": "<ACCESS_TOKEN>"
 }
 ```
@@ -72,7 +72,7 @@ If you ever accidentally reveal the Client Secret (or accidentally commit it to 
 
 Once you have the authorization token, pass it as a header for every call. Whenever it expires, use the refresh token to get a new one again.
  
-`Authorization: Bearer $ACCESS_TOKEN`
+`Authorization: BEARER $ACCESS_TOKEN`
 
 ### HTTP Request
 
@@ -97,7 +97,7 @@ Field | Description
 --------- | -----------
 `expires` | The unixtime that the access token will expire. Based on the server time.  
 `scope` | The scope of the Access Token as a comma-separated string. This provides information on what API access it is allowed. See the section on Scope below.
-`tokenType` | Always `bearer`.
+`tokenType` | Always `BEARER`.
 `accessToken` | The temporary App Access Token.
 
 ## Scopes
