@@ -16,126 +16,26 @@ search: true
 The Fire API allows you to deeply integrate Fire Account features into your application.
 
 <aside class="notice">
-**These docs are in BETA and subject to change at any moment. Please don't build production apps on the API yet.**
+**These docs are in BETA and subject to change at any moment. **
 </aside>
 
 # Authentication
-
-```shell
-# cat logindetails.json
-{
-	"businessClientId": "<BUSINESSID>",
-	"emailAddress": "<EMAIL>",
-	"password": "<PASSWORD>"
-}
-
-# Post that to the API
-curl https://business.realexfire.com/api/login \
-  -X POST \
-  -D - \
-  -d @logindetails.json
-
-# Grab the Authorization Token from the headers (at)
-
-HTTP/1.1 200 OK
-...
-at: aeb5fdf3-eee2-4e80-b605-7e2fac2add36
-...
-Content-Length: 2112
-Date: Wed, 29 Apr 2015 21:27:17 GMT
-```
-```json
-{
-   "userProfile": {
-      "firstName": "Brian",
-      "lastName": "Johnson",
-      "userEmail": "brian@website.com",
-      "mobileNumber": "+353871111111",
-      "cvl": "FULL",
-      "permissions": [],
-      "lastLogin": "2015-04-29T21:28:13.233Z"
-   },
-   "businessProfile": {
-      "businessName": "Brian's Company",
-      "businessClientId": "brianscompany",
-      "businessWebsite": "https://www.website.com",
-      "businessAddress": {
-         "address1": "7-11 Sir John Rogerson's Quay",
-         "city": "Dublin 2",
-         "country": {
-            "code": "IE",
-            "description": "Ireland"
-         }
-      },
-      "businessDetailsSubmitted": true,
-      "businessType": "OTHER",
-      "apiTokens": [
-         {
-            "privateToken": "<PRIVATE-TOKEN>",
-            "dateCreated": 1423749242837,
-            "publicToken": "<PUBLIC-TOKEN>",
-            "active": true,
-            "tokenId": 2
-         }
-      ]
-   }
-}
-```
-```shell
-# Keepalive example
-AUTHORIZATION_TOKEN=<AUTHORIZATION-TOKEN>
-
-curl https://business.realexfire.com/api/businesses/v1/operatingcountries \
-  -H "Authorization: $AUTHORIZATION_TOKEN"
-```
-
-<aside class="notice">
-In the BETA period, the authentication process uses the Fire Business Account web application login. This
-will change to a dedicated API token once the API is implemented.
-</aside>
-
-Get an authorization token by passing your business id, email and password to the login endpoint
-
-### HTTP Request
-
-`POST https://business.realexfire.com/api/login`
-
-The authorization token is returned as a header (`at`). This token will expire after 5 minutes 
-of inactivity, so a regular call (once every minute say) to an inexpensive endpoint (say `Operating Countries`) 
-is needed until you sign out.
-
-Once you have the authorization token, pass it as a header for every call. 
-`Authorization: $AUTHORIZATION_TOKEN`
-
-### JSON Input
-
-Parameter | Description
---------- | -----------
-`businessClientId` | The alpha-numeric business ID you set during sign up, and used to log into the Business Account application.
-`emailAddress` | The email address of the authorized user.
-`password` | The password for the authorized user.
-
-### Returns
-The user and business profiles as returned by the `Me` endpoint (`/api/businesses/v1/me`). 
-
-# Future Authentication / OAuth2 Bearer Tokens
 
 ```shell
 # cat refreshtoken.json
 ```
 ```json
 {
-	"grantType": "refresh_token",
+	"grantType": "Access Token",
 	"nonce": "<NONCE>",
 	"refreshToken": "<APP_REFRESH_TOKEN>",
 	"clientId": "<APP_CLIENT_ID>",
-	"clientSecretHash": "sha256(<APP_CLIENT_SECRET><NONCE>)",
-	"state": "data that will be returned to you"	
+	"clientSecret": "sha256(<APP_CLIENT_KEY><NONCE>)"
 }
 ```
 ```shell
 # Post that to the API
-curl https://business.realexfire.com/api/login \
+curl https://business.paywithfire.com/api/login \
   -X POST \
   -D - \
   -d @refreshtoken.json
@@ -154,8 +54,8 @@ curl https://business.realexfire.com/api/login \
 # Keepalive example
 ACCESS_TOKEN=<ACCESS_TOKEN>
 
-curl https://business.realexfire.com/api/businesses/v1/me \
-  -H "Authorization: Bearer $ACCESS_TOKEN"
+curl https://business.paywithfire.com/api/businesses/v1/me \
+  -H "Authorization: BEARER $ACCESS_TOKEN"
 ```
 
 Access to the API is by temporary App Access Bearer Tokens. 
@@ -176,7 +76,7 @@ Once you have the authorization token, pass it as a header for every call. Whene
 
 ### HTTP Request
 
-`POST https://business.realexfire.com/api/login`
+`POST https://business.paywithfire.com/api/login`
 
 
 ### JSON Input
@@ -263,7 +163,7 @@ Field | Description
 ## List all Fire Accounts
 
 ```shell
-curl https://business.realexfire.com/api/businesses/v1/accounts \
+curl https://business.paywithfire.com/api/businesses/v1/accounts \
   -X GET \
   -H "Authorization: $AUTHORIZATION_TOKEN"
 
@@ -300,7 +200,7 @@ Returns all your Fire Accounts. Ordered by Alias ascending. Can be paginated.
 
 ### HTTP Request
 
-`GET https://business.realexfire.com/api/businesses/v1/accounts`
+`GET https://business.paywithfire.com/api/businesses/v1/accounts`
 
 ### Returns
 
@@ -317,7 +217,7 @@ An array of account objects.
 }
 
 # Post that to the API
-curl https://business.realexfire.com/api/businesses/v1/accounts /
+curl https://business.paywithfire.com/api/businesses/v1/accounts /
   -X POST /
   -d @newaccount.json /
   -H "Authorization: $AUTHORIZATION_TOKEN"
@@ -330,7 +230,7 @@ To add a new Fire Account you just need a name and a currency.
 
 ### HTTP Request
 
-`POST https://business.realexfire.com/api/businesses/v1/accounts`
+`POST https://business.paywithfire.com/api/businesses/v1/accounts`
 
 ### JSON Input
 
@@ -343,7 +243,7 @@ Parameter | Description
 ## Retrieve the details of a Fire Account 
 
 ```shell
-curl https://business.realexfire.com/api/businesses/v1/accounts/1951 \
+curl https://business.paywithfire.com/api/businesses/v1/accounts/1951 \
   -X GET \
   -H "Authorization: $AUTHORIZATION_TOKEN"
 
@@ -375,7 +275,7 @@ You can retrieve the details of a Fire Account by its `ican`.
 
 ### HTTP Request
 
-`GET https://business.realexfire.com/api/businesses/v1/accounts/{ican}`
+`GET https://business.paywithfire.com/api/businesses/v1/accounts/{ican}`
 
 Parameter | Description
 --------- | -----------
@@ -430,7 +330,7 @@ Field | Description
 ## List all External Bank Accounts
 
 ```shell
-curl https://business.realexfire.com/api/businesses/v1/fundingsources \
+curl https://business.paywithfire.com/api/businesses/v1/fundingsources \
   -X GET \
   -H "Authorization: $AUTHORIZATION_TOKEN" 
 
@@ -468,7 +368,7 @@ Returns all your external bank accounts. Ordered by Alias ascending. Can be pagi
 
 ### HTTP Request
 
-`GET https://business.realexfire.com/api/businesses/v1/fundingsources`
+`GET https://business.paywithfire.com/api/businesses/v1/fundingsources`
 
 ### Returns
 
@@ -478,7 +378,7 @@ An array of external Bank accounts (referenced as `fundingSources` for legacy re
 
 ```shell
 # First get the PIN Grid required
-curl https://business.realexfire.com/api/businesses/v1/me/pingrid \
+curl https://business.paywithfire.com/api/businesses/v1/me/pingrid \
   -X GET \
   -H "Authorization: $AUTHORIZATION_TOKEN"
 
@@ -517,7 +417,7 @@ curl https://business.realexfire.com/api/businesses/v1/me/pingrid \
 }
 
 # Post that to the API
-curl https://business.realexfire.com/api/businesses/v1/fundingsources \
+curl https://business.paywithfire.com/api/businesses/v1/fundingsources \
   -X POST \
   -d @newaccount-gbp.json \
   -H "Authorization: $AUTHORIZATION_TOKEN"
@@ -530,8 +430,8 @@ To add a new bank account, first retrieve a PIN Grid object, and then post the d
 
 ### HTTP Request
 
-`POST https://business.realexfire.com/api/businesses/v1/me/pingrid`
-`POST https://business.realexfire.com/api/businesses/v1/fundingsources`
+`POST https://business.paywithfire.com/api/businesses/v1/me/pingrid`
+`POST https://business.paywithfire.com/api/businesses/v1/fundingsources`
 
 ### JSON Input 
 
@@ -552,7 +452,7 @@ Parameter | Description
 ## Retrieve the details of an External Bank Account 
 
 ```shell
-curl https://business.realexfire.com/api/businesses/v1/fundingsources/742 \
+curl https://business.paywithfire.com/api/businesses/v1/fundingsources/742 \
   -X GET \
   -H "Authorization: $AUTHORIZATION_TOKEN"
 
@@ -585,7 +485,7 @@ You can retrieve the details of an external account by its `id`.
 
 ### HTTP Request
 
-`GET https://business.realexfire.com/api/businesses/v1/fundingsources/{id}`
+`GET https://business.paywithfire.com/api/businesses/v1/fundingsources/{id}`
 
 Parameter | Description
 --------- | -----------
@@ -697,7 +597,7 @@ Field | Description
 
 ## List payments for an account
 ```shell
-curl https://business.realexfire.com/api/businesses/v1/accounts/1979/payments \
+curl https://business.paywithfire.com/api/businesses/v1/accounts/1979/payments \
   -X GET \
   -d "limit=25" \
   -d "offset=0" \
@@ -737,7 +637,7 @@ Retrieve a list of payments against an account.
 
 ### HTTP Request
 
-`GET  https://business.realexfire.com/api/businesses/v1/accounts/{accountId}/payments`
+`GET  https://business.paywithfire.com/api/businesses/v1/accounts/{accountId}/payments`
 
 ### Returns
 
@@ -762,7 +662,7 @@ a pre-existing External Bank account.
 }
 
 # Post that to the API
-curl https://business.realexfire.com/api/businesses/v1/accounts/transfer \
+curl https://business.paywithfire.com/api/businesses/v1/accounts/transfer \
   -X POST \
   -d @transferdetails.json \
   -H "Authorization: $AUTHORIZATION_TOKEN"
@@ -776,7 +676,7 @@ To transfer between two of your Fire Accounts in the same currency, post the det
 
 ### HTTP Request
 
-`POST https://business.realexfire.com/api/businesses/v1/accounts/transfer`
+`POST https://business.paywithfire.com/api/businesses/v1/accounts/transfer`
 
 ### Returns
 The `refId` of the resulting transfer.
@@ -785,7 +685,7 @@ The `refId` of the resulting transfer.
 
 ```shell
 # First, get the fee details object for FX transfers from this account.
-curl https://business.realexfire.com/api/businesses/v1/services/FX_INTERNAL_TRANSFER?ican=1954 \
+curl https://business.paywithfire.com/api/businesses/v1/services/FX_INTERNAL_TRANSFER?ican=1954 \
   -X GET \
   -H "Authorization: $AUTHORIZATION_TOKEN"
 
@@ -804,7 +704,7 @@ curl https://business.realexfire.com/api/businesses/v1/services/FX_INTERNAL_TRAN
 
 # ------- This seems all wrong????? ------
 # To get an estimate of the currency conversion rate that will be used:
-curl https://business.realexfire.com/api/businesses/v1/fx/rate?buyCurrency=GBP&sellCurrency=EUR&fixedSide=BUY&amount=10000 \
+curl https://business.paywithfire.com/api/businesses/v1/fx/rate?buyCurrency=GBP&sellCurrency=EUR&fixedSide=BUY&amount=10000 \
     -X GET \
     -H "Authorization: $AUTHORIZATION_TOKEN"
     
@@ -829,7 +729,7 @@ curl https://business.realexfire.com/api/businesses/v1/fx/rate?buyCurrency=GBP&s
 }
 
 # Post that to the API
-curl https://business.realexfire.com/api/businesses/v1/fx/transfer \
+curl https://business.paywithfire.com/api/businesses/v1/fx/transfer \
   -X POST \
   -d @transferdetails.json \
   -H "Authorization: $AUTHORIZATION_TOKEN"
@@ -889,7 +789,7 @@ curl https://business.realexfire.com/api/businesses/v1/fx/transfer \
 *Work in progress!*
 To transfer between two of your Fire Accounts in different currencies, you must first know what fee applies. You can get this by requesting the `FX_INTERNAL_TRANSFER` service for the source account.
 
-`GET https://business.realexfire.com/api/businesses/v1/services/FX_INTERNAL_TRANSFER?ican={ican}`
+`GET https://business.paywithfire.com/api/businesses/v1/services/FX_INTERNAL_TRANSFER?ican={ican}`
 
 This returns a fee details object which you can use to determine the fees you will be charged. 
 
@@ -897,7 +797,7 @@ Include this `feeRuleId` in the POST request to explicitly agree to the fees you
 
 ### HTTP Request
 
-`POST https://business.realexfire.com/api/businesses/v1/fx/transfer`
+`POST https://business.paywithfire.com/api/businesses/v1/fx/transfer`
 
 ### Returns
 The payment object for the resulting transfer.
@@ -928,7 +828,7 @@ You can pay from any of your Fire Accounts to an existing External Bank Account.
 
 
 # Webhooks
-Webhooks allow you to be notified of events as they happen on your Realex Fire accounts. This is useful if you have systems that need to know when things happen on your account, such as payments or withdrawals. 
+Webhooks allow you to be notified of events as they happen on your Fire accounts. This is useful if you have systems that need to know when things happen on your account, such as payments or withdrawals. 
 
 A webhook is a URL that you set up on your backend. We can then send the details of various events to you at this URL as they happen. You can have many webhooks, and can configure each one to listen for different events in Fire. 
 
@@ -937,7 +837,7 @@ You can set up webhooks in the Business Account web application or use the API t
 
 ## View Webhooks
 ```shell
-curl https://business.realexfire.com/api/businesses/v1/webhooks \
+curl https://business.paywithfire.com/api/businesses/v1/webhooks \
   -X GET \
   -H "Authorization: $AUTHORIZATION_TOKEN" 
 
@@ -957,7 +857,7 @@ curl https://business.realexfire.com/api/businesses/v1/webhooks \
 
 Retrieve a list of your existing webhooks 
 
-`GET https://business.realexfire.com/api/businesses/v1/webhooks`
+`GET https://business.paywithfire.com/api/businesses/v1/webhooks`
 
 ### Returns
 An array of webhook event configuration objects.
