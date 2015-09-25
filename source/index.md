@@ -21,13 +21,13 @@ seamlessly with the Role-based Access controls that will be available in a futur
 
 The API exposes 3 main areas of functionality: financial functions, service information and service configuration. 
 
-## Financial Functions
+### Financial Functions
 These functions provide access to your account details, payments, beneficiary accounts etc.   
 
-## Service Information
+### Service Information
 These provide information about the fees and limits applied to your account. 
 
-## Service Configuration
+### Service Configuration
 These provide information about your service configs - applications, webhooks, API tokens, etc.
 
 <aside class="notice">
@@ -37,24 +37,19 @@ These provide information about your service configs - applications, webhooks, A
 # Authentication
 
 ```shell
-# cat refreshtoken.json
-```
-```json
-{
-	"grantType": "Access Token",
-	"nonce": "<NONCE>",
-	"refreshToken": "<APP_REFRESH_TOKEN>",
-	"clientId": "<APP_CLIENT_ID>",
-	"clientSecret": "sha256(<APP_CLIENT_KEY><NONCE>)"
-}
-```
-```shell
-# Post that to the API
-curl https://business.paywithfire.com/api/login \
-  -X POST \
-  -D - \
-  -d @refreshtoken.json
-  
+# Set up Environment variables
+CLIENT_ID=<APP_CLIENT_ID>
+CLIENT_KEY=<APP_CLIENT_KEY>
+REFRESH_TOKEN=<APP_REFRESH_TOKEN>
+NONCE=`date +%s`
+SECRET=( `echo -n $NONCE$CLIENT_KEY | sha256sum` )
+
+# Get an Access Token from the API
+curl https://business.paywithfire.com/api/businesses/v1/apps/accesstokens \
+    -X POST \ 
+    -H "Content-type: application/json" \
+    -d "{"\""clientId"\"":"\""$CLIENT_ID"\"", "\""refreshToken"\"":"\""$REFRESH_TOKEN"\"","\""nonce"\"":"\""$NONCE"\"","\""grantType"\"":"\""Access Token"\"","\""clientSecret"\"":"\""${SECRET[0]}"\""}"
+      
 # Returns an access token
 ```
 ```json
@@ -88,7 +83,8 @@ curl https://business.paywithfire.com/api/login \
 # Keepalive example
 ACCESS_TOKEN=<ACCESS_TOKEN>
 
-curl https://business.paywithfire.com/api/businesses/v1/me \
+# Use it!
+curl https://business.paywithfire.com/api/businesses/v1/accounts \
   -H "Authorization: BEARER $ACCESS_TOKEN"
 ```
 
@@ -110,7 +106,7 @@ Once you have the authorization token, pass it as a header for every call. Whene
 
 ### HTTP Request
 
-`POST https://business.paywithfire.com/api/login`
+`POST https://business.paywithfire.com/api/businesses/v1/apps/accesstokens`
 
 
 ### JSON Input
