@@ -540,12 +540,6 @@ An array of payments for `accountId` with a count (`total`)
 
 
 
-# Transfers
-You can transfer instantly between any two of your Fire Accounts in either currency, or perform a bank transfer to 
-a pre-existing External Bank account. 
-
-
-
 # Webhooks
 Webhooks allow you to be notified of events as they happen on your Fire accounts. This is useful if you have systems that need to know when things happen on your account, such as payments or withdrawals. 
 
