@@ -86,7 +86,7 @@ curl https://business.paywithfire.com/api/businesses/v1/accounts \
 
 Access to the API is by Bearer Tokens. The process is somewhat similar to OAuth2.0, but with some changes to improve security. 
 
-1. You must first log into the BUPA application ([https://business.paywithfire.com]) and create a new Application in the *Profile* > *API* page. (You will need your PIN digits and 2-Factor Authentication device.) 
+1. You must first log into the [BUPA application](https://business.paywithfire.com) and create a new Application in the *Profile* > *API* page. (You will need your PIN digits and 2-Factor Authentication device.) 
 2. Give your application a Name and select the scope/permissions you need the application to have (more on Scopes below). 
 3. You will be provided with three pieces of information - the App `Refresh Token`, `Client ID` and `Client Key`.  You need to take note of the `Client Key` when it is displayed - it will not be shown again.
 
@@ -96,9 +96,11 @@ You now use these pieces of data to retrieve a short-term Access Token which you
 If you ever accidentally reveal the Client Key (or accidentally commit it to Github for instance) it is vital that you log into BUPA and delete/recreate the App Tokens as soon as possible. Anyone who has these three pieces of data can access the API and your data, and in future potentially make payments from your account (depending on the scope of the tokens).  
 </aside>
 
-Once you have the authorization token, pass it as a header for every call. Whenever it expires, create a new nonce and get a new one again.
+Once you have the access token, pass it as a header for every call, like so:  
  
 `Authorization: BEARER $ACCESS_TOKEN`
+
+Whenever it expires, create a new nonce and get a new one again.
 
 ### HTTP Request
 
@@ -110,7 +112,7 @@ Once you have the authorization token, pass it as a header for every call. Whene
 Parameter | Description
 --------- | -----------
 `grantType` | Always `Access Token`. (This will change to `refresh_token` in a future release.)
-`nonce` | A random non-repeating number used as a salt for the `clientSecret` below.
+`nonce` | A random non-repeating number used as a salt for the `clientSecret` below. The simplest nonce is a unix time. 
 `refreshToken` | The app's `Refresh Token` from the API page in BUPA.
 `clientId` | The app's `Client ID` from the API page in BUPA.
 `clientSecret` | The SHA256 hash of the `nonce` above and the app's `Client Key` from the API page in BUPA.
@@ -120,25 +122,42 @@ A temporary App Access Token which can be used to access the API.
 
 Field | Description
 --------- | -----------
-`expires` | The unixtime that the access token will expire. Based on the server time.  
-`scope` | The scope of the Access Token as a comma-separated string. This provides information on what API access it is allowed. See the section on Scope below.
-`tokenType` | Always `BEARER`.
-`accessToken` | The temporary App Access Token.
+`accessToken` | The temporary App Access Token you can use in further API calls.
+`expiry` | The unix time (in milliseconds) that the access token will expire. Based on the server time.  
+`permissions` | The permissions assigned to the Access Token as an array of strings. This provides information on what API access it is allowed. See the section on Scope below.
+`applicationId` | The ID of the application you are using. 
 
-## Scopes
 
-Scopes are the list of permissions that you assign to an Application Token when you create it. An Application Access Tokens created from these Application Tokens will only have these permissions.
+## Permissions/Scopes
+
+Scopes are the list of permissions that you assign to an Application when you create it. An Application Access Tokens created from these Applications will only have these permissions.
 
 <aside class="notice">
-It is important to only provide the minimum amount of access to an Application Token when you create it. This limits any potential damage done if the Application Token data is compromised.
+It is important to only provide the minimum amount of access to an Application when you create it. This limits any potential damage done if the Application Token data is compromised.
 </aside>
 
 The list of scopes allowed for the Business API is as follows.
 
 Scope | Description
 ----- | -----------
-`get_accounts` | Read the list of Fire accounts in your profile.
-`get_accounts:45` | Read access to just the specified account ID (`45` in this exmaple). You can add this multiple times to provide access to a specific list of accounts.  
+`PERM_BUSINESSES_GET_SERVICES` | Get Service Fees and Info
+`PERM_BUSINESSES_GET_ACCOUNTS` | Read the list of Fire accounts in your profile. 
+`PERM_BUSINESSES_GET_ACCOUNT` | Get the details of a single Fire account in your profile.
+`PERM_BUSINESSES_GET_PAYMENT` | View details of a payment
+`PERM_BUSINESSES_GET_ACCOUNT_PAYMENTS` | List payments on an Account
+`PERM_BUSINESSES_GET_ACCOUNT_PAYMENTS_FILTER` | Filter payments on an Account
+`PERM_BUSINESSES_GET_FUNDING_SOURCES` | List Withdrawal Accounts
+`PERM_BUSINESSES_GET_FUNDING_SOURCE` | View details of a Withdrawal Account
+`PERM_BUSINESSES_GET_FUNDING_SOURCE_PAYMENTS` | List payments on a Withdrawal Account
+`PERM_BUSINESSES_GET_WEBHOOKS` | List all Webhooks
+`PERM_BUSINESSES_GET_WEBHOOK_EVENT_TEST` | Send a test Webhook
+`PERM_BUSINESSES_GET_LIMITS` | List all Limits
+`PERM_BUSINESSES_GET_FX_RATE` | Check FX Rates
+`PERM_BUSINESSES_GET_APPS` | List all Applications
+`PERM_BUSINESSES_GET_APP_PERMISSIONS` | List all permissions for an Application
+`PERM_BUSINESSES_GET_APPS_PERMISSIONS` | List all permissions available for Applications
+`PERM_BUSINESSES_GET_WEBHOOK_TOKENS` | Get Webhook Tokens
+
 
 # Fire Accounts 
 
@@ -190,7 +209,7 @@ Field | Description
 ```shell
 curl https://business.paywithfire.com/api/businesses/v1/accounts \
   -X GET \
-  -H "Authorization: $AUTHORIZATION_TOKEN"
+  -H "Authorization: BEARER $ACCESS_TOKEN"
 
 
 {
@@ -237,7 +256,7 @@ An array of account objects.
 ```shell
 curl https://business.paywithfire.com/api/businesses/v1/accounts/1951 \
   -X GET \
-  -H "Authorization: $AUTHORIZATION_TOKEN"
+  -H "Authorization: BEARER $ACCESS_TOKEN"
 
 {
      "ican": 1951,
@@ -324,7 +343,7 @@ Field | Description
 ```shell
 curl https://business.paywithfire.com/api/businesses/v1/fundingsources \
   -X GET \
-  -H "Authorization: $AUTHORIZATION_TOKEN" 
+  -H "Authorization: BEARER $ACCESS_TOKEN"
 
 
 {
@@ -477,7 +496,7 @@ curl https://business.paywithfire.com/api/businesses/v1/accounts/1979/payments \
   -X GET \
   -d "limit=25" \
   -d "offset=0" \
-  -H "Authorization: $AUTHORIZATION_TOKEN"
+  -H "Authorization:  BEARER $ACCESS_TOKEN"
 
 {
 	"total": 1,
@@ -539,7 +558,7 @@ You can set up webhooks in the Business Account web application or use the API t
 ```shell
 curl https://business.paywithfire.com/api/businesses/v1/webhooks \
   -X GET \
-  -H "Authorization: $AUTHORIZATION_TOKEN" 
+  -H "Authorization: BEARER $ACCESS_TOKEN"
 
 {
     "webhookEvents": [
