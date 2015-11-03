@@ -1433,7 +1433,7 @@ html, body {
       margin: $nav-v-padding $nav-padding;
       width: $nav-width - 30;
       outline: none;
-      color: $nav-text !important;
+      color: $nav-text;
       border-radius: 0; /* ios has a default border radius */
     }
 
@@ -1472,7 +1472,7 @@ html, body {
     }
 
     a {
-      color: $nav-text !important;
+      color: $nav-text;
       text-decoration: none;
 
       &:hover {
@@ -1501,7 +1501,7 @@ html, body {
   }
 
   li {
-    color: $nav-text !important;
+    color: $nav-text;
     @include transition-property('background');
     @include transition-timing-function('linear');
     @include transition-duration(230ms);
@@ -1511,7 +1511,7 @@ html, body {
   .tocify-focus {
     @include box-shadow(0px 1px 0px $nav-active-shadow);
     background-color: $nav-active-bg;
-    color: $nav-active-text !important;
+    color: $nav-active-text;
   }
 
   // Subheaders are the submenus that slide open
