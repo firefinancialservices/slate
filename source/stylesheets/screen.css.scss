@@ -1504,7 +1504,7 @@ html, body {
     @include transition-duration(230ms);
   }
 
-  li a {
+  li>a {
     color: $nav-text;
   }
 
@@ -1514,7 +1514,11 @@ html, body {
     background-color: $nav-active-bg;
     color: $nav-active-text;
   }
-
+  
+  .tocify-focus>a {
+     color: $nav-active-text;
+  }
+ 
   // Subheaders are the submenus that slide open
   // in the table of contents.
   .tocify-subheader {
