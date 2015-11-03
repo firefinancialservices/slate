@@ -343,9 +343,8 @@ background: #f29023 !important;
 }
 
 .navbar-brand{
-	    position: absolute;
-    left: 50%;
-    margin-left: -44px;
+	position: absolute;
+    left: 15px;
     top: -7px;
 }
 .navbar-default .navbar-collapse, .navbar-default .navbar-form{
@@ -1397,7 +1396,7 @@ html, body {
   overflow-x: hidden;
   position: fixed;
   z-index: 30;
-  top: 70px;
+  top: 84px;
   left: 0;
   bottom: 0;
   width: $nav-width;
