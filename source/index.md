@@ -31,7 +31,7 @@ These provide information about the fees and limits applied to your account.
 These provide information about your service configs - applications, webhooks, API tokens, etc.
 
 <aside class="notice">
-**The API and these docs are in BETA and subject to change at any moment. **
+**The API and these docs are in BETA and subject to change at any moment.**
 </aside>
 
 # Authentication
