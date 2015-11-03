@@ -130,6 +130,12 @@ input{
  	margin-bottom: -4px;
  }
 
+.navbar-brand {
+	position: absolute;
+    left: 15px;
+    top: -7px;
+}
+
  @media screen and (max-width: 768px){
  	input{
  		margin-bottom: 15px;
@@ -342,7 +348,7 @@ background: #f29023 !important;
     box-shadow: none;
 }
 
-.navbar-brand{
+.navbar-brand {
 	position: absolute;
     left: 15px;
     top: -7px;
