@@ -69,7 +69,8 @@ $phone-width: $tablet-width - $nav-width; // min width before reverting to mobil
 ////////////////////
 %default-font {
   font-family: Roboto, sans-serif;
-  font-size: 13px;
+  font-size: 15px;
+  font-weight: 300;
 }
 
 %header-font {
