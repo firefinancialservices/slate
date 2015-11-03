@@ -1511,7 +1511,7 @@ html, body {
   .tocify-focus {
     @include box-shadow(0px 1px 0px $nav-active-shadow);
     background-color: $nav-active-bg;
-    color: $nav-active-text;
+    color: $nav-active-text !important;
   }
 
   // Subheaders are the submenus that slide open
