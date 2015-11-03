@@ -8,7 +8,7 @@ toc_footers:
 
 includes:
 
-search: true
+search: false
 ---
 
 # Integrating to the Fire Business Account API

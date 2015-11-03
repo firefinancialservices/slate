@@ -18,6 +18,7 @@
       scrollTo: 70,
       scrollHistory: true,
       hashGenerator: function (text, element) {
+    	  console.log(element.prop('id'));
         return element.prop('id');
       }
     }).data('toc-tocify');
