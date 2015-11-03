@@ -394,11 +394,11 @@ background: #f29023 !important;
     background-repeat: no-repeat;
     background-position: center;
     background-size: cover;
-	height:375px;
+	height:70px;
 }
 @media screen and (max-width: 450px){
 	 header{
-    	height: 300px;
+    	height: 70px;
 	 }
 }
 
@@ -1400,7 +1400,7 @@ html, body {
   overflow-x: hidden;
   position: fixed;
   z-index: 30;
-  top: 0;
+  top: 70px;
   left: 0;
   bottom: 0;
   width: $nav-width;
