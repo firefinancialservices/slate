@@ -48,7 +48,7 @@ SECRET=( `echo -n $NONCE$CLIENT_KEY | sha256sum` )
 curl https://business.paywithfire.com/api/businesses/v1/apps/accesstokens \
     -X POST \ 
     -H "Content-type: application/json" \
-    -d "{"\""clientId"\"":"\""$CLIENT_ID"\"", "\""refreshToken"\"":"\""$REFRESH_TOKEN"\"","\""nonce"\"":"\""$NONCE"\"","\""grantType"\"":"\""Access Token"\"","\""clientSecret"\"":"\""${SECRET[0]}"\""}"
+    -d "{"\""clientId"\"":"\""$CLIENT_ID"\"", "\""refreshToken"\"":"\""$REFRESH_TOKEN"\"","\""nonce"\"":"\""$NONCE"\"","\""grantType"\"":"\""AccessToken"\"","\""clientSecret"\"":"\""${SECRET[0]}"\""}"
       
 # Returns an access token
 {
@@ -81,7 +81,7 @@ curl https://business.paywithfire.com/api/businesses/v1/apps/accesstokens \
 ACCESS_TOKEN=<ACCESS_TOKEN>
 
 curl https://business.paywithfire.com/api/businesses/v1/accounts \
-  -H "Authorization: BEARER $ACCESS_TOKEN"
+  -H "Authorization: Bearer $ACCESS_TOKEN"
 ```
 
 Access to the API is by Bearer Tokens. The process is somewhat similar to OAuth2.0, but with some changes to improve security. 
@@ -98,7 +98,7 @@ If you ever accidentally reveal the Client Key (or accidentally commit it to Git
 
 Once you have the access token, pass it as a header for every call, like so:  
  
-`Authorization: BEARER $ACCESS_TOKEN`
+`Authorization: Bearer $ACCESS_TOKEN`
 
 Whenever it expires, create a new nonce and get a new one again.
 
@@ -111,7 +111,7 @@ Whenever it expires, create a new nonce and get a new one again.
 
 Parameter | Description
 --------- | -----------
-`grantType` | Always `Access Token`. (This will change to `refresh_token` in a future release.)
+`grantType` | Always `AccessToken`. (This will change to `refresh_token` in a future release.)
 `nonce` | A random non-repeating number used as a salt for the `clientSecret` below. The simplest nonce is a unix time. 
 `refreshToken` | The app's `Refresh Token` from the API page in BUPA.
 `clientId` | The app's `Client ID` from the API page in BUPA.
@@ -209,7 +209,7 @@ Field | Description
 ```shell
 curl https://business.paywithfire.com/api/businesses/v1/accounts \
   -X GET \
-  -H "Authorization: BEARER $ACCESS_TOKEN"
+  -H "Authorization: Bearer $ACCESS_TOKEN"
 
 
 {
@@ -256,7 +256,7 @@ An array of account objects.
 ```shell
 curl https://business.paywithfire.com/api/businesses/v1/accounts/1951 \
   -X GET \
-  -H "Authorization: BEARER $ACCESS_TOKEN"
+  -H "Authorization: Bearer $ACCESS_TOKEN"
 
 {
      "ican": 1951,
@@ -343,7 +343,7 @@ Field | Description
 ```shell
 curl https://business.paywithfire.com/api/businesses/v1/fundingsources \
   -X GET \
-  -H "Authorization: BEARER $ACCESS_TOKEN"
+  -H "Authorization: Bearer $ACCESS_TOKEN"
 
 
 {
@@ -496,7 +496,7 @@ curl https://business.paywithfire.com/api/businesses/v1/accounts/1979/payments \
   -X GET \
   -d "limit=25" \
   -d "offset=0" \
-  -H "Authorization:  BEARER $ACCESS_TOKEN"
+  -H "Authorization:  Bearer $ACCESS_TOKEN"
 
 {
 	"total": 1,
@@ -552,7 +552,7 @@ You can set up webhooks in the Business Account web application or use the API t
 ```shell
 curl https://business.paywithfire.com/api/businesses/v1/webhooks \
   -X GET \
-  -H "Authorization: BEARER $ACCESS_TOKEN"
+  -H "Authorization: Bearer $ACCESS_TOKEN"
 
 {
     "webhookEvents": [
