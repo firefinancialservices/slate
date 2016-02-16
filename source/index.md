@@ -538,6 +538,34 @@ Retrieve a list of payments against an account.
 
 An array of payments for `accountId` with a count (`total`)
 
+# Payment Requests
+A Payment Request is a 
+
+## View Sent Payment Requests
+```shell
+curl https://business.paywithfire.com/api/businesses/v1/paymentrequests/sent \
+  -X GET \
+  -d "limit=25" \
+  -d "offset=0" \
+  -H "Authorization:  Bearer $ACCESS_TOKEN"
+
+{
+  "total": 1
+  "dateRangeTo": 1455635760056
+  "paymentRequests": [{
+    "code": "abcdefgh"
+    "type": "SHAREABLE"
+    "direction": "SENT"
+    "status": "ACTIVE"
+    "currency": "EUR"
+    "amount": 1000
+    "description": "Monthly Gym Membership"
+    "myRef": "Gym Membership - July 2016"
+    "dateCreated": "2016-02-16T12:50:51.800Z"
+  }]
+}
+```
+Retrieves a paged list of the Payment Requests you have sent in reverse chronological order. 
 
 
 # Webhooks
