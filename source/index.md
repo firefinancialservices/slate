@@ -45,7 +45,7 @@ NONCE=`date +%s`
 SECRET=( `echo -n $NONCE$CLIENT_KEY | sha256sum` )
 
 # Get an Access Token from the API
-curl https://business.paywithfire.com/api/businesses/v1/apps/accesstokens \
+curl https://api.paywithfire.com/business/businesses/v1/apps/accesstokens \
     -X POST \ 
     -H "Content-type: application/json" \
     -d "{"\""clientId"\"":"\""$CLIENT_ID"\"", "\""refreshToken"\"":"\""$REFRESH_TOKEN"\"","\""nonce"\"":"\""$NONCE"\"","\""grantType"\"":"\""AccessToken"\"","\""clientSecret"\"":"\""${SECRET[0]}"\""}"
@@ -80,7 +80,7 @@ curl https://business.paywithfire.com/api/businesses/v1/apps/accesstokens \
 # Example Call
 ACCESS_TOKEN=<ACCESS_TOKEN>
 
-curl https://business.paywithfire.com/api/businesses/v1/accounts \
+curl https://api.paywithfire.com/business/businesses/v1/accounts \
   -H "Authorization: Bearer $ACCESS_TOKEN"
 ```
 
@@ -104,7 +104,7 @@ Whenever it expires, create a new nonce and get a new one again.
 
 ### HTTP Request
 
-`POST https://business.paywithfire.com/api/businesses/v1/apps/accesstokens`
+`POST https://api.paywithfire.com/business/businesses/v1/apps/accesstokens`
 
 
 ### JSON Input
@@ -207,7 +207,7 @@ Field | Description
 ## List all Fire Accounts
 
 ```shell
-curl https://business.paywithfire.com/api/businesses/v1/accounts \
+curl https://api.paywithfire.com/business/businesses/v1/accounts \
   -X GET \
   -H "Authorization: Bearer $ACCESS_TOKEN"
 
@@ -244,7 +244,7 @@ Returns all your Fire Accounts. Ordered by Alias ascending. Can be paginated.
 
 ### HTTP Request
 
-`GET https://business.paywithfire.com/api/businesses/v1/accounts`
+`GET https://api.paywithfire.com/business/businesses/v1/accounts`
 
 ### Returns
 
@@ -254,7 +254,7 @@ An array of account objects.
 ## Retrieve the details of a Fire Account 
 
 ```shell
-curl https://business.paywithfire.com/api/businesses/v1/accounts/1951 \
+curl https://api.paywithfire.com/business/businesses/v1/accounts/1951 \
   -X GET \
   -H "Authorization: Bearer $ACCESS_TOKEN"
 
@@ -286,7 +286,7 @@ You can retrieve the details of a Fire Account by its `ican`.
 
 ### HTTP Request
 
-`GET https://business.paywithfire.com/api/businesses/v1/accounts/{ican}`
+`GET https://api.paywithfire.com/business/businesses/v1/accounts/{ican}`
 
 Parameter | Description
 --------- | -----------
@@ -341,7 +341,7 @@ Field | Description
 ## List all External Bank Accounts
 
 ```shell
-curl https://business.paywithfire.com/api/businesses/v1/fundingsources \
+curl https://api.paywithfire.com/business/businesses/v1/fundingsources \
   -X GET \
   -H "Authorization: Bearer $ACCESS_TOKEN"
 
@@ -379,7 +379,7 @@ Returns all your external bank accounts. Ordered by Alias ascending. Can be pagi
 
 ### HTTP Request
 
-`GET https://business.paywithfire.com/api/businesses/v1/fundingsources`
+`GET https://api.paywithfire.com/business/businesses/v1/fundingsources`
 
 ### Returns
 
@@ -492,7 +492,7 @@ Field | Description
 
 ## List payments for an account
 ```shell
-curl https://business.paywithfire.com/api/businesses/v1/accounts/1979/payments \
+curl https://api.paywithfire.com/business/businesses/v1/accounts/1979/payments \
   -X GET \
   -d "limit=25" \
   -d "offset=0" \
@@ -532,7 +532,7 @@ Retrieve a list of payments against an account.
 
 ### HTTP Request
 
-`GET  https://business.paywithfire.com/api/businesses/v1/accounts/{accountId}/payments`
+`GET  https://api.paywithfire.com/business/businesses/v1/accounts/{accountId}/payments`
 
 ### Returns
 
@@ -543,7 +543,7 @@ A Payment Request is a
 
 ## View Sent Payment Requests
 ```shell
-curl https://business.paywithfire.com/api/businesses/v1/paymentrequests/sent \
+curl https://api.paywithfire.com/business/businesses/v1/paymentrequests/sent \
   -X GET \
   -d "limit=25" \
   -d "offset=0" \
@@ -578,7 +578,7 @@ You can set up webhooks in the Business Account web application or use the API t
 
 ## View Webhooks
 ```shell
-curl https://business.paywithfire.com/api/businesses/v1/webhooks \
+curl https://api.paywithfire.com/business/businesses/v1/webhooks \
   -X GET \
   -H "Authorization: Bearer $ACCESS_TOKEN"
 
@@ -598,7 +598,7 @@ curl https://business.paywithfire.com/api/businesses/v1/webhooks \
 
 Retrieve a list of your existing webhooks 
 
-`GET https://business.paywithfire.com/api/businesses/v1/webhooks`
+`GET https://api.paywithfire.com/business/businesses/v1/webhooks`
 
 ### Returns
 An array of webhook event configuration objects.
