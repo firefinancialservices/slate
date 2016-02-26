@@ -30,6 +30,17 @@ These provide information about the fees and limits applied to your account.
 ### Service Configuration
 These provide information about your service configs - applications, webhooks, API tokens, etc.
 
+### Service Endpoint
+The Business API is available at 
+
+`https://api.paywithfire.com/business/businesses/v1/`
+
+<aside class="notice">
+**Due to a bug in configuration, this is not the correct URL. You can use this for the moment, but it will be
+changing to `https://api.paywithfire.com/business/v1/` sometime in March. Apologies for the inconvenience. **
+</aside>
+
+
 <aside class="notice">
 **The API and these docs are in BETA and subject to change at any moment.**
 </aside>
@@ -105,6 +116,7 @@ Whenever it expires, create a new nonce and get a new one again.
 ### HTTP Request
 
 `POST https://api.paywithfire.com/business/businesses/v1/apps/accesstokens`
+
 
 
 ### JSON Input
@@ -537,35 +549,6 @@ Retrieve a list of payments against an account.
 ### Returns
 
 An array of payments for `accountId` with a count (`total`)
-
-# Payment Requests
-A Payment Request is a 
-
-## View Sent Payment Requests
-```shell
-curl https://api.paywithfire.com/business/businesses/v1/paymentrequests/sent \
-  -X GET \
-  -d "limit=25" \
-  -d "offset=0" \
-  -H "Authorization:  Bearer $ACCESS_TOKEN"
-
-{
-  "total": 1
-  "dateRangeTo": 1455635760056
-  "paymentRequests": [{
-    "code": "abcdefgh"
-    "type": "SHAREABLE"
-    "direction": "SENT"
-    "status": "ACTIVE"
-    "currency": "EUR"
-    "amount": 1000
-    "description": "Monthly Gym Membership"
-    "myRef": "Gym Membership - July 2016"
-    "dateCreated": "2016-02-16T12:50:51.800Z"
-  }]
-}
-```
-Retrieves a paged list of the Payment Requests you have sent in reverse chronological order. 
 
 
 # Webhooks
