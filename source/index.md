@@ -589,7 +589,7 @@ If a non-Fire user receives the request, tapping it will bring them to a web sit
 ```
 
 
-The payment resource has the following attributes: 
+The payment request resource has the following attributes: 
 
 Field | Description
 --------- | -----------
