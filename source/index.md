@@ -560,6 +560,19 @@ An array of payments for `accountId` with a count (`total`)
 
 
 # Payment Requests
+Payment Requests allow you to collect payment in real-time through Twitter, Facebook, text, email and print media.
+
+They are unique URLs that contain all the information needed for anyone to pay you. They are just URLs like this:
+
+`https://paywithfi.re/ez2scsqk`
+
+This means they can be tweeted, posted to Facebook, sent as a text or email - whatever method of communication you already have in place can be used.
+
+If an existing Pay with Fire user receives the Payment Request, they can tap it to view the details of the payment in their Pay with Fire app. They can then enter their PIN to pay securely. The payment is instant and arrives in the business Fire account immediately.
+
+If a non-Fire user receives the request, tapping it will bring them to a web site showing the details of the payment. From there they can easily go to the app store to get Pay with Fire, top it up with a card, and pay. 
+
+
 ```shell
 # Full details of an individual payment request.
 {
@@ -581,7 +594,7 @@ The payment resource has the following attributes:
 Field | Description
 --------- | -----------
 `code` | This is the Payment Request Code that is assigned by Fire to this request. Used in the URL to share this request.
-`type` | The type of the request - either `DIRECT` (a one-to-one request to a specific mobile number) or `SHARED` (a request that can be paid by anyone who receives it)
+`type` | The type of the request - either `DIRECT` (a one-to-one request to a specific mobile number) or `SHAREABLE` (a request that can be paid by anyone who receives it)
 `direction` | either `SENT` or `RECEIVED` depending on whether you sent or received the request.
 `status` | This can be `ACTIVE`, `EXPIRED` or `CLOSED`. Only `ACTIVE` requests can be paid.
 `currency` | Either `EUR` or `GBP`
@@ -600,7 +613,7 @@ Field | Description
 	"currency":"EUR",
 	"amount":3000,
 	"myRef":"Fees for April 2016",
-	"description":"April Membership Fees,
+	"description":"April Membership Fees",
 	"maxNumberPayments":null,
 	"maxNumberCustomerPayments":null
 }
@@ -618,12 +631,7 @@ curl https://api.paywithfire.com/business/v1/paymentrequests \
 ```
 
 Creates a new Shareable Payment Request. This returns a code that can be shared to your customers as a URL by any channel you wish.  
-For example, if the code is `12345678`, the URL will be 
 
-`https://paywithfi.re/12345678`
-
-This can emailed, texted, or tweeted as a URL. It can also be converted to a QR code and printed on invoices, flyers, posters etc. When your
-customer taps or scans the link with their app, they will be shown the details of the payment request and can then pay it instantly. 
 
 ### HTTP Request
 
