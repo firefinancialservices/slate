@@ -105,7 +105,7 @@ Once you have the access token, pass it as a header for every call, like so:
  
 `Authorization: Bearer $ACCESS_TOKEN`
 
-Whenever it expires, create a new nonce and get a new one again.
+Whenever it expires, create a new nonce and get a new access token again.
 
 ### HTTP Request
 
@@ -121,7 +121,7 @@ Parameter | Description
 `nonce` | A random non-repeating number used as a salt for the `clientSecret` below. The simplest nonce is a unix time. 
 `refreshToken` | The app's `Refresh Token` from the API page in BUPA.
 `clientId` | The app's `Client ID` from the API page in BUPA.
-`clientSecret` | The SHA256 hash of the `nonce` above and the app's `Client Key` from the API page in BUPA.
+`clientSecret` | The SHA256 hash of the `nonce` above and the app's `Client Key`. The Client Key will only be shown to you when you create the app, so don't forget to save it somewhere safe.
 
 ### Returns
 A temporary App Access Token which can be used to access the API. 
@@ -152,6 +152,12 @@ Scope | Description
 `PERM_BUSINESSES_GET_PAYMENT` | View details of a payment
 `PERM_BUSINESSES_GET_ACCOUNT_PAYMENTS` | List payments on an Account
 `PERM_BUSINESSES_GET_ACCOUNT_PAYMENTS_FILTER` | Filter payments on an Account
+`PERM_BUSINESSES_POST_PAYMENT_REQUEST` | Create a Payment Request
+`PERM_BUSINESSES_GET_PAYMENT_REQUESTS` | List all sent Payment Requests and their details
+`PERM_BUSINESS_PUT_PAYMENT_REQUEST_STATUS` | Update a Payment Request status
+`PERM_BUSINESSES_GET_PUBLIC_PAYMENT_REQUEST` | Get a public payment request
+`PERM_BUSINESSES_GET_PAYMENT_REQUEST_REPORTS` | Get a report of the total amount paid to a payment request
+`PERM_BUSINESSES_GET_PAYMENT_REQUEST_TRANSACTIONS` | Get a paged list of all payments to a payment request
 `PERM_BUSINESSES_GET_FUNDING_SOURCES` | List Withdrawal Accounts
 `PERM_BUSINESSES_GET_FUNDING_SOURCE` | View details of a Withdrawal Account
 `PERM_BUSINESSES_GET_FUNDING_SOURCE_PAYMENTS` | List payments on a Withdrawal Account
@@ -543,6 +549,117 @@ Retrieve a list of payments against an account.
 ### Returns
 
 An array of payments for `accountId` with a count (`total`)
+
+
+
+
+
+
+
+
+
+
+# Payment Requests
+```shell
+# Full details of an individual payment request.
+{
+	"code":"p5u6umne",
+	"type":"SHAREABLE",
+	"direction":"SENT",
+	"status":"ACTIVE",
+	"currency":"EUR",
+	"amount":500,
+	"description":"April Membership fees",
+	"myRef":"April membership fees",
+	"dateCreated":"2016-04-26T19:03:56.930Z"
+}
+```
+
+
+The payment resource has the following attributes: 
+
+Field | Description
+--------- | -----------
+`code` | This is the Payment Request Code that is assigned by Fire to this request. Used in the URL to share this request.
+`type` | The type of the request - either `DIRECT` (a one-to-one request to a specific mobile number) or `SHARED` (a request that can be paid by anyone who receives it)
+`direction` | either `SENT` or `RECEIVED` depending on whether you sent or received the request.
+`status` | This can be `ACTIVE`, `EXPIRED` or `CLOSED`. Only `ACTIVE` requests can be paid.
+`currency` | Either `EUR` or `GBP`
+`amount` | The amount of the request if provided. This will be in minor units (cents or pence) 
+`description` | The description of the request. This will be displayed to the user when they tap or scan the request.  
+`myRef` | An internal description of the request if you want a different one to the one that's shown to the public.
+`dateCreated` | Date of the payment request. _(ISO formatted)_
+
+
+## Create a new shared Payment Request
+```shell
+# Create the JSON object for the new Payment Request
+# cat payment-request.json
+{
+	"icanTo":2150,
+	"currency":"EUR",
+	"amount":3000,
+	"myRef":"Fees for April 2016",
+	"description":"April Membership Fees,
+	"maxNumberPayments":null,
+	"maxNumberCustomerPayments":null
+}
+
+# Post that to the API
+curl https://api.paywithfire.com/business/v1/paymentrequests \
+  -X POST \
+  -d @payment-request.json \
+  -H "Authorization: Bearer $ACCESS_TOKEN"
+
+{
+	type: "SHAREABLE", 
+	code: "kmxe4rxz"
+}
+```
+
+Creates a new Shareable Payment Request. This returns a code that can be shared to your customers as a URL by any channel you wish.  
+For example, if the code is `12345678`, the URL will be 
+
+`https://paywithfi.re/12345678`
+
+This can emailed, texted, or tweeted as a URL. It can also be converted to a QR code and printed on invoices, flyers, posters etc. When your
+customer taps or scans the link with their app, they will be shown the details of the payment request and can then pay it instantly. 
+
+### HTTP Request
+
+`POST  https://api.paywithfire.com/business/v1/paymentrequests`
+
+### Returns
+
+A JSON object containing the code and the type of the request.
+
+
+### JSON Input 
+
+Parameter | Description
+--------- | -----------
+`icanTo` | The ican of the account to collect the funds into. Must be one of your Fire Accounts. 
+`currency` | Either `EUR` or `GBP`, and must correspond the account select in `icanTo`.
+`amount` | _(Optional)_ Provide a specific amount to pay. Omit the parameter if you want to allow the user to choose their own amount to pay.
+`myRef` | _(Optional)_ An internal description of the request.
+`description` | _(Optional)_ A public facing description of the request. Will be shown to the user when they tap or scan the request.
+`maxNumberPayments` | _(Optional)_ The max number of people who can pay this request. Omit to let anyone pay.
+`maxNumberCustomerPayments` | _(Optional)_ The max number of times each person can pay the request. Omit to allow any number of times.
+
+### JSON Output
+
+Parameter | Description
+--------- | -----------
+`code` | The code for this request. Create a URL using this code like this: `https://paywithfi.re/<code>` and share to your customers.
+`type` | Either `DIRECT` or `SHAREABLE`. `DIRECT` is a one-to-one request to the specified mobile number. `SHAREABLE` is a public request that can be viewed and paid by anyone who receives it. 
+
+
+
+
+
+
+
+
 
 
 # Webhooks
