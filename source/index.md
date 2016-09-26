@@ -22,7 +22,7 @@ seamlessly with the Role-based Access controls that will be available in a futur
 The API exposes 3 main areas of functionality: financial functions, service information and service configuration. 
 
 ### Financial Functions
-These functions provide access to your account details, payments, beneficiary accounts etc.   
+These functions provide access to your account details, transactions, beneficiary accounts etc.   
 
 ### Service Information
 These provide information about the fees and limits applied to your account. 
@@ -64,12 +64,11 @@ curl https://api.paywithfire.com/business/v1/apps/accesstokens \
       "PERM_BUSINESSES_GET_SERVICES",
       "PERM_BUSINESSES_GET_ACCOUNTS",
       "PERM_BUSINESSES_GET_ACCOUNT",
-      "PERM_BUSINESSES_GET_PAYMENT",
-      "PERM_BUSINESSES_GET_ACCOUNT_PAYMENTS",
-      "PERM_BUSINESSES_GET_ACCOUNT_PAYMENTS_FILTER",
+      "PERM_BUSINESSES_GET_ACCOUNT_TRANSACTIONS",
+      "PERM_BUSINESSES_GET_ACCOUNT_TRANSACTIONS_FILTER",
       "PERM_BUSINESSES_GET_FUNDING_SOURCES",
       "PERM_BUSINESSES_GET_FUNDING_SOURCE",
-      "PERM_BUSINESSES_GET_FUNDING_SOURCE_PAYMENTS",
+      "PERM_BUSINESSES_GET_FUNDING_SOURCE_TRANSACTIONS",
       "PERM_BUSINESSES_GET_WEBHOOKS",
       "PERM_BUSINESSES_GET_WEBHOOK_EVENT_TEST",
       "PERM_BUSINESSES_GET_LIMITS",
@@ -149,9 +148,8 @@ Scope | Description
 `PERM_BUSINESSES_GET_SERVICES` | Get Service Fees and Info
 `PERM_BUSINESSES_GET_ACCOUNTS` | Read the list of Fire accounts in your profile. 
 `PERM_BUSINESSES_GET_ACCOUNT` | Get the details of a single Fire account in your profile.
-`PERM_BUSINESSES_GET_PAYMENT` | View details of a payment
-`PERM_BUSINESSES_GET_ACCOUNT_PAYMENTS` | List payments on an Account
-`PERM_BUSINESSES_GET_ACCOUNT_PAYMENTS_FILTER` | Filter payments on an Account
+`PERM_BUSINESSES_GET_ACCOUNT_TRANSACTIONS` | List transactions on an Account
+`PERM_BUSINESSES_GET_ACCOUNT_TRANSACTIONS_FILTER` | Filter transactions on an Account
 `PERM_BUSINESSES_POST_PAYMENT_REQUEST` | Create a Payment Request
 `PERM_BUSINESSES_GET_PAYMENT_REQUESTS` | List all sent Payment Requests and their details
 `PERM_BUSINESS_PUT_PAYMENT_REQUEST_STATUS` | Update a Payment Request status
@@ -160,7 +158,7 @@ Scope | Description
 `PERM_BUSINESSES_GET_PAYMENT_REQUEST_TRANSACTIONS` | Get a paged list of all payments to a payment request
 `PERM_BUSINESSES_GET_FUNDING_SOURCES` | List Withdrawal Accounts
 `PERM_BUSINESSES_GET_FUNDING_SOURCE` | View details of a Withdrawal Account
-`PERM_BUSINESSES_GET_FUNDING_SOURCE_PAYMENTS` | List payments on a Withdrawal Account
+`PERM_BUSINESSES_GET_FUNDING_SOURCE_TRANSACTIONS` | List transactions on a Withdrawal Account
 `PERM_BUSINESSES_GET_WEBHOOKS` | List all Webhooks
 `PERM_BUSINESSES_GET_WEBHOOK_EVENT_TEST` | Send a test Webhook
 `PERM_BUSINESSES_GET_LIMITS` | List all Limits
@@ -399,9 +397,9 @@ An array of external Bank accounts (referenced as `fundingSources` for legacy re
 
 
 
-# Payments
+# Transactions
 ```shell
-# Full details of an individual payment.
+# Full details of an individual transaction.
 {
 	"txnId": 30157,
 	"refId": 26774,
@@ -454,7 +452,7 @@ An array of external Bank accounts (referenced as `fundingSources` for legacy re
 	]
 }
 
-# Condensed payment details when part of a list.
+# Condensed transaction details when part of a list.
 {
 	"txnId": 30260,
 	"refId": 26834,
@@ -478,33 +476,33 @@ An array of external Bank accounts (referenced as `fundingSources` for legacy re
 	"date": "2015-04-29T22:56:48.867Z"
 }
 ```
-While there are many types of payments, they are all represented by the same JSON object with a different `txnType`.
+While there are many types of transactions, they are all represented by the same JSON object with a different `txnType`.
 
-The payment resource has the following attributes: 
+The transaction resource has the following attributes: 
 
 Field | Description
 --------- | -----------
-`txnId` | The id of this side of the payment (each payment has two sides - a to and a from). This is used to get the details of the payment.
-`refId` | The id of the payment.
+`txnId` | The id of this side of the transaction (each transaction has two sides - a to and a from). This is used to get the details of the transaction.
+`refId` | The id of the transaction.
 `ican` | identifier for the Fire account _(assigned by Fire)_ _This field is only used in the condensed version._
-`txnType` | The type of payment. `txnType.type` is the code, `txnType.description` is an English version. Use this to determine the "side" of the payment - e.g. `INTERNAL_TRANSFER_FROM` would be a positive payment from another account, `INTERNAL_TRANSFER_TO` is the negative side.
-`relatedParty` | `relatedParty.alias` is the name of the account on the other side of the payment. _This field is only used in the condensed version._
+`txnType` | The type of transaction. `txnType.type` is the code, `txnType.description` is an English version. Use this to determine the "side" of the transaction - e.g. `INTERNAL_TRANSFER_FROM` would be a positive transaction from another account, `INTERNAL_TRANSFER_TO` is the negative side.
+`relatedParty` | `relatedParty.alias` is the name of the account on the other side of the transaction. _This field is only used in the condensed version._
 `currency` | a JSON entity with the currency code (`currency.code`) and English name (`currency.description`) of the currency for the account - either `EUR` or `GBP`.
-`amountBeforeFee` | Amount of the payment before the fee was applied.
+`amountBeforeFee` | Amount of the transaction before the fee was applied.
 `feeAmount` | The amount of the fee.
 `amountAfterFee` | Net amount lodged or taken from the account after fees applied.
 `balance` | the balance of the account (in minor currency units - pence, cent etc. `434050` == `4,340.50 GBP` for a GBP account).
-`myRef` | The comment/reference on the payment 
-`date` | Date of the payment _(epoch date in full version, ISO date in condensed - will be fixed in a future release)_
-`from` | The "from" side of the payment. `from.type` is the type of the account, and `from.account` is the details of that account. _This field is only present in the full version._
-`to` | The "to" side of the payment. `to.type` is the type of the account, and `to.account` is the details of that account. _This field is only present in the full version._
+`myRef` | The comment/reference on the transaction 
+`date` | Date of the transaction _(epoch date in full version, ISO date in condensed - will be fixed in a future release)_
+`from` | The "from" side of the transaction. `from.type` is the type of the account, and `from.account` is the details of that account. _This field is only present in the full version._
+`to` | The "to" side of the transaction. `to.type` is the type of the account, and `to.account` is the details of that account. _This field is only present in the full version._
 `fxTradeDetails` | If this is a currency conversion, this will contain the FX rate and converted amount. _This field is only present in the full version._
 `feeDetails` | The details of any fees applied. _This field is only present in the full version._
 
 
-## List payments for an account
+## List transactions for an account
 ```shell
-curl https://api.paywithfire.com/business/v1/accounts/1979/payments \
+curl https://api.paywithfire.com/business/v1/accounts/1979/transactions \
   -X GET \
   -d "limit=25" \
   -d "offset=0" \
@@ -513,7 +511,7 @@ curl https://api.paywithfire.com/business/v1/accounts/1979/payments \
 {
 	"total": 1,
 	"dateRangeTo": 1430511042924,
-	"payments": [ 
+	"transactions": [ 
 		{
 			"txnId": 30260,
 			"refId": 26834,
@@ -540,15 +538,15 @@ curl https://api.paywithfire.com/business/v1/accounts/1979/payments \
 }
 ```
 
-Retrieve a list of payments against an account.
+Retrieve a list of transactions against an account.
 
 ### HTTP Request
 
-`GET  https://api.paywithfire.com/business/v1/accounts/{accountId}/payments`
+`GET  https://api.paywithfire.com/business/v1/accounts/{accountId}/transactions`
 
 ### Returns
 
-An array of payments for `accountId` with a count (`total`)
+An array of transactions for `accountId` with a count (`total`)
 
 
 
