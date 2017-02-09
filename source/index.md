@@ -22,7 +22,7 @@ seamlessly with the Role-based Access controls that will be available in a futur
 The API exposes 3 main areas of functionality: financial functions, service information and service configuration. 
 
 ### Financial Functions
-These functions provide access to your account details, transactions, beneficiary accounts etc.   
+These functions provide access to your account details, transactions, payee accounts etc.   
 
 ### Service Information
 These provide information about the fees and limits applied to your account. 
@@ -156,9 +156,9 @@ Scope | Description
 `PERM_BUSINESSES_GET_PUBLIC_PAYMENT_REQUEST` | Get a public payment request
 `PERM_BUSINESSES_GET_PAYMENT_REQUEST_REPORTS` | Get a report of the total amount paid to a payment request
 `PERM_BUSINESSES_GET_PAYMENT_REQUEST_TRANSACTIONS` | Get a paged list of all payments to a payment request
-`PERM_BUSINESSES_GET_FUNDING_SOURCES` | List Withdrawal Accounts
-`PERM_BUSINESSES_GET_FUNDING_SOURCE` | View details of a Withdrawal Account
-`PERM_BUSINESSES_GET_FUNDING_SOURCE_TRANSACTIONS` | List transactions on a Withdrawal Account
+`PERM_BUSINESSES_GET_FUNDING_SOURCES` | List Payee Accounts
+`PERM_BUSINESSES_GET_FUNDING_SOURCE` | View details of a Payee Account
+`PERM_BUSINESSES_GET_FUNDING_SOURCE_TRANSACTIONS` | List transactions to and from Payee Accounts
 `PERM_BUSINESSES_GET_WEBHOOKS` | List all Webhooks
 `PERM_BUSINESSES_GET_WEBHOOK_EVENT_TEST` | Send a test Webhook
 `PERM_BUSINESSES_GET_LIMITS` | List all Limits
@@ -302,10 +302,10 @@ Parameter | Description
 --------- | -----------
 `ican` | This is the internal account ID of the Fire Account to be returned.
 
-# External Bank Accounts 
+# Payee Bank Accounts 
 
 ```shell
-# JSON representation of an External Account
+# JSON representation of a Payee Account
 {
    "id": 742,
    "accountName": "BoI Current Account",
@@ -342,13 +342,13 @@ Field | Description
 `iban` | the IBAN of the account if currency is `EUR`. 
 `nsc` | the Sort Code of the account if currency is `GBP`. 
 `accountNumber` | the Account Number of the account if currency is `GBP`. 
-`accountHolderName` | the name on the external bank account. 
+`accountHolderName` | the name on the payee bank account. 
 `currency` | a JSON entity with the currency code (`currency.code`) and English name (`currency.description`) of the currency for the account - either `EUR` or `GBP`
-`dateCreated` | the date/time the external account was added. Milliseconds since the epoch (1970).
-`status` | the status of the external account. When the account is first added it is in `PENDING` state until the valided by clicking the link in the email sent to the authorized user's email address. `status.description` is the English text to describe the `status.type`.
+`dateCreated` | the date/time the payee account was added. Milliseconds since the epoch (1970).
+`status` | the status of the payee account. When the account is first added it is in `PENDING` state until the valided by clicking the link in the email sent to the authorized user's email address. `status.description` is the English text to describe the `status.type`.
 `country` | the country of the account. `country.description` is the English version of the 2-letter code in `country.code`.
 
-## List all External Bank Accounts
+## List all Payee Bank Accounts
 
 ```shell
 curl https://api.fire.com/business/v1/fundingsources \
@@ -385,7 +385,7 @@ curl https://api.fire.com/business/v1/fundingsources \
 ```
 
 
-Returns all your external bank accounts. Ordered by Alias ascending. Can be paginated. 
+Returns all your payee bank accounts. Ordered by Alias ascending. Can be paginated. 
 
 ### HTTP Request
 
@@ -393,7 +393,7 @@ Returns all your external bank accounts. Ordered by Alias ascending. Can be pagi
 
 ### Returns
 
-An array of external Bank accounts (referenced as `fundingSources` for legacy reasons).
+An array of payee Bank accounts (referenced as `fundingSources` for legacy reasons).
 
 
 
