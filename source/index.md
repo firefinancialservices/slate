@@ -186,13 +186,8 @@ Scope | Description
         "code": "EUR"
      },
      "defaultAccount": true,
-     "status": {
-        "type": "LIVE",
-        "description": "Live"
-     },
-     "colour": {
-        "name": "ORANGE"
-     }   
+     "status": "LIVE",
+     "colour":"ORANGE"
 }
 ```    
 
@@ -211,8 +206,8 @@ Field | Description
 `cnsc` | the Sort Code of the account. 
 `ccan` | the Account Number of the account. 
 `defaultAccount` | `true` if this is the default account for this currency. This will be the account that general fees are taken from (as opposed to per-transaction fees). 
-`status` | _Not used at present_
-`color` | _Not used at present_
+`status` | _Always LIVE_
+`color` | _Internal Use_
 
 ## List all Fire Accounts
 
@@ -237,13 +232,8 @@ curl https://api.fire.com/business/v1/accounts \
 		        "code": "EUR"
 		     },
 		     "defaultAccount": true,
-		     "status": {
-		        "type": "LIVE",
-		        "description": "Live"
-		     },
-		     "colour": {
-		        "name": "ORANGE"
-		     }   
+		     "status": "LIVE",
+             "colour":"ORANGE"
 		}
 	]
 }
@@ -281,13 +271,8 @@ curl https://api.fire.com/business/v1/accounts/1951 \
         "code": "EUR"
      },
      "defaultAccount": true,
-     "status": {
-        "type": "LIVE",
-        "description": "Live"
-     },
-     "colour": {
-        "name": "ORANGE"
-     }   
+     "status": "LIVE",
+     "colour":"ORANGE"
 }
 ```
 
@@ -429,11 +414,12 @@ An array of payee Bank accounts (referenced as `fundingSources` for legacy reaso
 		"code": "EUR",
 		"description": "Euro"
 	},
-	"amountBeforeFee": 500,
+	"amountBeforeCharges": 500,
 	"feeAmount": 125,
-	"amountAfterFee": 625,
+	"taxAmount": 0,
+	"amountAfterCharges": 625,
 	"balance": 35,
-	"date": 1429695798917,
+	"date": "2017-02-11T19:56:40.977Z",
 	"fxTradeDetails": { 
 		"buyCurrency": "GBP",
 		"sellCurrency": "EUR",
@@ -457,10 +443,7 @@ An array of payee Bank accounts (referenced as `fundingSources` for legacy reaso
 	"txnId": 30260,
 	"refId": 26834,
 	"ican": 1979,
-	"txnType": {
-		"type": "INTERNAL_TRANSFER_TO",
-		"description": "Transfer"
-	},
+	"type": "INTERNAL_TRANSFER_TO",
 	"relatedParty": {
 		"alias": "Main Account"
 	},
@@ -468,9 +451,10 @@ An array of payee Bank accounts (referenced as `fundingSources` for legacy reaso
 		"code": "EUR",
 		"description": "Euro"
 	},
-	"amountBeforeFee": 5000,
+	"amountBeforeCharges": 5000,
 	"feeAmount": 0,
-	"amountAfterFee": 5000,
+	"taxAmount": 0,
+	"amountAfterCharges": 5000,
 	"balance": 8500,
 	"myRef": "Transfer to main account",
 	"date": "2015-04-29T22:56:48.867Z"
@@ -485,12 +469,13 @@ Field | Description
 `txnId` | The id of this side of the transaction (each transaction has two sides - a to and a from). This is used to get the details of the transaction.
 `refId` | The id of the transaction.
 `ican` | identifier for the Fire account _(assigned by Fire)_ _This field is only used in the condensed version._
-`txnType` | The type of transaction. `txnType.type` is the code, `txnType.description` is an English version. Use this to determine the "side" of the transaction - e.g. `INTERNAL_TRANSFER_FROM` would be a positive transaction from another account, `INTERNAL_TRANSFER_TO` is the negative side.
+`type` | The type of transaction. Use this to determine the "side" of the transaction - e.g. `INTERNAL_TRANSFER_FROM` would be a positive transaction from another account, `INTERNAL_TRANSFER_TO` is the negative side.
 `relatedParty` | `relatedParty.alias` is the name of the account on the other side of the transaction. _This field is only used in the condensed version._
 `currency` | a JSON entity with the currency code (`currency.code`) and English name (`currency.description`) of the currency for the account - either `EUR` or `GBP`.
-`amountBeforeFee` | Amount of the transaction before the fee was applied.
-`feeAmount` | The amount of the fee.
-`amountAfterFee` | Net amount lodged or taken from the account after fees applied.
+`amountBeforeCharges` | Amount of the transaction before the fees and taxes were applied.
+`feeAmount` | The amount of the fee, if any.
+`taxAmount` | The amount of the tax, if any (e.g. Stamp duty for ATM transactions).
+`amountAfterCharges` | Net amount lodged or taken from the account after fees and charges were applied.
 `balance` | the balance of the account (in minor currency units - pence, cent etc. `434050` == `4,340.50 GBP` for a GBP account).
 `myRef` | The comment/reference on the transaction 
 `date` | Date of the transaction _(epoch date in full version, ISO date in condensed - will be fixed in a future release)_
@@ -516,10 +501,7 @@ curl https://api.fire.com/business/v1/accounts/1979/transactions \
 			"txnId": 30260,
 			"refId": 26834,
 			"ican": 1979,
-			"txnType": {
-				"type": "INTERNAL_TRANSFER_TO",
-				"description": "Transfer"
-			},
+			"type": "INTERNAL_TRANSFER_TO",
 			"relatedParty": {
 				"alias": "Main Account"
 			},
@@ -527,9 +509,10 @@ curl https://api.fire.com/business/v1/accounts/1979/transactions \
 				"code": "EUR",
 				"description": "Euro"
 			},
-			"amountBeforeFee": 5000,
+			"amountBeforeCharges": 5000,
 			"feeAmount": 0,
-			"amountAfterFee": 5000,
+			"taxAmount": 0,
+			"amountAfterCharges": 5000,
 			"balance": 8500,
 			"myRef": "Transfer to main account",
 			"date": "2015-04-29T22:56:48.867Z"
@@ -720,10 +703,7 @@ Parameter | Description
      "data":{  
         "txnId": 1234,
         "refId": 13001,
-        "txnType": { 
-            "type": "LODGEMENT",
-            "description": "Lodgement"
-        },
+        "type": "LODGEMENT",
         "from": { 
             "type": "WITHDRAWAL_ACCOUNT",
             "account": { 
@@ -748,9 +728,10 @@ Parameter | Description
             "code": "EUR", 
             "description": "Euro" 
         },
-        "amountBeforeFee": 300,
+        "amountBeforeCharges": 300,
         "feeAmount": 3,
-        "amountAfterFee": 297,
+        "taxAmount": 0,
+        "amountAfterCharges": 297,
         "balance": 397,
         "myRef": "Money for concert",
         "date": 1339511599000,
