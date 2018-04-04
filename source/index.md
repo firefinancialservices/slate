@@ -597,7 +597,26 @@ An array of transactions for `accountId` with a count (`total`)
 
 
 # Payment Batches
-````shell
+
+The Fire API allows businesses to automate payments between their accounts or to third parties across the UK and Europe.
+
+For security reasons, the API can only set up the payments in batches. These batches must be approved
+by an authorised user via the firework mobile app. 
+
+The process is as follows:
+
+1. Create a new batch
+2. Add payments to the batch
+3. Submit the batch for approval. 
+
+
+Once the batch is submitted, the authorised users will receive notifications to their firework mobile apps. 
+They can review the contents of the batch and then approve or reject it. If approved, the batch is then
+processed.
+
+
+### Batch Object
+```shell
 # JSON representation of a batch
 {
   "batchUuid": "F2AF3F2B-4406-4199-B249-B354F2CC6019",
@@ -618,22 +637,6 @@ An array of transactions for `accountId` with a count (`total`)
   "dateCreated":"2018-04-04T00:53:21.910Z"
 }
 ```
-
-The Fire API allows businesses to automate payments between their accounts or to third parties across the UK and Europe.
-
-For security reasons, the API can only set up the payments in batches. These batches must be approved
-by an authorised user via the firework mobile app. 
-
-The process is as follows:
-
-1. Create a new batch
-2. Add payments to the batch
-3. Submit the batch for approval. 
-
-
-Once the batch is submitted, the authorised users will receive notifications to their firework mobile apps. 
-They can review the contents of the batch and then approve or reject it. If approved, the batch is then
-processed.
 
 A Batch Object consists of the following data:
 
@@ -656,7 +659,124 @@ Field | Description
 `lastUpdated` | The datestamp of the last action on this batch - ISO format: e.g. 2018-04-04T10:48:53.540Z
 `dateCreated` | The datestamp the batch was created - ISO format: e.g. 2018-04-04T00:53:21.910Z
 
+### Internal Transfer Object
+```shell
+# Pending
+{
+  "batchItemUuid": "FBA4A76A-CE51-4FC1-B562-98EC01299E4D",
+  "status": "SUBMITTED",
+  "dateCreated": "2018-04-04T01:20:38.647Z",
+  "lastUpdated": "2018-04-04T01:20:38.647Z",
+  "icanFrom": 5532,
+  "icanTo": 2150,
+  "amount": 1000,
+  "ref": "Testing a transfer via batch"
+}
 
+# After processing
+{
+  "batchItemUuid":"FBA4A76A-CE51-4FC1-B562-98EC01299E4D",
+  "status":"SUCCEEDED",
+  "dateCreated":"2018-04-04T01:20:38.647Z",
+  "lastUpdated":"2018-04-04T10:48:53.417Z",
+  "icanFrom":5532,
+  "icanTo":2150,
+  "amount":1000,
+  "ref":"Testing a transfer via batch",
+  "result": {
+    "code":50001,
+    "message":"SUCCESS"
+  },
+  "feeAmount":0,
+  "taxAmount":0,
+  "amountAfterCharges":1000,
+  "refId":523211
+}
+```
+
+The Internal Transfer Object contains the following data:
+
+Field | Description
+----- | -----------
+`batchItemUuid` | A UUID for this item.
+`status` | The status of the batch - can be `SUBMITTED`, `REMOVED`, `SUCCEEDED`, `FAILED`.
+`icanFrom` | The account ID for the fire.com account the funds are taken from. 
+`icanTo` | The account ID for the fire.com account the funds are sent to.
+`amount` | The amount of the transfer in pence or cent. 
+`ref` | The reference on the transaction.
+`result` | The outcome of the attempted transaction. 
+`feeAmount` | The fee charged by fire.com for the payment. In pence or cent. 
+`taxAmount` | Any taxes/duty collected by fire.com for this payments (e.g. stamp duty etc). In pence or cent.
+`amountAfterCharges` | The amount of the transfer after fees and taxes. in pence or cent.
+`refId` | The ID of the resulting payment in your account. Can be used to retrieve the transaction using the `https://api.fire.com/business/v1/accounts/{accountId}/transactions/{refId}` endpoint. 
+`lastUpdated` | The datestamp of the last action on this item - ISO format: e.g. 2018-04-04T10:48:53.540Z
+`dateCreated` | The datestamp the item was created - ISO format: e.g. 2018-04-04T00:53:21.910Z
+
+### Bank Transfer Object
+```shell
+# Pending
+{
+  "batchItemUuid": "8A868124-61AE-4680-ACF0-19DA117AEC14",
+  "status": "SUBMITTED",
+  "dateCreated": "2018-04-04T14:03:48.260Z",
+  "lastUpdated": "2018-04-04T14:03:48.260Z",
+  "icanFrom": 2150,
+  "amount": 500,
+  "myRef": "Payment to John Smith for Consultancy in Dec.",
+  "yourRef": "ACME LTD - INV 2342",
+  "payeeType": "ACCOUNT_DETAILS",
+  "destIban": "IE00AIBK93123412345123",
+  "destAccountHolderName": "John Smith"
+}
+
+# After Processing
+{
+  "batchItemUuid":"8A868124-61AE-4680-ACF0-19DA117AEC14",
+  "status":"SUCCEEDED",
+  "dateCreated":"2018-04-04T14:03:48.260Z",
+  "lastUpdated":"2018-04-04T14:13:33.587Z",
+  "icanFrom":2150,
+  "amount":500,
+  "myRef":"Payment to John Smith for Consultancy in Dec.",
+  "yourRef":"ACME LTD - INV 2342",
+  "payeeType":"ACCOUNT_DETAILS",
+  "destIban":"IE00AIBK93123412345123",
+  "destAccountHolderName":"John Smith",
+  "result":{
+    "code":50001,
+    "message":"SUCCESS"
+  },
+  "feeAmount":49,
+  "taxAmount":0,
+  "amountAfterCharges":549,
+  "refId":523576,
+  "payeeId":1304
+}
+```
+
+The Bank Transfer Object contains the following data:
+
+Field | Description
+----- | -----------
+`batchItemUuid` | A UUID for this item.
+`status` | The status of the batch - can be `SUBMITTED`, `REMOVED`, `SUCCEEDED`, `FAILED`.
+`icanFrom` | The account ID for the fire.com account the funds are taken from. 
+`amount` | The amount of the transfer in pence or cent. 
+`myRef` | The reference on the transaction for your records - not shown to the beneficiary.
+`yourRef` | The reference on the transaction - displayed on the beneficiary bank statement.
+`payeeType` | The type of payee that was specified - either `PAYEE_ID` or `ACCOUNT_DETAILS`
+`payeeId` | The ID of the existing or automatically created payee
+`destAccountHolderName` | The name of the payee.
+`destIban` | The destination IBAN if a Euro Bank transfer.
+`destNsc` | The destination Sort Code if a GBP Bank transfer.
+`destAccountNumber` |The destination Account Number if a GBP Bank transfer.
+`result` | The outcome of the attempted transaction. 
+`feeAmount` | The fee charged by fire.com for the payment. In pence or cent. 
+`taxAmount` | Any taxes/duty collected by fire.com for this payments (e.g. stamp duty etc). In pence or cent.
+`amountAfterCharges` | The amount of the transfer after fees and taxes. in pence or cent.
+`refId` | The ID of the resulting payment in your account. Can be used to retrieve the transaction using the `https://api.fire.com/business/v1/accounts/{accountId}/transactions/{refId}` endpoint. 
+`lastUpdated` | The datestamp of the last action on this item - ISO format: e.g. 2018-04-04T10:48:53.540Z
+`dateCreated` | The datestamp the item was created - ISO format: e.g. 2018-04-04T00:53:21.910Z
 
 
 ## Batch Life Cycle Events
@@ -746,14 +866,53 @@ The UUID of the newly created batch. This is used to reference the batch in furt
   "ref": "Moving funds to Operating Account"
 }
 
-# Post that to the API
+# cat add-mode-1-bank-transfer-to-batch-request.json
+{
+  "icanFrom": "2001",
+  "payeeId": "15002", 
+  "payeeType": "PAYEE_ID", 
+  "amount": "500",
+  "myRef": "Payment to John Smith for Consultancy in Dec.",
+  "yourRef": "ACME LTD - INV 23434"
+}
+
+# cat add-mode-2-euro-bank-transfer-to-batch-request.json
+{
+  "icanFrom": "2001",
+  "payeeType": "ACCOUNT_DETAILS", 
+  "destIban": "IE00AIBK93123412341234", 
+  "destAccountHolderName" :"John Smith",
+  "amount": "500"
+  "myRef": "Payment to John Smith for Consultancy in Dec.",
+  "yourRef": "ACME LTD - INV 23434"
+}
+
+# cat add-mode-2-gbp-bank-transfer-to-batch-request.json
+{
+  "icanFrom": "2001",
+  "payeeType": "ACCOUNT_DETAILS", 
+  "destNsc": "123456", 
+  "destAccountNumber": "12345678",
+  "destAccountHolderName" :"John Smith",
+  "amount": "500"
+  "myRef": "Payment to John Smith for Consultancy in Dec.",
+  "yourRef": "ACME LTD - INV 23434"
+}
+
+# Post that to the API (Internal transfers)
 curl https://api.fire.com/business/v1/batches/{batchUuid}/internaltransfers \
   -X POST \
   -d @add-internal-transfer-to-batch-request.json \
   -H "Content-type: application/json" \
   -H "Authorization: Bearer $ACCESS_TOKEN"
 
-
+# Post that to the API (Bank transfers)
+curl https://api.fire.com/business/v1/batches/{batchUuid}/banktransfers \
+  -X POST \
+  -d @add-mode-2-eur-bank-transfer-to-batch-request.json \
+  -H "Content-type: application/json" \
+  -H "Authorization: Bearer $ACCESS_TOKEN"
+  
 {
   "batchItemUuid":"fba4a76a-ce51-4fc1-b562-98ec01299e4d"
 }
@@ -889,6 +1048,57 @@ No body is returned - a HTTP 204 No Content response signifies the call was succ
 
 
 
+## List Batches
+
+```shell
+curl https://api.fire.com/business/v1/batches \
+  -X GET -G \
+  -d "batchStatuses=COMPLETE" \   
+  -d "batchTypes=INTERNAL_TRANSFER" \   
+  -d "orderBy=DATE" \
+  -d "order=DESC" \
+  -d "offset=0" \
+  -d "limit=10" \
+  -H "Authorization: Bearer $ACCESS_TOKEN"
+  
+{
+  "total": 1,
+  "batchRequests": [
+    {
+	   "batchUuid": "F2AF3F2B-4406-4199-B249-B354F2CC6019",
+	   "type": "INTERNAL_TRANSFER",
+	   "status":"COMPLETE",
+	   "sourceName": "Payment API",
+	   "batchName": "January 2018 Payroll",
+	   "jobNumber": "2018-01-PR",
+	   "callbackUrl": "https://my.webserver.com/cb/payroll"
+	   "currency":"EUR", 
+	   "numberOfItemsSubmitted":1, 
+	   "valueOfItemsSubmitted":1000, 
+	   "numberOfItemsFailed":0,
+	   "valueOfItemsFailed":0,
+	   "numberOfItemsSucceeded":1,
+	   "valueOfItemsSucceeded":1000,
+	   "lastUpdated":"2018-04-04T10:48:53.540Z",
+	   "dateCreated":"2018-04-04T00:53:21.910Z"
+	 }
+  ]
+}
+```
+
+Returns the list of batch with the specified types and statuses.   
+
+### HTTP Request
+
+`GET https://api.fire.com/business/v1/batches`
+
+
+### Returns
+
+A Fire List of Batch objects. 
+
+
+
 ## Get details of a single Batches
 
 ```shell
@@ -928,44 +1138,6 @@ Returns the details of the batch specified in the API endpoint - `{batchUuid}`.
 A Batch object containing the details of the batch. 
 
 
-
-## Get details of a single Batches
-
-```shell
-curl https://api.fire.com/business/v1/batches/{batchUuid} \
-  -X GET \
-  -H "Authorization: Bearer $ACCESS_TOKEN"
-  
-{
-  "batchUuid": "F2AF3F2B-4406-4199-B249-B354F2CC6019",
-  "type": "BANK_TRANSFER",
-  "status":"COMPLETE",
-  "sourceName": "Payment API",
-  "batchName": "January 2018 Payroll",
-  "jobNumber": "2018-01-PR",
-  "callbackUrl": "https://my.webserver.com/cb/payroll"
-  "currency":"EUR", 
-  "numberOfItemsSubmitted":1, 
-  "valueOfItemsSubmitted":1000, 
-  "numberOfItemsFailed":0,
-  "valueOfItemsFailed":0,
-  "numberOfItemsSucceeded":1,
-  "valueOfItemsSucceeded":1000,
-  "lastUpdated":"2018-04-04T10:48:53.540Z",
-  "dateCreated":"2018-04-04T00:53:21.910Z"
-}
-```
-
-Returns the details of the batch specified in the API endpoint - `{batchUuid}`.   
-
-### HTTP Request
-
-`GET https://api.fire.com/business/v1/batches/{batchUuid}`
-
-
-### Returns
-
-A Batch object containing the details of the batch. 
 
 
 ## List Items in a Batch
@@ -1016,6 +1188,8 @@ A Fire List object of Batch Items (Internal transfers or Bank transfers).
 
 
 
+{"approvals":[{"userId":3138,"emailAddress":"owen.obyrne@gmail.com","firstName":"Owen","lastName":"O Byrne","mobileNumber":"+353876394593","status":"PENDING","lastUpdated":"2018-04-04T14:07:22.193Z"}
+]}
 
 
 # Payment Requests
