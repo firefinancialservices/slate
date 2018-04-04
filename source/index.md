@@ -187,6 +187,47 @@ Scope | Description
 `PERM_BUSINESS_DELETE_BATCH` | Cancel a Batch
 `PERM_BUSINESS_PUT_BATCH` | Submit a batch
 
+# Pagination and Response Objects
+
+```shell
+# JSON representation of a list object
+{
+  "total": 2,
+  "{itemTypes}": [
+    { },  
+    { } 
+  ]
+}
+```
+
+Lists are returned in a specific format (a *Fire List*). An object containing some metadata about the list and the list itself is provided. 
+
+Fire List Meta Data | Desc
+------------------- | ----
+`total` | The total number of items in the list. 
+`{itemTypes}` | Varies depending on the type of items in the list, but contains an array of `{itemType}`s.
+
+## Pagination
+```shell
+curl https://api.fire.com/business/v1/{itemTypes} \
+  -X GET -G \
+  -d "offset=0" \
+  -d "limit=10" \
+  -d "orderBy=DATE" \
+  -d "order=DESC" \
+  -H "Authorization: Bearer $ACCESS_TOKEN"
+```
+
+Pagination applies to GET request endpoints. 
+
+Parameter | Description
+--------- | -----------
+`orderBy` | Currently defaults to `DATE`. No other options at this time. 
+`order` | Either `ASC` or `DESC`
+`limit` | The number of records to return. Defaults to `10` - max is `200`.
+`offset` | The page offset. Defaults to `0`. Multiply this by the `limit` to determine which records will be returned. E.g. `offset` = `3` and `limit` = `20` will return records 60 to 79.
+
+
 
 # Fire Accounts 
 
@@ -356,7 +397,9 @@ Field | Description
 
 ```shell
 curl https://api.fire.com/business/v1/fundingsources \
-  -X GET \
+  -X GET -G \
+  -d "offset=0" \
+  -d "limit=10" \
   -H "Authorization: Bearer $ACCESS_TOKEN"
 
 
@@ -507,7 +550,7 @@ Field | Description
 ## List transactions for an account
 ```shell
 curl https://api.fire.com/business/v1/accounts/1979/transactions \
-  -X GET \
+  -X GET -G \
   -d "limit=25" \
   -d "offset=0" \
   -H "Authorization: Bearer $ACCESS_TOKEN"
@@ -729,7 +772,7 @@ curl https://api.fire.com/business/v1/batches/{batchUuid}/internaltransfers/{ite
 # Returns a HTTP 200 OK.
 ```
 
-Removes a Payment from the Batch. You can only remove payments before the batch is submitted for approval (while it is in the `BATCH_OPEN` state.)
+Removes a Payment from the Batch. You can only remove payments before the batch is submitted for approval (while it is in the `OPEN` state.)
 
 ### HTTP Request
 
@@ -740,6 +783,115 @@ Removes a Payment from the Batch. You can only remove payments before the batch 
 ### Returns
 
 No body is returned - a HTTP 200 OK signifies the call was successful. 
+
+
+
+
+
+## Cancel a Batch
+
+```shell
+# Send a DELETE request to the API
+curl https://api.fire.com/business/v1/batches/{batchUuid} \
+  -X DELETE \
+  -H "Authorization: Bearer $ACCESS_TOKEN"
+
+# Returns a HTTP 200 OK.
+```
+
+Cancels the Batch. You can only cancel a batch before it is submitted for approval (while it is in the `OPEN` state.)
+
+### HTTP Request
+
+`DELETE https://api.fire.com/business/v1/batches/{batchUuid}`
+
+
+### Returns
+
+No body is returned - a HTTP 200 OK signifies the call was successful. 
+
+
+
+## Submit a Batch for Approval
+
+```shell
+# Send a PUT request to the API
+curl https://api.fire.com/business/v1/batches/{batchUuid} \
+  -X PUT \
+  -H "Authorization: Bearer $ACCESS_TOKEN"
+
+# Returns a HTTP 204 No Content.
+```
+
+Submits the Batch (for approval in the case of a `BANK_TRANSFER`). If this is an `INTERNAL_TRANSFER` batch, the transfers are immediately queued for processing. If this is a `BANK_TRANSFER` batch, this will trigger requests for approval to the firework mobile apps of authorised users. Once those users approve the batch, it is queued for processing.
+
+You can only submit a batch while it is in the `OPEN` state.
+
+### HTTP Request
+
+`PUT https://api.fire.com/business/v1/batches/{batchUuid}`
+
+
+### Returns
+
+No body is returned - a HTTP 204 No Content response signifies the call was successful. 
+
+
+
+
+## List Batches
+
+```shell
+curl https://api.fire.com/business/v1/batches \
+  -X GET -G \
+  -d "batchStatuses=COMPLETE" \
+  -d "batchTypes=INTERNAL_TRANSFER" \
+  -d "orderBy=DATE" \
+  -d "order=DESC" \
+  -d "offset=0" \
+  -d "limit=10" \
+  -H "Authorization: Bearer $ACCESS_TOKEN"
+  
+{
+  "total": 1,
+  "batchRequests": [
+    {
+      "batchUuid": "F2AF3F2B-4406-4199-B249-B354F2CC6019",
+      "type": "BANK_TRANSFER",
+      "status":"COMPLETE",
+      "sourceName": "Payment API",
+      "batchName": "January 2018 Payroll",
+      "jobNumber": "2018-01-PR",
+      "callbackUrl": "https://my.webserver.com/cb/payroll"
+      "currency":"EUR", 
+      "numberOfItemsSubmitted":1, 
+      "valueOfItemsSubmitted":1000, 
+      "numberOfItemsFailed":0,
+      "valueOfItemsFailed":0,
+      "numberOfItemsSucceeded":1,
+      "valueOfItemsSucceeded":1000,
+      "lastUpdated":"2018-04-04T10:48:53.540Z",
+      "dateCreated":"2018-04-04T00:53:21.910Z"
+    }
+  ]
+}
+```
+
+Returns a paginated list of batches of specified types in specified states.  
+
+### HTTP Request
+
+`GET https://api.fire.com/business/v1/batches/{batchUuid}`
+
+Parameter | Description
+--------- | -----------
+`batchStatuses` | Specify the batch statuses you wish to retreive. Can be `PENDING_APPROVAL`, `REJECTED`, `COMPLETE`, `OPEN`, `CANCELLED`, `PENDING_PARENT_BATCH_APPROVAL`, `READY_FOR_PROCESSING`, `PROCESSING`.
+`batchTypes` | Specify the types of batches you wish to retrieve. Can be `INTERNAL_TRANSFER`, `BANK_TRANSFER`, `NEW_PAYEE`.
+ 
+
+### Returns
+
+A Fire List object of Batches. 
 
 
 
