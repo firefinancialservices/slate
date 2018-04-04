@@ -560,6 +560,7 @@ For security reasons, the API can only set up the payments in batches. These bat
 by an authorised user via the firework mobile app. 
 
 The process is as follows:
+
 1. Create a new batch
 2. Add payments to the batch
 3. Submit the batch for approval. 
