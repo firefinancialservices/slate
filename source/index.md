@@ -510,7 +510,7 @@ curl https://api.fire.com/business/v1/accounts/1979/transactions \
   -X GET \
   -d "limit=25" \
   -d "offset=0" \
-  -H "Authorization:  Bearer $ACCESS_TOKEN"
+  -H "Authorization: Bearer $ACCESS_TOKEN"
 
 {
 	"total": 1,
@@ -587,17 +587,20 @@ Event | Description
 Push notifications are sent to the firework mobile app for many of these events too - these can be
 configured from within the app. 
 
+
+
+
 ## Create a new Batch
 
 ```shell
 # Create the JSON object for the new Batch
 # cat create-batch-request.json
 {
-"type": "BANK_TRANSFER",
-"currency": "EUR", 
-"batchName": "January 2018 Payroll",
-"jobNumber": "2018-01-PR",
-"callbackUrl": "https://my.webserver.com/cb/payroll"
+  "type": "BANK_TRANSFER",
+  "currency": "EUR", 
+  "batchName": "January 2018 Payroll",
+  "jobNumber": "2018-01-PR",
+  "callbackUrl": "https://my.webserver.com/cb/payroll"
 }
 
 # Post that to the API
@@ -605,7 +608,7 @@ curl https://api.fire.com/business/v1/batches \
   -X POST \
   -d @create-batch-request.json \
   -H "Content-type: application/json"
-  -H "Authorization:  Bearer $ACCESS_TOKEN"
+  -H "Authorization: Bearer $ACCESS_TOKEN"
 
 
 {
@@ -633,6 +636,83 @@ Parameter | Description
 The UUID of the newly created batch.
 
 
+
+
+
+
+## Add a Payment to the Batch
+
+```shell
+# Create the JSON object for the new Batch
+# cat add-internal-transfer-to-batch-request.json
+{
+  "icanFrom": "2001",
+  "icanTo": "2041", 
+  "amount": "10000",
+  "ref": "Moving funds to Operating Account"
+}
+
+# Post that to the API
+curl https://api.fire.com/business/v1/batches/{batchUuid}/internaltransfers \
+  -X POST \
+  -d @add-internal-transfer-to-batch-request.json \
+  -H "Content-type: application/json"
+  -H "Authorization: Bearer $ACCESS_TOKEN"
+
+
+{
+  "batchItemUuid":"fba4a76a-ce51-4fc1-b562-98ec01299e4d"
+}
+```
+
+Add a Payment to the Batch.
+
+This process is slightly different depending on whether it is an `INTERNAL_TRANSFER` or `BANK_TRANSFER` batch type.
+
+### Internal Transfers
+Simply specify the source account, destination account, amount and a reference.
+
+### Bank Transfers
+There are two ways to process bank transfers - by Payee ID (*Mode 1*) or by Payee Account Details (*Mode 2*).
+
+Mode | Description
+---- | -----------
+Mode 1 | Use the payee IDs of existing approved payees set up against your account. These batches can be approved in the normal manner.
+Mode 2 | Use the account details of the payee. In the event that these details correspond to an existing approved payee, the batch can be approved as normal. If the account details are new, another batch of New Payees will automatically be created. This batch will need to be approved before the Payment batch can be approved. These payees will the exist as approved payees for future batches.
+
+
+### HTTP Request
+
+`POST  https://api.fire.com/business/v1/batches/{batchUuid}/internaltransfers`
+`POST  https://api.fire.com/business/v1/batches/{batchUuid}/banktransfers`
+
+The POST data for an Internal Transfer (between your own fire.com accounts) is:
+
+Parameter | Description
+--------- | -----------
+`icanFrom` | The Account ID of the source account. 
+`icanTo` | The Account ID of the destination account.
+`amount` | The amount of the transfer in pence or cent. 
+`ref` | The reference to put on the transfer.
+ 
+The POST data for a Bank Transfer (to an external payee account) is:
+
+Parameter | Description
+--------- | -----------
+`icanFrom` | The Account ID of the source account. 
+`payeeType` | Either `PAYEE_ID` or `ACCOUNT_DETAILS`. Use `PAYEE_ID` if you are paying existing approved payees (*Mode 1*). Specify the payee ID in the `payeeId` field. Use `ACCOUNT_DETAILS` if you are providing account numbers/sort codes/IBANs (*Mode 2*). Specify the account details in the `destIban`, `destAccountHolderName`, `destNsc` or `destAccountNumber` fields as appropriate. If the payee is already approved on your account, then this batch can be approved as normal. If the payee is not already approved on your fire.com account, then a new payee batch will be created automatically, and that batch must be approved before the payment batch can be approved. 
+`payeeId` | _(Conditional)_ Provide this field if using *Mode 1* and `payeeType` = `PAYEE_ID`. Use the ID of the payee.
+`destAccountHolderName` | _(Conditional)_ Provide this field if using *Mode 2*.
+`destIban` | _(Conditional)_ Provide this field if using *Mode 2* and the payee account is in EURO.
+`destNsc` | _(Conditional)_ Provide this field if using *Mode 2* and the payee account is in GBP.
+`destAccountNumber` | _(Conditional)_ Provide this field if using *Mode 2* and the payee account is in GBP.
+`amount` | The amount of the transfer in pence or cent. 
+`myRef` | The reference to put on the transfer - only you see this reference.
+`yourRef` | The reference to put on the transfer for the payee to see on their bank statement.
+
+### Returns
+
+The UUID of the newly created batch item.
 
 
 
