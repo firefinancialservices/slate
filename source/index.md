@@ -432,7 +432,7 @@ curl https://api.fire.com/business/v1/fundingsources \
 ```
 
 
-Returns all your payee bank accounts. Ordered by Alias ascending. Can be paginated. 
+Returns all your payee bank accounts. Ordered by date added descending. Can be paginated. 
 
 ### HTTP Request
 
@@ -935,6 +935,7 @@ Mode 2 | Use the account details of the payee. In the event that these details c
 ### HTTP Request
 
 `POST  https://api.fire.com/business/v1/batches/{batchUuid}/internaltransfers`
+
 `POST  https://api.fire.com/business/v1/batches/{batchUuid}/banktransfers`
 
 The POST data for an Internal Transfer (between your own fire.com accounts) is:
@@ -983,6 +984,7 @@ Removes a Payment from the Batch. You can only remove payments before the batch 
 ### HTTP Request
 
 `DELETE https://api.fire.com/business/v1/batches/{batchUuid}/internaltransfers/{itemUuid}`
+
 `DELETE https://api.fire.com/business/v1/batches/{batchUuid}/banktransfers/{itemUuid}`
 
 
@@ -1177,6 +1179,7 @@ Returns a paginated list of items in the specified batch.
 ### HTTP Request
 
 `GET https://api.fire.com/business/v1/batches/{batchUuid}/internaltransfers`
+
 `GET https://api.fire.com/business/v1/batches/{batchUuid}/banktransfers`
 
 
