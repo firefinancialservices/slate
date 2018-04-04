@@ -701,7 +701,7 @@ The POST data for a Bank Transfer (to an external payee account) is:
 Parameter | Description
 --------- | -----------
 `icanFrom` | The Account ID of the source account. 
-`payeeType` | Either `PAYEE_ID` or `ACCOUNT_DETAILS`. Use `PAYEE_ID` if you are paying existing approved payees (*Mode 1*). Specify the payee ID in the `payeeId` field. Use `ACCOUNT_DETAILS` if you are providing account numbers/sort codes/IBANs (*Mode 2*). Specify the account details in the `destIban`, `destAccountHolderName`, `destNsc` or `destAccountNumber` fields as appropriate. If the payee is already approved on your account, then this batch can be approved as normal. If the payee is not already approved on your fire.com account, then a new payee batch will be created automatically, and that batch must be approved before the payment batch can be approved. 
+`payeeType` | Either `PAYEE_ID` or `ACCOUNT_DETAILS`. Use `PAYEE_ID` if you are paying existing approved payees *(Mode 1)*. Specify the payee ID in the `payeeId` field. Use `ACCOUNT_DETAILS` if you are providing account numbers/sort codes/IBANs *(Mode 2)*. Specify the account details in the `destIban`, `destAccountHolderName`, `destNsc` or `destAccountNumber` fields as appropriate.  
 `payeeId` | _(Conditional)_ Provide this field if using *Mode 1* and `payeeType` = `PAYEE_ID`. Use the ID of the payee.
 `destAccountHolderName` | _(Conditional)_ Provide this field if using *Mode 2*.
 `destIban` | _(Conditional)_ Provide this field if using *Mode 2* and the payee account is in EURO.
