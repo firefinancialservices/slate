@@ -621,14 +621,11 @@ Create a new batch of payments.
 
 Parameter | Description
 --------- | -----------
-`type` | This is the type of payments that will be included in the batch - either `INTERNAL_TRANSFER`
-or `BANK_TRANSFER`. Only one type of transfer can be included in each batch. 
-`currency` | The currency of payments in the batch. Either `EUR` or `GBP`. Only one currency payments can be
-included in a batch.
+`type` | This is the type of payments that will be included in the batch - either `INTERNAL_TRANSFER` or `BANK_TRANSFER`. Only one type of transfer can be included in each batch. 
+`currency` | The currency of payments in the batch. Either `EUR` or `GBP`. Only one currency payments can be included in a batch.
 `batchName` | An optional name for this batch. Useful in reporting. 
 `jobNumber` | An optional job number for the batch. Useful in reporting.
-`batchUuid` | Optionally set the UUID for this batch. Leave blank to let fire.com create it for you. Must be
-a UUID.
+`batchUuid` | Optionally set the UUID for this batch. Leave blank to let fire.com create it for you. Must be a UUID.
 `callbackUrl` | An optional callback URL for batch events. 
  
 ### Returns
