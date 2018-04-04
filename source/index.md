@@ -225,7 +225,7 @@ Parameter | Description
 `orderBy` | Currently defaults to `DATE`. No other options at this time. 
 `order` | Either `ASC` or `DESC`
 `limit` | The number of records to return. Defaults to `10` - max is `200`.
-`offset` | The page offset. Defaults to `0`. Multiply this by the `limit` to determine which records will be returned. E.g. `offset` = `3` and `limit` = `20` will return records 60 to 79.
+`offset` | The page offset. Defaults to `0`. This is the record number that the returned list will start at. E.g. `offset` = `40` and `limit` = `20` will return records 40 to 59.
 
 
 
@@ -918,8 +918,6 @@ curl https://api.fire.com/business/v1/batches/{batchUuid}/banktransfers \
 }
 ```
 
-Add a Payment to the Batch.
-
 This process is slightly different depending on whether it is an `INTERNAL_TRANSFER` or `BANK_TRANSFER` batch type.
 
 ### Internal Transfers
@@ -931,7 +929,7 @@ There are two ways to process bank transfers - by Payee ID *(Mode 1)* or by Paye
 Mode | Description
 ---- | -----------
 Mode 1 | Use the payee IDs of existing approved payees set up against your account. These batches can be approved in the normal manner.
-Mode 2 | Use the account details of the payee. In the event that these details correspond to an existing approved payee, the batch can be approved as normal. If the account details are new, another batch of New Payees will automatically be created. This batch will need to be approved before the Payment batch can be approved. These payees will the exist as approved payees for future batches.
+Mode 2 | Use the account details of the payee. In the event that these details correspond to an existing approved payee, the batch can be approved as normal. If the account details are new, a batch of New Payees will automatically be created. This batch will need to be approved before the Payment batch can be approved. These payees will then exist as approved payees for future batches.
 
 
 ### HTTP Request
@@ -1174,7 +1172,7 @@ curl https://api.fire.com/business/v1/batches/{batchUuid}/internaltransfers \
 }
 ```
 
-Returns a paginated list of batches of specified types in specified states.  
+Returns a paginated list of items in the specified batch.  
 
 ### HTTP Request
 
