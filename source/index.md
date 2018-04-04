@@ -1187,9 +1187,45 @@ Returns a paginated list of batches of specified types in specified states.
 A Fire List object of Batch Items (Internal transfers or Bank transfers). 
 
 
+## List Approvers for a Batch
 
-{"approvals":[{"userId":3138,"emailAddress":"owen.obyrne@gmail.com","firstName":"Owen","lastName":"O Byrne","mobileNumber":"+353876394593","status":"PENDING","lastUpdated":"2018-04-04T14:07:22.193Z"}
-]}
+```shell
+curl https://api.fire.com/business/v1/batches/{batchUuid}/approvals \
+  -X GET -G \
+  -H "Authorization: Bearer $ACCESS_TOKEN"
+  
+{
+  "approvals": [
+    {
+      "userId":3138,
+      "emailAddress":"jane.doe@acme.com",
+      "firstName":"Jane",
+      "lastName":"Doe",
+      "mobileNumber":"+353871234567",
+      "status":"PENDING",
+      "lastUpdated":"2018-04-04T14:07:22.193Z"
+    }
+  ]
+}
+```
+
+Returns a list of approvers for this batch.  
+
+### HTTP Request
+
+`GET https://api.fire.com/business/v1/batches/{batchUuid}/approvals`
+
+
+### Returns
+
+A list of approvers for this batch.  
+
+
+
+
+
+
+
 
 
 # Payment Requests
