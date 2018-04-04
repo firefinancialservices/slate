@@ -96,7 +96,7 @@ Access to the API is by Bearer Tokens. The process is somewhat similar to OAuth2
 You now use these pieces of data to retrieve a short-term Access Token which you can use to access the API. The Access Token expires within a relatively short time, so even if it is compromised, the attacker will not have long to use it. The `Client Key` is the most important piece of information to keep secret. This should only ever be stored on a backend server, and never in a front end client or mobile app. 
 
 <aside class="warning">
-If you ever accidentally reveal the Client Key (or accidentally commit it to Github for instance) it is vital that you log into BUPA and delete/recreate the App Tokens as soon as possible. Anyone who has these three pieces of data can access the API and your data, and in future potentially make payments from your account (depending on the scope of the tokens).  
+If you ever accidentally reveal the Client Key (or accidentally commit it to Github for instance) it is vital that you log into BUPA and delete/recreate the App Tokens as soon as possible. Anyone who has these three pieces of data can access the API to view your data and set up payments from your account (depending on the scope of the tokens).  
 </aside>
 
 Once you have the access token, pass it as a header for every call, like so:  
@@ -608,7 +608,7 @@ configured from within the app.
 curl https://api.fire.com/business/v1/batches \
   -X POST \
   -d @create-batch-request.json \
-  -H "Content-type: application/json"
+  -H "Content-type: application/json" \
   -H "Authorization: Bearer $ACCESS_TOKEN"
 
 
@@ -634,7 +634,8 @@ Parameter | Description
  
 ### Returns
 
-The UUID of the newly created batch.
+The UUID of the newly created batch. This is used to reference the batch in further API calls. 
+
 
 
 
@@ -657,7 +658,7 @@ The UUID of the newly created batch.
 curl https://api.fire.com/business/v1/batches/{batchUuid}/internaltransfers \
   -X POST \
   -d @add-internal-transfer-to-batch-request.json \
-  -H "Content-type: application/json"
+  -H "Content-type: application/json" \
   -H "Authorization: Bearer $ACCESS_TOKEN"
 
 
@@ -674,7 +675,7 @@ This process is slightly different depending on whether it is an `INTERNAL_TRANS
 Simply specify the source account, destination account, amount and a reference.
 
 ### Bank Transfers
-There are two ways to process bank transfers - by Payee ID (*Mode 1*) or by Payee Account Details (*Mode 2*).
+There are two ways to process bank transfers - by Payee ID *(Mode 1)* or by Payee Account Details *(Mode 2)*.
 
 Mode | Description
 ---- | -----------
@@ -713,7 +714,35 @@ Parameter | Description
 
 ### Returns
 
-The UUID of the newly created batch item.
+The UUID of the newly created batch item. This can be used to remove the item from the batch as shown below.
+
+
+
+## Remove a Payment from the Batch
+
+```shell
+# Send a DELETE request to the API
+curl https://api.fire.com/business/v1/batches/{batchUuid}/internaltransfers/{itemUuid} \
+  -X DELETE \
+  -H "Authorization: Bearer $ACCESS_TOKEN"
+
+# Returns a HTTP 200 OK.
+```
+
+Removes a Payment from the Batch. You can only remove payments before the batch is submitted for approval (while it is in the `BATCH_OPEN` state.)
+
+### HTTP Request
+
+`DELETE https://api.fire.com/business/v1/batches/{batchUuid}/internaltransfers/{itemUuid}`
+`DELETE https://api.fire.com/business/v1/batches/{batchUuid}/banktransfers/{itemUuid}`
+
+
+### Returns
+
+No body is returned - a HTTP 200 OK signifies the call was successful. 
+
+
+
 
 
 
