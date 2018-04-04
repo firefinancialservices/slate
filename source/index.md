@@ -630,6 +630,11 @@ The process is as follows:
 2. Add payments to the batch
 3. Submit the batch for approval. 
 
+
+Once the batch is submitted, the authorised users will receive notifications to their firework mobile apps. 
+They can review the contents of the batch and then approve or reject it. If approved, the batch is then
+processed.
+
 A Batch Object consists of the following data:
 
 Field | Description
@@ -652,12 +657,12 @@ Field | Description
 `dateCreated` | The datestamp the batch was created - ISO format: e.g. 2018-04-04T00:53:21.910Z
 
 
-Once the batch is submitted, the authorised users will receive notifications to their firework mobile apps. 
-They can review the contents of the batch and then approve or reject it. If approved, the batch is then
-processed. A batch webhook can be specified to receive details of all the payments as they are processed. 
-This webhook receives notifications for every event in the batch lifecycle. 
+
 
 ## Batch Life Cycle Events
+A batch webhook can be specified to receive details of all the payments as they are processed. 
+This webhook receives notifications for every event in the batch lifecycle. 
+
 The following events are triggered during a batch:
 
 Event | Description
@@ -873,7 +878,7 @@ You can only submit a batch while it is in the `OPEN` state.
 
 ### HTTP Request
 
-`PUT https://api.fire.com/business/v1/batches/{batchUuid}`
+`PUT https://api.fire.com/business/v1/batches`
 
 
 ### Returns
@@ -881,39 +886,117 @@ You can only submit a batch while it is in the `OPEN` state.
 No body is returned - a HTTP 204 No Content response signifies the call was successful. 
 
 
-## List Batches
 
-```shelll
-curl https://api.fire.com/business/v1/batches \
+
+
+## Get details of a single Batches
+
+```shell
+curl https://api.fire.com/business/v1/batches/{batchUuid} \
+  -X GET \
+  -H "Authorization: Bearer $ACCESS_TOKEN"
+  
+{
+  "batchUuid": "F2AF3F2B-4406-4199-B249-B354F2CC6019",
+  "type": "BANK_TRANSFER",
+  "status":"COMPLETE",
+  "sourceName": "Payment API",
+  "batchName": "January 2018 Payroll",
+  "jobNumber": "2018-01-PR",
+  "callbackUrl": "https://my.webserver.com/cb/payroll"
+  "currency":"EUR", 
+  "numberOfItemsSubmitted":1, 
+  "valueOfItemsSubmitted":1000, 
+  "numberOfItemsFailed":0,
+  "valueOfItemsFailed":0,
+  "numberOfItemsSucceeded":1,
+  "valueOfItemsSucceeded":1000,
+  "lastUpdated":"2018-04-04T10:48:53.540Z",
+  "dateCreated":"2018-04-04T00:53:21.910Z"
+}
+```
+
+Returns the details of the batch specified in the API endpoint - `{batchUuid}`.   
+
+### HTTP Request
+
+`GET https://api.fire.com/business/v1/batches/{batchUuid}`
+
+
+### Returns
+
+A Batch object containing the details of the batch. 
+
+
+
+## Get details of a single Batches
+
+```shell
+curl https://api.fire.com/business/v1/batches/{batchUuid} \
+  -X GET \
+  -H "Authorization: Bearer $ACCESS_TOKEN"
+  
+{
+  "batchUuid": "F2AF3F2B-4406-4199-B249-B354F2CC6019",
+  "type": "BANK_TRANSFER",
+  "status":"COMPLETE",
+  "sourceName": "Payment API",
+  "batchName": "January 2018 Payroll",
+  "jobNumber": "2018-01-PR",
+  "callbackUrl": "https://my.webserver.com/cb/payroll"
+  "currency":"EUR", 
+  "numberOfItemsSubmitted":1, 
+  "valueOfItemsSubmitted":1000, 
+  "numberOfItemsFailed":0,
+  "valueOfItemsFailed":0,
+  "numberOfItemsSucceeded":1,
+  "valueOfItemsSucceeded":1000,
+  "lastUpdated":"2018-04-04T10:48:53.540Z",
+  "dateCreated":"2018-04-04T00:53:21.910Z"
+}
+```
+
+Returns the details of the batch specified in the API endpoint - `{batchUuid}`.   
+
+### HTTP Request
+
+`GET https://api.fire.com/business/v1/batches/{batchUuid}`
+
+
+### Returns
+
+A Batch object containing the details of the batch. 
+
+
+## List Items in a Batch
+
+```shell
+curl https://api.fire.com/business/v1/batches/{batchUuid}/internaltransfers \
   -X GET -G \
-  -d "batchStatuses=COMPLETE" \
-  -d "batchTypes=INTERNAL_TRANSFER" \
-  -d "orderBy=DATE" \
-  -d "order=DESC" \
   -d "offset=0" \
   -d "limit=10" \
   -H "Authorization: Bearer $ACCESS_TOKEN"
   
 {
-  "total": 1,
-  "batchRequests": [
+  "total":1, 
+  "items": [
     {
-      "batchUuid": "F2AF3F2B-4406-4199-B249-B354F2CC6019",
-      "type": "BANK_TRANSFER",
-      "status":"COMPLETE",
-      "sourceName": "Payment API",
-      "batchName": "January 2018 Payroll",
-      "jobNumber": "2018-01-PR",
-      "callbackUrl": "https://my.webserver.com/cb/payroll"
-      "currency":"EUR", 
-      "numberOfItemsSubmitted":1, 
-      "valueOfItemsSubmitted":1000, 
-      "numberOfItemsFailed":0,
-      "valueOfItemsFailed":0,
-      "numberOfItemsSucceeded":1,
-      "valueOfItemsSucceeded":1000,
-      "lastUpdated":"2018-04-04T10:48:53.540Z",
-      "dateCreated":"2018-04-04T00:53:21.910Z"
+      "batchItemUuid":"FBA4A76A-CE51-4FC1-B562-98EC01299E4D",
+      "status":"SUCCEEDED",
+      "result": {
+        "code":50001,
+        "message":"SUCCESS"
+      },
+      "dateCreated":"2018-04-04T01:20:38.647Z",
+      "lastUpdated":"2018-04-04T10:48:53.417Z",
+      "feeAmount":0,
+      "taxAmount":0,
+      "amountAfterCharges":1000,
+      "icanFrom":5532,
+      "icanTo":2150,
+      "amount":1000,
+      "ref":"Testing a transfer via batch",
+      "refId":523211
     }
   ]
 }
@@ -923,18 +1006,13 @@ Returns a paginated list of batches of specified types in specified states.
 
 ### HTTP Request
 
-`GET https://api.fire.com/business/v1/batches/{batchUuid}`
+`GET https://api.fire.com/business/v1/batches/{batchUuid}/internaltransfers`
+`GET https://api.fire.com/business/v1/batches/{batchUuid}/banktransfers`
 
-Parameter | Description
---------- | -----------
-`batchStatuses` | Specify the batch statuses you wish to retreive. Can be `PENDING_APPROVAL`, `REJECTED`, `COMPLETE`, `OPEN`, `CANCELLED`, `PENDING_PARENT_BATCH_APPROVAL`, `READY_FOR_PROCESSING`, `PROCESSING`.
-`batchTypes` | Specify the types of batches you wish to retrieve. Can be `INTERNAL_TRANSFER`, `BANK_TRANSFER`, `NEW_PAYEE`.
- 
 
 ### Returns
 
-A Fire List object of Batches. 
-
+A Fire List object of Batch Items (Internal transfers or Bank transfers). 
 
 
 
