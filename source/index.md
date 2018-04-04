@@ -15,14 +15,13 @@ search: false
 
 The Fire API allows you to deeply integrate Fire Business Account features into your application or back-office systems. 
 
-Currently the API provides read-only access to your profile and accounts. The full transaction API is under development and 
-will provide complete control of your Business Account. Every endpoint has its own permission, and the API will integrate 
-seamlessly with the Role-based Access controls that will be available in a future release. 
+The API provides read access to your profile, accounts and transactions, event-driven notifications of activity on the 
+account and payment initiation via batches. Each feature has it's own HTTP endpoint and every endpoint has its own permission.
 
 The API exposes 3 main areas of functionality: financial functions, service information and service configuration. 
 
 ### Financial Functions
-These functions provide access to your account details, transactions, payee accounts etc.   
+These functions provide access to your account details, transactions, payee accounts, payment initiation etc.   
 
 ### Service Information
 These provide information about the fees and limits applied to your account. 
@@ -36,7 +35,7 @@ The Business API is available at
 `https://api.fire.com/business/v1/`
 
 <aside class="notice">
-**The API and these docs are in BETA and subject to change at any moment.**
+**The API and these docs are in BETA and subject to change.**
 </aside>
 
 # Authentication
@@ -145,28 +144,48 @@ The list of scopes allowed for the Business API is as follows.
 
 Scope | Description
 ----- | -----------
-`PERM_BUSINESSES_GET_SERVICES` | Get Service Fees and Info
-`PERM_BUSINESSES_GET_ACCOUNTS` | Read the list of Fire accounts in your profile. 
-`PERM_BUSINESSES_GET_ACCOUNT` | Get the details of a single Fire account in your profile.
-`PERM_BUSINESSES_GET_ACCOUNT_TRANSACTIONS` | List transactions on an Account
-`PERM_BUSINESSES_GET_ACCOUNT_TRANSACTIONS_FILTER` | Filter transactions on an Account
-`PERM_BUSINESSES_POST_PAYMENT_REQUEST` | Create a Payment Request
-`PERM_BUSINESSES_GET_PAYMENT_REQUESTS` | List all sent Payment Requests and their details
+`PERM_BUSINESS_GET_SERVICES` | Get Service Fees and Info
+`PERM_BUSINESS_GET_ACCOUNTS` | Read the list of Fire accounts in your profile. 
+`PERM_BUSINESS_GET_ACCOUNT` | Get the details of a single Fire account in your profile.
+`PERM_BUSINESS_GET_ACCOUNT_TRANSACTIONS` | List transactions on an Account
+`PERM_BUSINESS_GET_ACCOUNT_TRANSACTIONS_FILTER` | Filter transactions on an Account
+`PERM_BUSINESS_POST_PAYMENT_REQUEST` | Create a Payment Request
+`PERM_BUSINESS_GET_PAYMENT_REQUESTS` | List all sent Payment Requests and their details
 `PERM_BUSINESS_PUT_PAYMENT_REQUEST_STATUS` | Update a Payment Request status
-`PERM_BUSINESSES_GET_PUBLIC_PAYMENT_REQUEST` | Get a public payment request
-`PERM_BUSINESSES_GET_PAYMENT_REQUEST_REPORTS` | Get a report of the total amount paid to a payment request
-`PERM_BUSINESSES_GET_PAYMENT_REQUEST_TRANSACTIONS` | Get a paged list of all payments to a payment request
-`PERM_BUSINESSES_GET_FUNDING_SOURCES` | List Payee Accounts
-`PERM_BUSINESSES_GET_FUNDING_SOURCE` | View details of a Payee Account
-`PERM_BUSINESSES_GET_FUNDING_SOURCE_TRANSACTIONS` | List transactions to and from Payee Accounts
-`PERM_BUSINESSES_GET_WEBHOOKS` | List all Webhooks
-`PERM_BUSINESSES_GET_WEBHOOK_EVENT_TEST` | Send a test Webhook
-`PERM_BUSINESSES_GET_LIMITS` | List all Limits
-`PERM_BUSINESSES_GET_FX_RATE` | Check FX Rates
-`PERM_BUSINESSES_GET_APPS` | List all Applications
-`PERM_BUSINESSES_GET_APP_PERMISSIONS` | List all permissions for an Application
-`PERM_BUSINESSES_GET_APPS_PERMISSIONS` | List all permissions available for Applications
-`PERM_BUSINESSES_GET_WEBHOOK_TOKENS` | Get Webhook Tokens
+`PERM_BUSINESS_GET_PUBLIC_PAYMENT_REQUEST` | Get a public payment request
+`PERM_BUSINESS_GET_PAYMENT_REQUEST_REPORTS` | Get a report of the total amount paid to a payment request
+`PERM_BUSINESS_GET_PAYMENT_REQUEST_TRANSACTIONS` | Get a paged list of all payments to a payment request
+`PERM_BUSINESS_GET_FUNDING_SOURCES` | List Payee Accounts
+`PERM_BUSINESS_GET_FUNDING_SOURCE` | View details of a Payee Account
+`PERM_BUSINESS_GET_FUNDING_SOURCE_TRANSACTIONS` | List transactions to and from Payee Accounts
+`PERM_BUSINESS_GET_WEBHOOKS` | List all Webhooks
+`PERM_BUSINESS_GET_WEBHOOK_EVENT_TEST` | Send a test Webhook
+`PERM_BUSINESS_GET_WEBHOOK_TOKENS` | Get Webhook Tokens
+`PERM_BUSINESS_GET_LIMITS` | List all Limits
+`PERM_BUSINESS_GET_FX_RATE` | Check FX Rates
+`PERM_BUSINESS_GET_APPS` | List all Applications
+`PERM_BUSINESS_GET_APP_PERMISSIONS` | List all permissions for an Application
+`PERM_BUSINESS_GET_APPS_PERMISSIONS` | List all permissions available for Applications
+`PERM_BUSINESS_GET_USERS` |  List all Users
+`PERM_BUSINESS_GET_USER` | Get the details of a User
+`PERM_BUSINESS_GET_USER_ADDRESS` | Get the address of a User
+`PERM_BUSINESS_GET_CARDS` | List Debit Cards
+`PERM_BUSINESS_GET_MY_CARD_TRANSACTIONS` | Get a list of Debit Card transactions
+`PERM_BUSINESS_GET_MY_CARD_TRANSACTIONS_FILTERED` | Get a filtered list of Debit Card Transactions
+`PERM_BUSINESS_GET_ACTIVITIES` | Get a list of Account Activities
+`PERM_BUSINESS_GET_BATCHES` | List all Batches
+`PERM_BUSINESS_POST_BATCHES` | Create a new Batch
+`PERM_BUSINESS_GET_BATCH` | Get the details of a Batch
+`PERM_BUSINESS_POST_BATCH_INTERNALTRANSFERS` | Add an Internal Transfer to a Batch
+`PERM_BUSINESS_POST_BATCH_BANKTRANSFERS` | Add a Bank Transfer to a Batch
+`PERM_BUSINESS_DELETE_BATCH_INTERNALTRANSFERS` | Remove an internal transfer from a batch
+`PERM_BUSINESS_DELETE_BATCH_BANKTRANSFERS` | Remove a bank transfer from a batch
+`PERM_BUSINESS_GET_BATCH_INTERNALTRANSFERS` | List items for an Internal Transfer Batch
+`PERM_BUSINESS_GET_BATCH_BANKTRANSFERS` | List items for a Bank Transfer Batch
+`PERM_BUSINESS_GET_BATCH_NEWPAYEES` | List items for a New Payee Batch
+`PERM_BUSINESS_GET_BATCH_APPROVALS` | List approvals for a Batch
+`PERM_BUSINESS_DELETE_BATCH` | Cancel a Batch
+`PERM_BUSINESS_PUT_BATCH` | Submit a batch
 
 
 # Fire Accounts 
@@ -534,7 +553,87 @@ An array of transactions for `accountId` with a count (`total`)
 
 
 
+# Payment Batches
+The Fire API allows businesses to automate payments between their accounts or to third parties across the UK and Europe.
 
+For security reasons, the API can only set up the payments in batches. These batches must be approved
+by an authorised user via the firework mobile app. 
+
+The process is as follows:
+1. Create a new batch
+2. Add payments to the batch
+3. Submit the batch for approval. 
+
+Once the batch is submitted, the authorised users will receive notifications to their firework mobile apps. 
+They can review the contents of the batch and then approve or reject it. If approved, the batch is then
+processed. A batch webhook can be specified to receive details of all the payments as they are processed. 
+This webhook receives notifications for every event in the batch lifecycle. 
+
+## Batch Life Cycle Events
+The following events are triggered during a batch:
+
+Event | Description
+----- | -----------
+`batch.opened` | Contains the details of the batch opened. Checks that the callback URL exists - unless a HTTP 200 response is returned, the callback URL will not be configured. 
+`batch.item-added` | Details of the item added to the batch
+`batch.item-removed` | Details of the item removed from the batch
+`batch.cancelled` | Notifies that the batch was cancelled. 
+`batch.submitted` | Notifes that the batch was submitted
+`batch.approved` | Notifies that the batch was approved - includes who approved it.
+`batch.rejected` | Notifies that the batch was rejected - includes who rejected it.
+`batch.failed` | Notifies that the batch failed - includes the details of the failure (insufficient funds etc)
+`batch.completed` | Notifies that the batch completed successfully. Includes a summary. 
+
+Push notifications are sent to the firework mobile app for many of these events too - these can be
+configured from within the app. 
+
+## Create a new Batch
+
+```shell
+# Create the JSON object for the new Batch
+# cat create-batch-request.json
+{
+"type": "BANK_TRANSFER",
+"currency": "EUR", 
+"batchName": "January 2018 Payroll",
+"jobNumber": "2018-01-PR",
+"callbackUrl": "https://my.webserver.com/cb/payroll"
+}
+
+# Post that to the API
+curl https://api.fire.com/business/v1/batches \
+  -X POST \
+  -d @create-batch-request.json \
+  -H "Content-type: application/json"
+  -H "Authorization:  Bearer $ACCESS_TOKEN"
+
+
+{
+  "batchUuid":"F2AF3F2B-4406-4199-B249-B354F2CC6019"
+}
+```
+
+Create a new batch of payments. 
+
+### HTTP Request
+
+`POST  https://api.fire.com/business/v1/batches`
+
+Parameter | Description
+--------- | -----------
+`type` | This is the type of payments that will be included in the batch - either `INTERNAL_TRANSFER`
+or `BANK_TRANSFER`. Only one type of transfer can be included in each batch. 
+`currency` | The currency of payments in the batch. Either `EUR` or `GBP`. Only one currency payments can be
+included in a batch.
+`batchName` | An optional name for this batch. Useful in reporting. 
+`jobNumber` | An optional job number for the batch. Useful in reporting.
+`batchUuid` | Optionally set the UUID for this batch. Leave blank to let fire.com create it for you. Must be
+a UUID.
+`callbackUrl` | An optional callback URL for batch events. 
+ 
+### Returns
+
+The UUID of the newly created batch.
 
 
 
