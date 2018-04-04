@@ -836,12 +836,53 @@ You can only submit a batch while it is in the `OPEN` state.
 
 No body is returned - a HTTP 204 No Content response signifies the call was successful. 
 
+## Batch Objects
+````shell
+# JSON representation of a batch
+{
+  "batchUuid": "F2AF3F2B-4406-4199-B249-B354F2CC6019",
+  "type": "BANK_TRANSFER",
+  "status":"COMPLETE",
+  "sourceName": "Payment API",
+  "batchName": "January 2018 Payroll",
+  "jobNumber": "2018-01-PR",
+  "callbackUrl": "https://my.webserver.com/cb/payroll"
+  "currency":"EUR", 
+  "numberOfItemsSubmitted":1, 
+  "valueOfItemsSubmitted":1000, 
+  "numberOfItemsFailed":0,
+  "valueOfItemsFailed":0,
+  "numberOfItemsSucceeded":1,
+  "valueOfItemsSucceeded":1000,
+  "lastUpdated":"2018-04-04T10:48:53.540Z",
+  "dateCreated":"2018-04-04T00:53:21.910Z"
+}
+```
 
+A Batch Object consists of the following data:
 
+Field | Description
+----- | -----------
+`batchUuid` | A UUID for this batch.
+`type` | The type of the batch - can be `INTERNAL_TRANSFER`, `BANK_TRANSFER`, `NEW_PAYEE`.
+`status` | The status of the batch - can be `PENDING_APPROVAL`, `REJECTED`, `COMPLETE`, `OPEN`, `CANCELLED`, `PENDING_PARENT_BATCH_APPROVAL`, `READY_FOR_PROCESSING`, `PROCESSING`.
+`sourceName` | A string describing where the batch originated - for instance the name of the API token that was used, or showing that the batch was automatically created by fire.com (in the case of a new payee batch).  
+`batchName` | An optional name you give to the batch at creation time. Say `January 2018 Payroll`.
+`jobNumber` | An optional job number you can give to the batch to help link it to your own system. 
+`callbackUrl` | An optional POST URL that all events for this batch will be sent to. 
+`currency` | All payments in the batch must be the same currency - either `EUR` or `GBP`
+`numberOfItemsSubmitted` | A count of the number of items in the batch
+`valueOfItemsSubmitted` | A sum of the value of items in the batch. 
+`numberOfItemsFailed` | Once processed, a count of the number of items that didn't process successfully. 
+`valueOfItemsFailed` | Once processed, a sum of the value of items that didn't process successfully. 
+`numberOfItemsSucceeded` | Once processed, a count of the number of items that processed successfully. 
+`valueOfItemsSucceeded` | Once processed, a sum of the value of items that processed successfully. 
+`lastUpdated` | The datestamp of the last action on this batch - ISO format: e.g. 2018-04-04T10:48:53.540Z
+`dateCreated` | The datestamp the batch was created - ISO format: e.g. 2018-04-04T00:53:21.910Z
 
-## List Batches
+## List Batchess
 
-```shell
+```shelll
 curl https://api.fire.com/business/v1/batches \
   -X GET -G \
   -d "batchStatuses=COMPLETE" \
@@ -993,7 +1034,7 @@ Parameter | Description
 `maxNumberPayments` | _(Optional)_ The max number of people who can pay this request. Omit to let anyone pay.
 `maxNumberCustomerPayments` | _(Optional)_ The max number of times each person can pay the request. Omit to allow any number of times.
 
-### JSON Output
+### JSON Outputt
 
 Parameter | Description
 --------- | -----------
