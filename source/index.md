@@ -1,5 +1,5 @@
 ---
-title: Fire Business Account API Reference
+title: fire.com Business Account API Reference
 
 language_tabs:
   - shell: cURL
@@ -11,9 +11,9 @@ includes:
 search: false
 ---
 
-# Integrating to the Fire Business Account API
+# Integrating to the fire.com Business Account API
 
-The Fire API allows you to deeply integrate Fire Business Account features into your application or back-office systems. 
+The fire.com API allows you to deeply integrate Business Account features into your application or back-office systems. 
 
 The API provides read access to your profile, accounts and transactions, event-driven notifications of activity on the 
 account and payment initiation via batches. Each feature has it's own HTTP endpoint and every endpoint has its own permission.
@@ -145,8 +145,8 @@ The list of scopes allowed for the Business API is as follows.
 Scope | Description
 ----- | -----------
 `PERM_BUSINESS_GET_SERVICES` | Get Service Fees and Info
-`PERM_BUSINESS_GET_ACCOUNTS` | Read the list of Fire accounts in your profile. 
-`PERM_BUSINESS_GET_ACCOUNT` | Get the details of a single Fire account in your profile.
+`PERM_BUSINESS_GET_ACCOUNTS` | Read the list of fire.com accounts in your profile. 
+`PERM_BUSINESS_GET_ACCOUNT` | Get the details of a single fire.com account in your profile.
 `PERM_BUSINESS_GET_ACCOUNT_TRANSACTIONS` | List transactions on an Account
 `PERM_BUSINESS_GET_ACCOUNT_TRANSACTIONS_FILTER` | Filter transactions on an Account
 `PERM_BUSINESS_POST_PAYMENT_REQUEST` | Create a Payment Request
@@ -200,9 +200,9 @@ Scope | Description
 }
 ```
 
-Lists are returned in a specific format (a *Fire List*). An object containing some metadata about the list and the list itself is provided. 
+Lists are returned in a specific format (a *fire.com list*). An object containing some metadata about the list and the list itself is provided. 
 
-Fire List Meta Data | Desc
+fire.com List Meta Data | Desc
 ------------------- | ----
 `total` | The total number of items in the list. 
 `{itemTypes}` | Varies depending on the type of items in the list, but contains an array of `{itemType}`s.
@@ -229,10 +229,10 @@ Parameter | Description
 
 
 
-# Fire Accounts 
+# fire.com Accounts 
 
 ```shell
-# JSON representation of a Fire Account
+# JSON representation of a fire.com Account
 {
      "ican": 1951,
      "name": "Main Account",
@@ -251,13 +251,13 @@ Parameter | Description
 }
 ```    
 
-Fire Accounts are the Fire equivalent of a bank account from bank, but with extra features you won't find anywhere else. 
+fire.com Accounts are the equivalent of a bank account from bank. 
 
 The resource has the following attributes: 
 
 Field | Description
 --------- | -----------
-`ican` | identifier for the Fire account _(assigned by Fire)_ 
+`ican` | identifier for the fire.com account _(assigned by fire.com)_ 
 `name` | the name the user gives to the account to help them identify it. 
 `currency` | a JSON entity with the currency code (`currency.code`) and English name (`currency.description`) of the currency for the account - either `EUR` or `GBP`.
 `balance` | the balance of the account (in minor currency units - pence, cent etc. `434050` == `4,340.50 GBP` for a GBP account).
@@ -269,7 +269,7 @@ Field | Description
 `status` | _Always LIVE_
 `color` | _Internal Use_
 
-## List all Fire Accounts
+## List all fire.com Accounts
 
 ```shell
 curl https://api.fire.com/business/v1/accounts \
@@ -300,7 +300,7 @@ curl https://api.fire.com/business/v1/accounts \
 ```
 
 
-Returns all your Fire Accounts. Ordered by Alias ascending. Can be paginated. 
+Returns all your fire.com Accounts. Ordered by Alias ascending. Can be paginated. 
 
 ### HTTP Request
 
@@ -311,7 +311,7 @@ Returns all your Fire Accounts. Ordered by Alias ascending. Can be paginated.
 An array of account objects.
 
 
-## Retrieve the details of a Fire Account 
+## Retrieve the details of a fire.com Account 
 
 ```shell
 curl https://api.fire.com/business/v1/accounts/1951 \
@@ -337,7 +337,7 @@ curl https://api.fire.com/business/v1/accounts/1951 \
 ```
 
 
-You can retrieve the details of a Fire Account by its `ican`. 
+You can retrieve the details of a fire.com Account by its `ican`. 
 
 ### HTTP Request
 
@@ -345,7 +345,7 @@ You can retrieve the details of a Fire Account by its `ican`.
 
 Parameter | Description
 --------- | -----------
-`ican` | This is the internal account ID of the Fire Account to be returned.
+`ican` | This is the internal account ID of the fire.com Account to be returned.
 
 # Payee Bank Accounts 
 
@@ -381,7 +381,7 @@ The resource has the following attributes:
 
 Field | Description
 --------- | -----------
-`id` | identifier for the Bank account _(assigned by Fire)_ 
+`id` | identifier for the Bank account _(assigned by fire.com)_ 
 `accountName` | the name the user gives to the bank account to help them identify the account. 
 `bic` | the BIC of the account if currency is `EUR`. 
 `iban` | the IBAN of the account if currency is `EUR`. 
@@ -530,7 +530,7 @@ Field | Description
 --------- | -----------
 `txnId` | The id of this side of the transaction (each transaction has two sides - a to and a from). This is used to get the details of the transaction.
 `refId` | The id of the transaction.
-`ican` | identifier for the Fire account _(assigned by Fire)_ _This field is only used in the condensed version._
+`ican` | identifier for the fire.com account _(assigned by fire.com)_ _This field is only used in the condensed version._
 `type` | The type of transaction. Use this to determine the "side" of the transaction - e.g. `INTERNAL_TRANSFER_FROM` would be a positive transaction from another account, `INTERNAL_TRANSFER_TO` is the negative side.
 `relatedParty` | `relatedParty.alias` is the name of the account on the other side of the transaction. _This field is only used in the condensed version._
 `currency` | a JSON entity with the currency code (`currency.code`) and English name (`currency.description`) of the currency for the account - either `EUR` or `GBP`.
@@ -598,9 +598,9 @@ An array of transactions for `accountId` with a count (`total`)
 
 # Payment Batches
 
-The Fire API allows businesses to automate payments between their accounts or to third parties across the UK and Europe.
+The fire.com API allows businesses to automate payments between their accounts or to third parties across the UK and Europe.
 
-For security reasons, the API can only set up the payments in batches. These batches must be approved
+For added security, the API can only set up the payments in batches. These batches must be approved
 by an authorised user via the firework mobile app. 
 
 The process is as follows:
@@ -838,7 +838,7 @@ Create a new batch of payments.
 Parameter | Description
 --------- | -----------
 `type` | This is the type of payments that will be included in the batch - either `INTERNAL_TRANSFER` or `BANK_TRANSFER`. Only one type of transfer can be included in each batch. 
-`currency` | The currency of payments in the batch. Either `EUR` or `GBP`. Only one currency payments can be included in a batch.
+`currency` | The currency of payments in the batch. Either `EUR` or `GBP`. Only one currency can be included in a batch.
 `batchName` | An optional name for this batch. Useful in reporting. 
 `jobNumber` | An optional job number for the batch. Useful in reporting.
 `batchUuid` | Optionally set the UUID for this batch. Leave blank to let fire.com create it for you. Must be a UUID.
@@ -1095,7 +1095,7 @@ Returns the list of batch with the specified types and statuses.
 
 ### Returns
 
-A Fire List of Batch objects. 
+A fire.com List of Batch objects. 
 
 
 
@@ -1185,7 +1185,7 @@ Returns a paginated list of items in the specified batch.
 
 ### Returns
 
-A Fire List object of Batch Items (Internal transfers or Bank transfers). 
+A fire.com list object of Batch Items (Internal transfers or Bank transfers). 
 
 
 ## List Approvers for a Batch
@@ -1238,9 +1238,9 @@ They are unique URLs that contain all the information needed for anyone to pay y
 
 This means they can be tweeted, posted to Facebook, sent as a text or email - whatever method of communication you already have in place can be used.
 
-If an existing Fire user receives the Payment Request, they can tap it to view the details of the payment in their Fire app. They can then enter their PIN to pay securely. The payment is instant and arrives in the business Fire account immediately.
+If an existing fire.com user receives the Payment Request, they can tap it to view the details of the payment in their Personal Mobile app. They can then enter their PIN to pay securely. The payment is instant and arrives in the business fire.com account immediately.
 
-If a non-Fire user receives the request, tapping it will bring them to a web site showing the details of the payment. From there they can easily go to the app store to get Fire, top it up with a card, and pay. 
+If a non-fire.com user receives the request, tapping it will bring them to a web site showing the details of the payment. From there they can easily go to the app store to get the Personal Mobile app, top it up with a card, and pay. 
 
 
 ```shell
@@ -1263,7 +1263,7 @@ The payment request resource has the following attributes:
 
 Field | Description
 --------- | -----------
-`code` | This is the Payment Request Code that is assigned by Fire to this request. Used in the URL to share this request.
+`code` | This is the Payment Request Code that is assigned by fire.com to this request. Used in the URL to share this request.
 `type` | The type of the request - either `DIRECT` (a one-to-one request to a specific mobile number) or `SHAREABLE` (a request that can be paid by anyone who receives it)
 `direction` | either `SENT` or `RECEIVED` depending on whether you sent or received the request.
 `status` | This can be `ACTIVE`, `EXPIRED` or `CLOSED`. Only `ACTIVE` requests can be paid.
@@ -1316,7 +1316,7 @@ A JSON object containing the code and the type of the request.
 
 Parameter | Description
 --------- | -----------
-`icanTo` | The ican of the account to collect the funds into. Must be one of your Fire Accounts. 
+`icanTo` | The ican of the account to collect the funds into. Must be one of your fire.com Accounts. 
 `currency` | Either `EUR` or `GBP`, and must correspond the account select in `icanTo`.
 `amount` | _(Optional)_ Provide a specific amount to pay. Omit the parameter if you want to allow the user to choose their own amount to pay.
 `myRef` | _(Optional)_ An internal description of the request.
@@ -1341,9 +1341,9 @@ Parameter | Description
 
 
 # Webhooks
-Webhooks allow you to be notified of events as they happen on your Fire accounts. This is useful if you have systems that need to know when things happen on your account, such as payments or withdrawals. 
+Webhooks allow you to be notified of events as they happen on your fire.com accounts. This is useful if you have systems that need to know when things happen on your account, such as payments or withdrawals. 
 
-A webhook is a URL that you set up on your backend. We can then send the details of various events to you at this URL as they happen. You can have many webhooks, and can configure each one to listen for different events in Fire. 
+A webhook is a URL that you set up on your backend. We can then send the details of various events to you at this URL as they happen. You can have many webhooks, and can configure each one to listen for different events in fire.com. 
 
 ## Configuring your webhook settings
 You can set up webhooks in the Business Account web application or use the API to configure them programmatically. 
@@ -1378,7 +1378,7 @@ An array of webhook event configuration objects.
 Parameter | Description
 --------- | -----------
 `webhook` | The details of the webhook. `webhook.id` and `webhook.businessId` are identifiers, and `webhook.webhookUrl` is the actual URL of the webhook.
-`events` | An array of Fire Account events that will trigger a call to this webhook. 
+`events` | An array of fire.com Account events that will trigger a call to this webhook. 
 
 ## Receiving a webhook at your server.
 ```shell
@@ -1439,7 +1439,7 @@ Parameter | Description
 You will recieve an array of events as they occur. In general there will be only one event per message, but as your volume increases, we will gather all events in a short time-window into one call to your webhook. This reduces the load on your server. 
 
 When the data is sent to your webhook it will be signed and encoded using JWT (JSON Web Token). JWT is a compact URL-safe means of representing data to be transferred between two parties (see [JWT.io](http://jwt.io) for more details and to get a code library for your programming environment). While the data is the message is 
-visibile to anyone, the signature is created using a shared secret that only you and Fire have access to, so you can be sure that it came from us. 
+visibile to anyone, the signature is created using a shared secret that only you and fire.com have access to, so you can be sure that it came from us. 
 
 A JWT looks like this:
 
@@ -1447,6 +1447,6 @@ A JWT looks like this:
 `0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWV`
 `9.TJVA95OrM7E2cBab30RMHrHDcEfxjoYZgeFONFh7HgQ`
 
-This needs to be decoded using the library from JWT.io. You should ensure that the signature is valid. There are a set of Webhook API Tokens in the Profile / Webhooks section of the Business Fire Account application. The Key ID (`kid`) in the JWT header will be the `Webhooks` public token, and you should use the corresponding private token as the secret to verify the signature on the JWT.  
+This needs to be decoded using the library from JWT.io. You should ensure that the signature is valid. There are a set of Webhook API Tokens in the Profile / Webhooks section of the Business fire.com Account application. The Key ID (`kid`) in the JWT header will be the `Webhooks` public token, and you should use the corresponding private token as the secret to verify the signature on the JWT.  
 
 
