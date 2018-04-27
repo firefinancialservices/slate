@@ -596,7 +596,7 @@ An array of transactions for `accountId` with a count (`total`)
 
 
 
-# Payment Batches
+# Payment Initiation
 
 The fire.com API allows businesses to automate payments between their accounts or to third parties across the UK and Europe.
 
@@ -1099,7 +1099,7 @@ A fire.com List of Batch objects.
 
 
 
-## Get details of a single Batches
+## Get details of a single Batch
 
 ```shell
 curl https://api.fire.com/business/v1/batches/{batchUuid} \
