@@ -792,8 +792,8 @@ Event | Description
 `batch.item-removed` | Details of the item removed from the batch
 `batch.cancelled` | Notifies that the batch was cancelled. 
 `batch.submitted` | Notifes that the batch was submitted
-`batch.approved` | Notifies that the batch was approved - includes who approved it.
-`batch.rejected` | Notifies that the batch was rejected - includes who rejected it.
+`batch.approved` | Notifies that the batch was approved.
+`batch.rejected` | Notifies that the batch was rejected.
 `batch.failed` | Notifies that the batch failed - includes the details of the failure (insufficient funds etc)
 `batch.completed` | Notifies that the batch completed successfully. Includes a summary. 
 
