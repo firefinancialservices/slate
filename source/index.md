@@ -611,8 +611,10 @@ The process is as follows:
 
 
 Once the batch is submitted, the authorised users will receive notifications to their firework mobile apps. 
-They can review the contents of the batch and then approve or reject it. If approved, the batch is then
-processed.
+They can review the contents of the batch and then approve or reject it. 
+If approved, the batch is then processed. 
+You can avail of enhanced security by using Dual Authorisation to verify payments if you wish.
+Dual Authorisation can be enabled by you when setting up your API application in firework online.
 
 
 ### Batch Object
