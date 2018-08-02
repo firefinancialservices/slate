@@ -546,6 +546,54 @@ Field | Description
 `fxTradeDetails` | If this is a currency conversion, this will contain the FX rate and converted amount. _This field is only present in the full version._
 `feeDetails` | The details of any fees applied. _This field is only present in the full version._
 
+The transaction type can be one of the following:
+
+Transaction Type | Description
+--------- | -----------
+`PAYMENT_RECEIVED`|
+`LODGEMENT`|
+`MANUAL_TRANSFER`|
+`WITHDRAWAL`|
+`REVERSAL`|
+`INTERNAL_TRANSFER_TO`|
+`INTERNAL_TRANSFER_FROM`|
+`WITHDRAWAL_RETURNED`|
+`LODGEMENT_REVERSED`|
+`FX_INTERNAL_TRANSFER_FROM`|
+`FX_INTERNAL_TRANSFER_TO`|
+`CARD_POS_CONTACT_DEBIT`|
+`CARD_POS_CONTACT_CREDIT`|
+`CARD_POS_CONTACTLESS_DEBIT`|
+`CARD_POS_CONTACTLESS_CREDIT`|
+`CARD_ECOMMERCE_DEBIT`|
+`CARD_ECOMMERCE_CREDIT`|
+`CARD_ATM_DEBIT`|
+`CARD_ATM_CREDIT`|
+`CARD_INTERNATIONAL_POS_CONTACT_DEBIT`|
+`CARD_INTERNATIONAL_POS_CONTACT_CREDIT`|
+`CARD_INTERNATIONAL_POS_CONTACTLESS_DEBIT`|
+`CARD_INTERNATIONAL_POS_CONTACTLESS_CREDIT`|
+`CARD_INTERNATIONAL_ECOMMERCE_DEBIT`|
+`CARD_INTERNATIONAL_ECOMMERCE_CREDIT`|
+`CARD_INTERNATIONAL_ATM_DEBIT`|
+`CARD_INTERNATIONAL_ATM_CREDIT`|
+`CARD_POS_CONTACT_DEBIT_REVERSAL`|
+`CARD_POS_CONTACT_CREDIT_REVERSAL`|
+`CARD_POS_CONTACTLESS_DEBIT_REVERSAL`|
+`CARD_POS_CONTACTLESS_CREDIT_REVERSAL`|
+`CARD_ECOMMERCE_DEBIT_REVERSAL`|
+`CARD_ECOMMERCE_CREDIT_REVERSAL`|
+`CARD_ATM_DEBIT_REVERSAL`|
+`CARD_ATM_CREDIT_REVERSAL`|
+`CARD_INTERNATIONAL_POS_CONTACT_DEBIT_REVERSAL`|
+`CARD_INTERNATIONAL_POS_CONTACT_CREDIT_REVERSAL`|
+`CARD_INTERNATIONAL_POS_CONTACTLESS_DEBIT_REVERSAL`|
+`CARD_INTERNATIONAL_POS_CONTACTLESS_CREDIT_REVERSAL`|
+`CARD_INTERNATIONAL_ECOMMERCE_DEBIT_REVERSAL`|
+`CARD_INTERNATIONAL_ECOMMERCE_CREDIT_REVERSAL`|
+`CARD_INTERNATIONAL_ATM_DEBIT_REVERSAL`|
+`CARD_INTERNATIONAL_ATM_CREDIT_REVERSAL`|
+
 
 ## List transactions for an account
 ```shell
@@ -593,6 +641,63 @@ Retrieve a list of transactions against an account.
 
 An array of transactions for `accountId` with a count (`total`)
 
+
+## Filtered list of transactions for an account
+```shell
+curl https://api.fire.com/business/v1/accounts/1979/transactions/filter \
+  -X GET -G \
+  -d "dateRangeFrom=1493593200000" \
+  -d "dateRangeTo=1496271600000" \
+  -d "limit=25" \
+  -d "offset=0" \
+  -H "Authorization: Bearer $ACCESS_TOKEN"
+
+{
+	"total": 1,
+	"dateRangeTo": 1496271600000,
+	"transactions": [ 
+		{
+			"txnId": 30260,
+			"refId": 26834,
+			"ican": 1979,
+			"type": "INTERNAL_TRANSFER_TO",
+			"relatedParty": {
+				"alias": "Main Account"
+			},
+			"currency": { 
+				"code": "EUR",
+				"description": "Euro"
+			},
+			"amountBeforeCharges": 5000,
+			"feeAmount": 0,
+			"taxAmount": 0,
+			"amountAfterCharges": 5000,
+			"balance": 8500,
+			"myRef": "Transfer to main account",
+			"date": "2018-04-29T22:56:48.867Z"
+		}
+	]
+}
+```
+
+Retrieve a filtered list of transactions against an account.
+
+### HTTP Request
+
+`GET  https://api.fire.com/business/v1/accounts/{accountId}/transactions/filter`
+
+The following query parameters can be used to filter the list:
+
+Parameter | Description
+--------- | -----------
+`dateRangeFrom` | A millisecond epoch time specifying the date range start date. 
+`dateRangeTo` | A millisecond epoch time specifying the date range end date. 
+`searchKeyword` | Search term to filter by from the reference field (`myRef`). 
+`transactionTypes` | One or more of the transaction types above. This field can be repeated multiple times to allow for multiple transaction types. 
+
+### Returns
+
+An array of transactions for `accountId` filtered by the specified fields with a count (`total`) filtered by date rage, transaction type or reference. 
 
 
 
