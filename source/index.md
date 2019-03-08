@@ -89,14 +89,14 @@ curl https://api.fire.com/business/v1/accounts \
 
 Access to the API is by Bearer Tokens. The process is somewhat similar to OAuth2.0, but with some changes to improve security. 
 
-1. You must first log into the [BUPA application](https://business.fire.com) and create a new Application in the *Profile* > *API* page. (You will need your PIN digits and 2-Factor Authentication device.) 
+1. You must first log into the [firework online application](https://business.fire.com) and create a new Application in the *Profile* > *API* page. (You will need your PIN digits and 2-Factor Authentication device.) 
 2. Give your application a Name and select the scope/permissions you need the application to have (more on Scopes below). 
 3. You will be provided with three pieces of information - the App `Refresh Token`, `Client ID` and `Client Key`.  You need to take note of the `Client Key` when it is displayed - it will not be shown again.
 
 You now use these pieces of data to retrieve a short-term Access Token which you can use to access the API. The Access Token expires within a relatively short time, so even if it is compromised, the attacker will not have long to use it. The `Client Key` is the most important piece of information to keep secret. This should only ever be stored on a backend server, and never in a front end client or mobile app. 
 
 <aside class="warning">
-If you ever accidentally reveal the Client Key (or accidentally commit it to Github for instance) it is vital that you log into BUPA and delete/recreate the App Tokens as soon as possible. Anyone who has these three pieces of data can access the API to view your data and set up payments from your account (depending on the scope of the tokens).  
+If you ever accidentally reveal the Client Key (or accidentally commit it to Github for instance) it is vital that you log into firework online and delete/recreate the App Tokens as soon as possible. Anyone who has these three pieces of data can access the API to view your data and set up payments from your account (depending on the scope of the tokens).  
 </aside>
 
 Once you have the access token, pass it as a header for every call, like so:  
@@ -117,8 +117,8 @@ Parameter | Description
 --------- | -----------
 `grantType` | Always `AccessToken`. (This will change to `refresh_token` in a future release.)
 `nonce` | A random non-repeating number used as a salt for the `clientSecret` below. The simplest nonce is a unix time. 
-`refreshToken` | The app's `Refresh Token` from the API page in BUPA.
-`clientId` | The app's `Client ID` from the API page in BUPA.
+`refreshToken` | The app's `Refresh Token` from the API page in firework online.
+`clientId` | The app's `Client ID` from the API page in firework online.
 `clientSecret` | The SHA256 hash of the `nonce` above and the app's `Client Key`. The Client Key will only be shown to you when you create the app, so don't forget to save it somewhere safe.
 
 ### Returns
@@ -266,7 +266,7 @@ Field | Description
 `cnsc` | the Sort Code of the account. 
 `ccan` | the Account Number of the account. 
 `defaultAccount` | `true` if this is the default account for this currency. This will be the account that general fees are taken from (as opposed to per-transaction fees). 
-`status` | _Always LIVE_
+`status` | Either _LIVE_ or _MIGRATED_
 `color` | _Internal Use_
 
 ## List all fire.com Accounts
@@ -698,6 +698,313 @@ Parameter | Description
 ### Returns
 
 An array of transactions for `accountId` filtered by the specified fields with a count (`total`) filtered by date rage, transaction type or reference. 
+
+# Direct Debits
+
+The fire.com api allows businesses to automate direct debit payment actions on their fire.com business accounts.
+
+You can retrieve details of your direct debit payments, direct debit mandates and also take actions on both your direct debit payments and mandates.
+
+## Get the details of a Direct Debit
+```shell
+curl https://api.fire.com/business/v1/directdebits/42de0705-e3f1-44fa-8c41-79973eb80eb2 \
+  -X GET -G \
+  -d "limit=25" \
+  -d "offset=0" \
+  -H "Authorization: Bearer $ACCESS_TOKEN"
+
+# Response Body 
+{
+      "directDebitUuid": "42de0705-e3f1-44fa-8c41-79973eb80eb2",
+      "currency": {
+        "code": "GBP",
+        "description": "Sterling"
+      },
+      "status": "RECEIVED | REJECT_REQUESTED | REJECT_READY_FOR_PROCESSING | REJECT_RECORD_IN_PROGRESS | REJECT_RECORDED | REJECT_FILE_CREATED |
+ REJECT_FILE_SENT | COLLECTED | REFUND_REQUESTED | REFUND_RECORD_IN_PROGRESS | REFUND_RECORDED | REFUND_FILE_CREATED | REFUND_FILE_SENT",
+      "type": "FIRST_COLLECTION|ONGOING_COLLECTION|REPRESENTED_COLLECTION|FINAL_COLLECTION",
+      "mandateUuid": "f171b143-e3eb-47de-85a6-1c1f1108c701",
+      "originatorReference": "VODA-123456",
+      "originatorName": "Vodafone PLC",
+      "directDebitReference": "VODA-ABC453-1",
+      "targetIcan ": 1,
+      "targetPayeeId": 12,
+      "isDDIC": false,
+      "amount": 100,
+      "schemeRejectReason": "<e.g. 'Instruction cancelled by payer' >",
+      "schemeRejectReasonCode": "For BACS (ARUDD): 0|1|2|3|5|6|7|8|9|A|B",
+      "lastUpdated": "2016-12-15T22:56:05.937Z",
+      "dateCreated": "2016-12-15T22:56:05.937Z"
+}
+
+```
+Retrieve all details of a single direct debit collection/payment, whether successful or not.
+
+The permision needed to access this endpoint is PERM_BUSINESS_GET_DIRECT_DEBIT
+
+
+
+### HTTP Request
+
+`GET https://api.fire.com/business/v1/directdebits/{directDebitUuid}`
+
+Parameter | Description
+--------- | -----------
+`directDebitUuid` | The UUID for the direct debit payment
+
+
+## Get all Direct Debit payments associated with a direct debit mandate
+```shell
+curl https://api.fire.com/business/v1/directdebits \
+  -X GET -G \
+  -d "limit=25" \
+  -d "offset=0" \
+  -d "directDebitUuid=42de0705-e3f1-44fa-8c41-79973eb80eb2" \
+  -H "Authorization: Bearer $ACCESS_TOKEN"
+
+
+
+# Response Body 
+{
+  "total": 1,
+  "directdebits": [
+    {
+      "directDebitUuid": "42de0705-e3f1-44fa-8c41-79973eb80eb2",
+      "currency": {
+        "code": "GBP",
+        "description": "Sterling"
+      },
+      "status": "RECEIVED | REJECT_REQUESTED | REJECT_READY_FOR_PROCESSING | REJECT_RECORD_IN_PROGRESS | REJECT_RECORDED | REJECT_FILE_CREATED |
+ REJECT_FILE_SENT | COLLECTED | REFUND_REQUESTED | REFUND_RECORD_IN_PROGRESS | REFUND_RECORDED | REFUND_FILE_CREATED | REFUND_FILE_SENT",
+      "type": "FIRST_COLLECTION|ONGOING_COLLECTION|REPRESENTED_COLLECTION|FINAL_COLLECTION",
+      "mandateUuid": "f171b143-e3eb-47de-85a6-1c1f1108c701",
+      "originatorReference": "VODA-123456",
+      "originatorName": "Vodafone PLC",
+      "originatorAlias": "Vodafone PLC Alias",
+      "originatorLogoUrlSmall": "www.originatorLogoSmall.com",
+      "originatorLogoUrlLarge": "www.originatorLogoLarge.com",
+      "directDebitReference": "VODA-ABC453-1",
+      "targetIcan ": 1,
+      "targetPayeeId": 12,
+      "amount": 100,
+      "feeAmount": 100,
+      "taxAmount": 100,
+      "amountAfterCharges": 100,
+      "fireRejectReason": "ACCOUNT_NOT_FOUND | ACCOUNT_NOT_LIVE | ACCOUNT_DOES_NOT_ACCEPT_DIRECT_DEBITS | INVALID_ACCOUNT_CURRENCY | MANDATE_NOT_FOUND | MANDATE_INVALID_STATUS |
+       BUSINESS_NOT_LIVE | BUSINESS_NOT_FULL | PERSONAL_USER_NOT_LIVE | PERSONAL_USER_NOT_FULL | INSUFFICIENT_FUNDS | REQUESTED_BY_CUSTOMER_VIA_SUPPORT | MANDATE_CANCELLED | CUSTOMER_DECEASED | ACCOUNT_TRANSFERRED |
+       ADVANCE_NOTICE_DISPUTED_REQUESTED_BY_CUSTOMER | AMOUNT_DIFFERS_REQUESTED_BY_CUSTOMER | AMOUNT_NOT_DUE_REQUESTED_BY_CUSTOMER | PRESENTATION_OVERDUE_REQUESTED_BY_CUSTOMER | ORIGINATOR_DIFFERS | CUSTOMER_ACCOUNT_CLOSED | REQUESTED_BY_CUSTOMER |",
+      "schemeRejectReason": "<e.g. 'Instruction cancelled by payer' >",
+      "schemeRejectReasonCode": "For BACS (ARUDD): 0|1|2|3|5|6|7|8|9|A|B",
+      "fireRefundReason": "ADVANCE_NOTICE_DIFFERS_FROM_DIRECT_DEBIT | CUSTOMER_DID_NOT_RECEIVE_ADVANCE_NOTICE | MANDATE_CANCELLED_BY_FIRE | MANDATE_CANCELLED_EXTERNALLY_BY_CUSTOMER | MANDATE_NOT_APPROVED_BY_CUSTOMER | MANDATE_SIGNATURE_IS_NOT_VALID |
+       REQUESTED_BY_ORIGINATOR | CUSTOMER_DOES_NOT_RECOGNISE_ORIGINATOR |",
+      "schemeRefundReason": "<e.g. 'DDI cancelled by Paying Bank' >",
+      "schemeRefundReasonCode": "For BACS (DDIC): 0|1|2|3|5|6|7|8",
+      "dateRefunded": "2016-12-15T22:56:05.937Z",
+      "lastUpdated": "2016-12-15T22:56:05.937Z",
+      "dateCreated": "2016-12-15T22:56:05.937Z"
+    }
+  ]
+}
+```
+Retrieve all direct debit payments associated with a direct debit mandate.
+
+The permision needed to access this endpoint is PERM_BUSINESS_GET_DIRECT_DEBITS
+
+### HTTP Request
+
+`GET https://api.fire.com/business/v1/directdebits`
+
+Parameter | Description
+--------- | -----------
+`ican` | Identifier for the fire.com account (assigned by fire.com)
+`payeeId` | The ID of the existing or automatically created payee 
+`mandateUuid` | The UUID for the mandate
+`currency` | The currency of the direct debit mandate
+`status` | The statuses of the direct debit payments associated with the mandate (RECEIVED, COLLECTED, REJECT_REQUESTED, REJECT_PAID)
+`limit` | The number of records to return. Defaults to `10` - max is `200`.
+`offset` | The page offset. Defaults to `0`. This is the record number that the returned list will start at. E.g. `offset` = `40` and `limit` = `20` will return records 40 to 59.
+
+## Get Direct Debit mandate details
+```shell
+# Response Body 
+{
+
+"mandateUuid": "28d627c3-1889-44c8-ae59-6f6b20239260",
+  "currency": {
+    "code": "GBP",
+    "description": "Sterling"
+  },
+  "status": "CREATED | LIVE | REJECT_REQUESTED | REJECT_RECORD_IN_PROGRESS | REJECT_RECORDED | REJECT_FILE_CREATED | REJECT_FILE_SENT | CANCEL_REQUESTED |
+ CANCEL_RECORD_IN_PROGRESS | CANCEL_RECORDED | CANCEL_FILE_CREATED | CANCEL_FILE_SENT | COMPLETE | DORMANT",
+  "originatorReference": "VODA-123456",
+  "originatorName": "Vodafone PLC",
+  "originatorAlias": "Vodafone PLC Alias",
+  "originatorLogoUrlSmall": "www.originatorLogoSmall.com",
+  "originatorLogoUrlLarge": "www.originatorLogoLarge.com",
+  "mandateReference": "VODA-ABC453",
+  "alias": "Vodafone",
+  "targetIcan": 1,
+  "numberOfDirectDebitCollected": 1,
+  "valueOfDirectDebitCollected": 2,
+  "latestDirectDebitAmount": 3,
+  "latestDirectDebitDate": 4,
+  "fireRejectReason": "ACCOUNT_DOES_NOT_ACCEPT_DIRECT_DEBITS | DDIC | ACCOUNT_NOT_FOUND | ACCOUNT_NOT_LIVE | CUSTOMER_NOT_FOUND | BUSINESS_NOT_LIVE | BUSINESS_NOT_FULL | 
+   PERSONAL_USER_NOT_LIVE | PERSONAL_USER_NOT_FULL | MANDATE_ALREADY_EXISTS | MANDATE_WITH_DIFERENT_ACCOUNT | NULL_MANDATE_REFERENCE | INVALID_ACCOUNT_CURRENCY | INVALID_MANDATE_REFERENCE | REQUESTED_BY_CUSTOMER_VIA_SUPPORT | 
+   CUSTOMER_ACCOUNT_CLOSED | CUSTOMER_DECEASED | ACCOUNT_TRANSFERRED | MANDATE_NOT_FOUND | ACCOUNT_TRANSFERRED_TO_DIFFERENT_ACCOUNT | INVALID_ACCOUNT_TYPE | MANDATE_EXPIRED | MANDATE_CANCELLED | REQUESTED_BY_CUSTOMER |",
+  "schemeRejectReason": "<e.g. 'Instruction cancelled by payer' >",
+  "schemeRejectReasonCode": "For BACS (AUDDIS): 1|2|3|5|6|B|C|F|G|H|O|K",
+  "fireCancelReason": "REFRER_TO_CUSTOMER | REQUESTED_BY_CUSTOMER_VIA_SUPPORT | CUSTOMER_DECEASED | CUSTOMER_ACCOUNT_CLOSED | ADVANCE_NOTICE_DISPUTED_VIA_SUPPORT | ACCOUNT_TRANSFERRED | ACCOUNT_TRANSFERRED_TO_DIFFERENT_ACCOUNT | 
+   MANDATE_AMENDED | MANDATE_REINSTATED | REQUESTED_BY_CUSTOMER",
+  "schemeCancelReason": "<e.g. Instruction cancelled by payer >",
+  "schemeCancelReasonCode": "For BACS (ADDACS): 0|1|2|3|B|C|D|E|R",
+  "lastUpdated": "2016-12-15T22:56:05.937Z",
+  "dateCreated": "2016-12-15T22:56:05.937Z",
+  "dateRejected": "2016-12-15T22:56:05.937Z",
+  "dateCompleted": "2016-12-15T22:56:05.937Z",
+  "dateCancelled": "2016-12-15T22:56:05.937Z"
+}
+```
+Retrieve all details for a direct debit mandate.
+
+The permision needed to access this endpoint is PERM_BUSINESS_GET_MANDATE
+
+
+
+### HTTP Request
+`GET https://api.fire.com/business/v1/mandates/{mandateUuid}`
+
+Parameter | Description
+--------- | -----------
+`mandateUuid` | The UUID for the mandate
+
+## List all Direct Debit Mandates
+```shell
+# Response Body 
+{
+  "total": 1,
+  "mandates": [
+    {
+      "mandateUuid": "28d627c3-1889-44c8-ae59-6f6b20239260",
+      "currency": {
+        "code": "GBP",
+        "description": "Sterling"
+      },
+      "status": "CREATED | LIVE | REJECT_REQUESTED | REJECT_RECORD_IN_PROGRESS | REJECT_RECORDED | REJECT_FILE_CREATED | REJECT_FILE_SENT | CANCEL_REQUESTED | 
+CANCEL_RECORD_IN_PROGRESS | CANCEL_RECORDED | CANCEL_FILE_CREATED | CANCEL_FILE_SENT | COMPLETE | DORMANT",
+      "originatorReference": "VODA-123456",
+      "originatorName": "Vodafone PLC",
+      "mandateReference": "VODA-ABC453",
+      "alias": "Vodafone",
+      "targetIcan": 1,
+      "numberOfDirectDebitsCollected": 1,
+      "valueOfDirectDebitsCollected": 2,
+      "latestDirectDebitAmount": 3,
+      "latestDirectDebitDate": "2016-12-15T22:56:05.937Z",
+
+      "schemeRejectReason": "<e.g. 'Instruction cancelled by payer' >",
+      "schemeRejectReasonCode": "For BACS (AUDDIS): 1|2|3|5|6|B|C|F|G|H|O|K",
+
+      "schemeCancelReason": "<e.g. Instruction cancelled by payer >",
+      "schemeCancelReasonCode": "For BACS (ADDACS): 0|1|2|3|B|C|D|E|R",
+
+      "lastUpdated": "2016-12-15T22:56:05.937Z",
+      "dateCreated": "2016-12-15T22:56:05.937Z",
+      "dateCompleted": "2016-12-15T22:56:05.937Z",
+      "dateCancelled": "2016-12-15T22:56:05.937Z"
+    }
+  ]
+}
+```
+List all direct debit mandates.
+
+The permision needed to access this endpoint is	PERM_BUSINESS_GET_MANDATES
+
+### HTTP Request
+`GET https://api.fire.com/business/v1/mandates`
+
+Parameter | Description
+--------- | -----------
+`ican` | Identifier for the fire.com account (assigned by fire.com)
+`payeeId` | The ID of the existing or automatically created payee 
+`currency` | The currency of the direct debit mandate
+`status` | The statuses of the direct debit payments associated with the mandate (RECEIVED, COLLECTED, REJECT_REQUESTED, REJECT_PAID)
+`limit` | The number of records to return. Defaults to `10` - max is `200`.
+`offset` | The page offset. Defaults to `0`. This is the record number that the returned list will start at. E.g. `offset` = `40` and `limit` = `20` will return records 40 to 59.
+
+
+## Reject a Direct Debit
+```shell
+# Response Body 
+204 no content
+```
+permission name	PERM_BUSINESS_POST_DIRECT_DEBIT_REJECT
+
+This endpoint allows you to reject a direct debit payment where the status is still set to RECEIVED.
+
+### HTTP Request
+`POST https://api.fire.com/business/v1/directdebits/{directDebitUuid}/reject`
+
+Parameter | Description
+--------- | -----------
+`directDebitUuid` | The UUID for the direct debit payment
+
+
+## Cancel a Direct Debit Mandate
+```shell
+# Response Body 
+204 no content
+```
+
+The permision needed to access this endpoint is	PERM_BUSINESS_POST_MANDATE_CANCEL
+
+This endpoint allows you to cancel a direct debit mandate.
+
+### HTTP Request
+`POST https://api.fire.com/business/v1/mandates/{mandateUuid}/cancel`
+
+
+Parameter | Description
+--------- | -----------
+`mandateUuid` | The UUID for the mandate
+
+
+## Update Direct Debit Mandate Alias
+
+```shell
+# Response Body 
+204 no content
+```
+The permision needed to access this endpoint is	PERM_BUSINESS_PUT_MANDATE
+
+### HTTP Request
+`POST https://api.fire.com/business/v1/mandates/{mandateUuid}`
+
+Parameter | Description
+--------- | -----------
+`mandateUuid` | The UUID for the mandate
+`alias` | The name for the mandate
+
+
+## Activate a Direct Debit Mandate
+
+```shell
+# Response Body 
+204 no content
+```
+The permision needed to access this endpoint is	PERM_BUSINESS_POST_MANDATE_ACTIVATE
+
+This endpoint can only be used to activate a direct debit mandate when it is in the status REJECT_REQUESTED (even if the account has direct debits disabled). This action will also enable the account for direct debits if it was previously set to be disabled. 
+
+### HTTP Request
+`POST https://api.fire.com/business/v1/mandates/{mandateUuid}/activate`
+
+Parameter | Description
+--------- | -----------
+`mandateUuid` | The UUID for the mandate
+
+
+
+
 
 
 
