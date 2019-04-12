@@ -186,6 +186,12 @@ Scope | Description
 `PERM_BUSINESS_GET_BATCH_APPROVALS` | List approvals for a Batch
 `PERM_BUSINESS_DELETE_BATCH` | Cancel a Batch
 `PERM_BUSINESS_PUT_BATCH` | Submit a batch
+`PERM_BUSINESS_POST_ACCOUNTS` | Add a new Account
+`PERM_BUSINESS_POST_CARDS` | Create a new card
+
+
+
+
 
 # Pagination and Response Objects
 
@@ -336,7 +342,6 @@ curl https://api.fire.com/business/v1/accounts/1951 \
 }
 ```
 
-
 You can retrieve the details of a fire.com Account by its `ican`. 
 
 ### HTTP Request
@@ -347,7 +352,261 @@ Parameter | Description
 --------- | -----------
 `ican` | This is the internal account ID of the fire.com Account to be returned.
 
-# Payee Bank Accounts 
+
+## Add New Account
+
+```shell
+POST /account
+
+{ 
+   "accountName": "Test",
+    "currency": "EUR",
+    "colour": "RED",
+    "acceptFeesAndCharges”: True|False
+} 
+
+```
+
+Creates a new fire.com account.
+
+<aside class="warning">
+Please note there is a charge associated with creating a new account. 
+</aside>
+
+
+### HTTP Request
+
+`POST https://api/business/v1/accounts`
+
+### Returns
+
+New account object.
+
+# Users
+
+The fire.com users are the business users you have setup on your account. 
+
+```shell
+# Full details of an individual user.
+
+{
+    "id": 30157,
+    "emailAddress": "user@user.com",
+    "firstName": "User",
+    "lastName": "User",
+    "mobileNumber": "+353876543829",
+     "role": {
+      "code": "ADMIN",
+      "description": "Administrator" 
+      },
+     "status": {
+        "code": LIVE,
+        "description": "User has full access to fire.com applications."
+      } ,
+       "lastLogin": "2017-02-11T19:56:40.977Z"
+       "userCvl": {
+       "code": "FULL",
+       "description": "Full"
+        },
+        "mobileApplicationDetails": {
+        "mobileApplicationId": 100801,
+        "clientId": 7492,
+        "status": "LIVE",
+        "businessUserId": 30157,
+        "deviceName": "iPhone",
+        "os" "iOS",
+        "deviceOSVersion": "12.4"        
+   }
+
+```  
+
+The resource has the following attributes:
+
+Field | Description
+--------- | -----------
+`id` | the id of the user.
+`emailAddress` | the email address of the user.
+`firstName` | the user’s first name.
+`lastName` | the user’s last name.
+`mobileNumber` | the user’s mobile number.
+`role` | role assigned to the user.
+`status` | user’s status type id.
+`lastLogin` | user’s last log-in date.
+`userCvl` | user’s CVL type ID.
+`mobileApplicationDetails` | business mobile application details.
+
+The user status can be one of the following:
+
+Field | Description
+--------- | -----------
+`INVITE_SENT` | initial invitation sent.
+`SMS_CODE_SENT` | user has been sent an SMS verification message during the registration flow.
+`LIVE` | user is LIVE.
+`CLOSED` | user has been closed.
+
+The user CVL can be one of the following:
+
+Field | Description
+--------- | -----------
+`BASIC` | not fully verified.
+`FULL` | fully verified.
+
+## List all fire.com Users
+
+```shell
+# JSON representation of list all users
+
+{"users": [{
+   "id", 1001,
+   "emailAddress":"terry@example.com",
+   "firstName": "Terry",
+   "lastName": "Example",
+   "mobileNumber":"+353855555555",
+   "status": "LIVE",
+   "lastLogin": "2012-01-20T11:21:35.000Z"
+}]}
+
+```   
+
+Returns list of all users on your fire.com account.
+
+### HTTP REQUEST
+
+`GET https://api.fire.com/business/v1/users`
+
+### RETURNS
+
+An array of user objects.
+
+## List User Details
+
+```shell
+# JSON representation of list all users
+
+{
+   "id", 1001,
+   "emailAddress":"terry@example.com",
+   "firstName": "Terry",
+   "lastName": "Example",
+   "mobileNumber":"+353855555555",
+   "role": "FULL_USER",
+   "status": "LIVE",
+   "lastLogin": "2012-01-20T11:21:35.000Z"
+}
+
+
+```   
+
+Returns details of a specific fire.com user. 
+
+### HTTP REQUEST
+
+`GET https://api.fire.com/business/v1/users/{userId}`
+
+### RETURNS
+
+A user object.
+
+
+# Cards
+```shell
+# JSON representation of a card object
+{
+      "cardId": 97002,
+      "expiryDate": "2019-01-22T00:00:00.000Z",
+      "maskedPan": "4319***********1234",
+      "status": "LIVE",
+      "userId": 1056,
+      "firstName": "chfn",
+      "lastName": "chln",
+      "emailAddress": "colmhealy@realexqa.com"
+    }
+
+```   
+
+You can create multiple debit cards which can be linked to your fire.com accounts. 
+
+The resource has the following attributes:
+
+Field | Description
+--------- | -----------
+`cardId` | card id assigned by fire.com
+`expiryDate` | card expiry dare
+`maskedPan` |card number (masked)
+`status`| card status
+`userId` | card user id assigned by fire.com
+`firstName` | card user first name
+`lastName`| card user last name
+`emailAddress`| card user email address
+
+## View List of Cards
+
+```shell
+#List of card objects
+
+{
+  "cards": [
+    {
+      "cardId": 97002,
+      "expiryDate": "2019-01-22T00:00:00.000Z",
+      "maskedPan": "4319***********1234",
+      "status": "LIVE",
+      "userId": 1056,
+      "firstName": "chfn",
+      "lastName": "chln",
+      "emailAddress": "colmhealy@realexqa.com"
+    }
+  ]
+}
+```
+Returns a list of cards related to your fire.com account.
+
+### HTTP REQUEST
+GET https://api/business/v1/cards
+
+### RETURNS
+An array of card objects.
+
+## Create Card
+
+```shell
+#Create new card
+
+POST /cards 
+
+{ 
+ "eurIcan":2150, 
+  "gbpIcan":2152, 
+  "userId":3138, 
+  "cardPin":"1111", 
+  "acceptFeesAndCharges": True|False 
+  "addressType":"BUSINESS|HOME" 
+} 
+
+Return: 
+{ 
+  "cardId":2645, 
+  "expiryDate":"2020-06-30T00:00:00.000Z", 
+  "maskedPan":"537455******0386", 
+  "status": CREATED_ACTIVE
+} 
+```
+Creates a new card.
+
+<aside class="warning">
+Please note there is a charge associated with creating a new card. 
+</aside>
+
+### HTTP REQUEST
+'POST https://api/business/v1/cards'
+
+
+### RETURNS
+New card object.
+
+
+
+# Payee Bank Accounts
 
 ```shell
 # JSON representation of a Payee Account
