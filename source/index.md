@@ -356,14 +356,15 @@ Parameter | Description
 ## Add New Account
 
 ```shell
-POST /account
 
 { 
-   "accountName": "Test",
+    "accountName": "Test",
     "currency": "EUR",
-    "colour": "RED",
-    "acceptFeesAndCharges”: True|False
+    "acceptFeesAndCharges": true|false 
 } 
+
+# Response Body 
+204 no content
 
 ```
 
@@ -376,11 +377,9 @@ Please note there is a charge associated with creating a new account.
 
 ### HTTP Request
 
-`POST https://api/business/v1/accounts`
+`POST https://api.fire.com/business/v1/accounts`
 
-### Returns
 
-New account object.
 
 # Users
 
@@ -395,28 +394,29 @@ The fire.com users are the business users you have setup on your account.
     "firstName": "User",
     "lastName": "User",
     "mobileNumber": "+353876543829",
-     "role": {
-      "code": "ADMIN",
-      "description": "Administrator" 
-      },
-     "status": {
-        "code": LIVE,
+    "role": {
+        "code": "ADMIN",
+        "description": "Administrator"
+    },
+    "status": {
+        "code": "LIVE",
         "description": "User has full access to fire.com applications."
-      } ,
-       "lastLogin": "2017-02-11T19:56:40.977Z"
-       "userCvl": {
-       "code": "FULL",
-       "description": "Full"
-        },
-        "mobileApplicationDetails": {
+    },
+    "lastLogin": "2017-02-11T19:56:40.977Z",
+    "userCvl": {
+        "code": "FULL",
+        "description": "Full"
+    },
+    "mobileApplicationDetails": {
         "mobileApplicationId": 100801,
         "clientId": 7492,
         "status": "LIVE",
         "businessUserId": 30157,
         "deviceName": "iPhone",
-        "os" "iOS",
-        "deviceOSVersion": "12.4"        
-   }
+        "os": "iOS",
+        "deviceOSVersion": "12.4"
+    }
+}
 
 ```  
 
@@ -456,15 +456,19 @@ Field | Description
 ```shell
 # JSON representation of list all users
 
-{"users": [{
-   "id", 1001,
-   "emailAddress":"terry@example.com",
-   "firstName": "Terry",
-   "lastName": "Example",
-   "mobileNumber":"+353855555555",
-   "status": "LIVE",
-   "lastLogin": "2012-01-20T11:21:35.000Z"
-}]}
+{
+  "users": [
+    {
+      "id", 1001,
+      "emailAddress":"terry@example.com",
+      "firstName": "Terry",
+      "lastName": "Example",
+      "mobileNumber":"+353855555555",
+      "status": "LIVE",
+      "lastLogin": "2012-01-20T11:21:35.000Z"
+    }
+  ]
+}
 
 ```   
 
@@ -519,8 +523,8 @@ A user object.
       "userId": 1056,
       "firstName": "chfn",
       "lastName": "chln",
-      "emailAddress": "colmhealy@realexqa.com"
-    }
+      "emailAddress": "test@test.com"
+}
 
 ```   
 
@@ -554,7 +558,7 @@ Field | Description
       "userId": 1056,
       "firstName": "chfn",
       "lastName": "chln",
-      "emailAddress": "colmhealy@realexqa.com"
+      "emailAddress": "test@test.com"
     }
   ]
 }
@@ -562,7 +566,7 @@ Field | Description
 Returns a list of cards related to your fire.com account.
 
 ### HTTP REQUEST
-GET https://api/business/v1/cards
+`GET https://api.fire.com/business/v1/cards`
 
 ### RETURNS
 An array of card objects.
@@ -572,14 +576,12 @@ An array of card objects.
 ```shell
 #Create new card
 
-POST /cards 
-
 { 
- "eurIcan":2150, 
+  "eurIcan":2150, 
   "gbpIcan":2152, 
   "userId":3138, 
   "cardPin":"1111", 
-  "acceptFeesAndCharges": True|False 
+  "acceptFeesAndCharges": true|false, 
   "addressType":"BUSINESS|HOME" 
 } 
 
@@ -598,11 +600,95 @@ Please note there is a charge associated with creating a new card.
 </aside>
 
 ### HTTP REQUEST
-'POST https://api/business/v1/cards'
-
+`POST https://api.fire.com/business/v1/cards`
 
 ### RETURNS
 New card object.
+
+## List Card Transactions
+
+```shell
+#List Card Transactions
+
+{
+  "total": 1,
+  "dateRangeTo": 1547744156603,
+  "transactions": [
+    {
+      "txnId": 97904,
+      "refId": 62887,
+      "ican": 1607,
+      "type": "CARD_ECOMMERCE_CREDIT",
+      "relatedParty": {
+        "type": "CARD_MERCHANT",
+        "cardMerchant": {
+          "acquirerIdDe32": "00000004619",
+          "additionalAmtDe54": null,
+          "authCodeDe38": null,
+          "billAmt": 1510,
+          "billCcy": "826",
+          "expiryDate": "0",
+          "mccCode": "5999",
+          "merchIdDe42": "273141000156182",
+          "merchNameDe43": "AMZ*Aisence online5 rue PlaetisAMAZON.FRL2338     LUXLUX",
+          "posDataDe61": null,
+          "posTermnlDe41": null,
+          "posDataDe22": "690550S99001",
+          "procCode": "200000",
+          "respCodeDe39": null,
+          "retRefNoDe37": null,
+          "statusCode": "43",
+          "token": "431524366",
+          "txnAmt4d": 169900,
+          "txnCcy": "978",
+          "txnCtry": "LUX",
+          "txnDesc": "AMZ*Aisence online5 rue PlaetisAMAZON.FRL2338     LUXLUX",
+          "txnStatCode": "S",
+          "txnType": "P",
+          "additionalDataDe48": "ABCDEF",
+          "authorisedByGps": "N",
+          "avsResult": null,
+          "mtId": "1240",
+          "recordDataDe120": null,
+          "additionalDataDe124": "0.00"
+        }
+      },
+      "card": {
+        "cardId": 146,
+        "provider": "MASTERCARD",
+        "alias": "MasterCard-2995",
+        "maskedPan": "537455******2995",
+        "embossCardName": "DD DD",
+        "embossBusinessName": "XXXX",
+        "expiryDate": "2019-09-30T00:00:00.000Z"
+      },
+      "currency": {
+        "code": "EUR",
+        "description": "Euro"
+      },
+      "amountBeforeCharges": 1699,
+      "feeAmount": 0,
+      "taxAmount": 0,
+      "amountAfterCharges": 1699,
+      "balance": 3146,
+      "myRef": "AMZAisence online",
+      "date": "2017-09-21T10:32:53.773Z"
+    }
+  ]
+}
+```
+List Card Transactions.
+
+
+### HTTP REQUEST
+`GET: https://api.fire.com/business/v1/me/cards/{cardid}/transactions?limit=25&offset=0`
+
+### RETURNS
+List of transactions for a card.
+
+
+
+
 
 
 
