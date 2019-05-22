@@ -188,6 +188,8 @@ Scope | Description
 `PERM_BUSINESS_PUT_BATCH` | Submit a batch
 `PERM_BUSINESS_POST_ACCOUNTS` | Add a new Account
 `PERM_BUSINESS_POST_CARDS` | Create a new card
+`PERM_BUSINESS_POST_MY_CARD_BLOCK` | Blocks a card
+`PERM_BUSINESS_POST_MY_CARD_UNBLOCK` | Unblocks a card
 
 
 
@@ -686,7 +688,45 @@ List Card Transactions.
 ### RETURNS
 List of transactions for a card.
 
+## Block a Card
 
+```shell
+# Send a block card request to the API
+Curl https://api.fire.com/business/v1/me/cards/{cardId}/block
+-X POST
+-H “Authorization: Bearer $ACCESS_TOKEN”
+
+# Status 204 No Content
+```  
+
+Updates status of an existing card to “Blocked” which prevents any transactions being carried out with that card.
+
+### HTTP Request 
+
+`POST https://api.fire.com/business/v1/me/cards/{cardId}/block`
+
+### RETURNS
+No body is returned - "Status 204 No Content" signifies the call was successful.
+
+## Unblock a Card  
+
+```shell
+# Send a unblock card request to the API
+Curl https://api.fire.com/business/v1/me/cards/{cardId}/unblock
+-X POST
+-H “Authorization: Bearer $ACCESS_TOKEN”
+
+# Status 204 No Content
+```  
+
+Updates status of an existing card to “unblocked” which means that transactions can be carried out with that card.
+
+### HTTP Request 
+
+`POST https://api.fire.com/business/v1/me/cards/{cardId}/unblock`
+
+### RETURNS
+No body is returned - "Status 204 No Content" signifies the call was successful.
 
 
 
