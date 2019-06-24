@@ -366,7 +366,21 @@ Parameter | Description
 } 
 
 # Response Body 
-204 no content
+{
+     "ican": 1951,
+     "name": "Test",
+     "balance": 0,
+     "ciban": "IE54CPAY99119911111111",
+     "cbic": "CPAYIE2D",
+     "cnsc": "991199",
+     "ccan": "11111111",
+     "currency": {
+        "description": "Euro",
+        "code": "EUR"
+     },
+     "defaultAccount": false,
+     "status": "LIVE"
+  }
 
 ```
 
@@ -930,6 +944,7 @@ Field | Description
 `to` | The "to" side of the transaction. `to.type` is the type of the account, and `to.account` is the details of that account. _This field is only present in the full version._
 `fxTradeDetails` | If this is a currency conversion, this will contain the FX rate and converted amount. _This field is only present in the full version._
 `feeDetails` | The details of any fees applied. _This field is only present in the full version._
+`proprietarySchemeDetails` | Supplementary transaction details relating to the specific payment scheme the transaction relates to e.g. SEPA.
 
 The transaction type can be one of the following:
 
