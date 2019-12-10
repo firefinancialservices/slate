@@ -196,7 +196,6 @@ Scope | Description
 `PERM_BUSINESS_LIST_ASPSPS` | Get list of ASPSPs
 
 
-
 # Pagination and Response Objects
 
 ```shell
