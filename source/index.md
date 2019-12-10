@@ -58,7 +58,7 @@ curl https://api.fire.com/business/v1/apps/accesstokens \
 {
  "businessId": 23416,
  "applicationId": 113423,
- "expiry": 1443180240273,
+ "expiry":"2020-10-22T07:48:56.460Z",
  "permissions": [
       "PERM_BUSINESSES_GET_SERVICES",
       "PERM_BUSINESSES_GET_ACCOUNTS",
@@ -126,8 +126,9 @@ A temporary App Access Token which can be used to access the API.
 
 Field | Description
 --------- | -----------
+`businessId` | The business ID for the business.
 `accessToken` | The temporary App Access Token you can use in further API calls.
-`expiry` | The unix time (in milliseconds) that the access token will expire. Based on the server time.  
+`expiry` | The expiry date and time (ISO-8601).
 `permissions` | The permissions assigned to the Access Token as an array of strings. This provides information on what API access it is allowed. See the section on Scope below.
 `applicationId` | The ID of the application you are using. 
 
@@ -190,8 +191,9 @@ Scope | Description
 `PERM_BUSINESS_POST_CARDS` | Create a new card
 `PERM_BUSINESS_POST_MY_CARD_BLOCK` | Blocks a card
 `PERM_BUSINESS_POST_MY_CARD_UNBLOCK` | Unblocks a card
-
-
+`PERM_BUSINESS_POST_PAYMENT_REQUEST_PAY` | Pay a Payment Request / Get Redirect URL
+`PERM_BUSINESS_GET_PAYMENT_REQUEST_PAYMENT` | Get Payment Details
+`PERM_BUSINESS_LIST_ASPSPS` | Get list of ASPSPs
 
 
 
@@ -395,11 +397,465 @@ Please note there is a charge associated with creating a new account.
 
 `POST https://api.fire.com/business/v1/accounts`
 
+# Open Banking
+
+<aside class="notice">
+BETA: Fire Open Payments is currently only available to fire.com customers in beta. If you would be interested in becoming a beta tester please do not hesitate to contact us at sales@fire.com.
+</aside>
+
+Fire Open Payments is a feature of the fire.com business account that leverages Open Banking to allow your customers to pay you via bank transfer and to reconcile those payments as they are received into your fire.com GBP or EUR account.
+
+To set up each Fire Open Payment you first need to create a payment request. This contains the details of the payment such as the amount, destination account, description as well as various other specific fields that you want to associate with the payment. The payment request is represented as a URL with a unique code which can then be incorporated into an eCommerce shopping cart as an alternative form of payment. For example, you can put "Pay by Bank" on your website along with "Pay by Card" and "Pay by PayPal". It can also be distributed by a variety of means such as by email, SMS, WhatsApp, encoded as a QR code, NFC tag, etc.
+
+Consumers confirm the payment details such as the amount are correct, select their bank and authorise the payment. All major UK banks are covered.
+
+The funds are settled into your fire.com account, fully reconciled, with your specified fields provided.
+
+There are two implementation options you can use to display payment pages with Fire Open Payments.
+
+1. **Integrated Payment Pages**: You host the payments page yourself - this option allows you to have control of the UI and UX for displaying the payment details confirmation, bank selection and response pages. 
+
+2. **Hosted Payment Pages (COMING DECEMBER 2019)**: fire.com hosts the payment pages - this option allows you to re-direct your customer to the fire.com hosted payment detail, consent and response pages. 
+
+## Integrated Payment Pages Option
+```shell
+
+
+```
+To implement the integrated Fire Open Payments option you need to do the following:
+
+1. Create your new API application with the appropriate permissions required in Firework Online, as outlined in the ["Authentication"](https://fire.com/docs/#authentication) steps. The permissions needed are:
+    * "Create a Payment Request"
+    * "Pay a Payment Request"
+    * "List All ASPSPs / banks"  
+    * "Get Payment Details"
+2. Use the Refresh Token, Client ID and Client Key to create an access token as outlined in the ["Authentication"](https://fire.com/docs/#authentication) steps.
+3. On your website, create a "Pay by Bank" button alongside your other available payment methods, such as Cards and PayPal.
+4. Once the user clicks on "Pay by Bank", create a new Fire Open Payment request as outlined in the ["Create a Fire Open Payment"](https://fire.com/docs/#create-a-fire-open-payment-request) steps.
+5. Call the ["Get list of ASPSPs"](https://fire.com/docs/#get-list-of-aspsps-/-banks) endpoint and display the list of ASPSPs/Banks to your customer to allow them to choose their ASPSP/bank. 
+6. Call the ["Get Redirect URL"](https://fire.com/docs/#get-redirect-url) endpoint to set up the payment initiation with your customer's ASPSP/bank.
+7. At this point your customer is redirected from your website to their own bank to authenticate themselves. Once they have authorised the payment, fire.com will direct the customer to the returnUrl that you supplied when creating the Fire Open Payment request with the paymentUUID of the successful or failed transaction. 
+8. fire.com can also optionally send a ["webhook"](https://fire.com/docs/#webhooks) to your website notifying you of the outcome of the transaction. You can set up the "Payment Request Payment Authorised" webhook to notify you once the payment is authorised or cancelled.
+9. Once fire.com responds with the paymentUUID and/or the webhook to your website, you need to call the ["Get Payment Details"](https://fire.com/docs/#get-payment-details) endpoint to get the details of the transaction. This will let you know whether the transaction was successful or not.
+10. The funds will be received into your GBP or EUR account. Funding will typically occur on the same day as the transaction was initiated.
+
+## Hosted Payment Pages Option
+```shell
+
+```
+<aside class="notice">
+COMING SOON - we are putting the final touches to our hosted payment pages to ensure the best customer experience. If you want to join the waitlist for our hosted payment payment pages option, email us at sales@fire.com.
+</aside>
+
+1. You can create a new Fire Open Payment payment request either within Firework Online or via the API. If you are creating it via the API, follow steps 1-4 from the ["Integrated Payment Pages"](https://fire.com/docs/#integrated-payment-pages-option) above.
+2. Create a URL using the code returned in this format: `https://payments.fire.com/<code>` and redirect your customer to this page.
+3. fire.com will host all the pages that the customer needs from here on. fire.com will respond to the returnUrl that you supplied when creating the Fire Open Payment request with the paymentUUID of the successful or failed transaction. fire.com can also optionally send a ["webhook"](https://fire.com/docs/#webhooks) to your website notifying you of the transaction's outcome.
+4. Once fire.com responds with the paymentUUID and/or the webhook to your website, you need to call the ["Get Payment Details"](https://fire.com/docs/#get-payment-details) endpoint to get the details of the transaction. This will let you know whether the transaction was successful or not. You can set up the "Payment Request Payment Authorised" webhook to notify you once the payment is authorised or cancelled.
+5. The funds will be received into your GBP or EUR account. Funding will typically occur on the same day as the transaction was initiated.
+
+## Create a Fire Open Payment request
+
+```shell
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# Sample ECOMMERCE_GOODS Fire Open Payments
+{
+    "type":"ECOMMERCE_GOODS",
+    "icanTo":12450,
+    "currency":"GBP",
+    "amount":10000,
+    "myRef":"Fees",
+    "description":"Gym fees",
+    "maxNumberPayments":1,
+    "expiry":"2020-10-22T07:48:56.460Z",
+    "returnUrl":"https://www.google.com/response",
+    "orderDetails": 
+              {
+                 "orderId":"6c28a47d-4502-4111",
+                 "productId":"ZFDAA-1221",
+                 "customerNumber":"123645",
+                 "variableReference":"John Doe",
+                 "comment1":"Additional comments about the transaction",
+                 "comment2":"Additional comments about the transaction",
+                 "merchantCustomerIdentification":"08303863544",
+                 "deliveryAddressLine1":"12 The Street",
+                 "deliveryAddressLine2":"The Way",
+                 "deliveryCity":"London",    
+                 "deliveryPostCode":"EC15155",
+                 "deliveryCountry":"GB"
+            }
+}
+
+# Sample ECOMMERCE_GOODS response
+
+{
+    `type`: "ECOMMERCE_GOODS", 
+    `code`: "kmxe4rxz"
+}
+
+
+```
+
+Creates a new Fire Open Payment Payment request. A code is returned that can be shared to your customers as a URL by any channel you wish.
+
+There are several types of Fire Open Payment requests that can be created.
+
+Type | Description
+-----|-----------
+PARTY_TO_PARTY | Used for person-to-person payments.
+BILL_PAYMENT | Used for bill payments. 
+ECOMMERCE_GOODS | Used for goods sold online. Need to have the "merchantCustomerIdentification" and "deliveryAddress" fields populated. The "maxNumberPayments" must always be set to 1.
+ECOMMERCE_SERVICES | Used for services sold online. Need to have the "merchantCustomerIdentification" field populated. The "maxNumberPayments" must always be set to 1.
+OTHER | Used when none of the above is appropriate.
+
+### HTTP Request
+
+`POST  https://api.fire.com/business/v1/paymentrequests`
+
+
+
+### JSON Input 
+
+Parameter | Description
+--------- | -----------
+`type` | The type of Fire Open Payment that was created (PARTY_TO_PARTY, BILL_PAYMENT, ECOMMERCE_GOODS, ECOMMERCE_SERVICES, OTHER).
+`icanTo` | The ican of the account to collect the funds into. Must be one of your fire.com Accounts. 
+`currency` | Either `EUR` or `GBP`, and must correspond to the currency of the account the funds are being lodged into in the `icanTo`.
+`amount` | The requested amount to pay. Note the last two digits represent pennies/cents, (e.g., £1.00 = 100).
+`myRef` | An internal description of the request.
+`description` | A public facing description of the request. This will be shown to the user when they tap or scan the request.
+`maxNumberPayments` | _(Optional)_ The max number of people who can pay this request. Must be set to 1 for the ECOMMERCE_GOODS and ECOMMERCE_SERVICES types.
+`expiry` | _(Optional)_ This is the expiry date and time of the payment request.
+`returnUrl` | The merchant return URL where the customer will be re-directed to with the result of the transaction.
+`orderId` | _(Optional)_ This is your own unqiue identifier for the transaction. The orderId cannot be set unless the maxNumberPayments = 1.
+`productId` | _(Optional)_ This is your own unqiue product id for the transaction. 
+`customerNumber` | _(Optional)_ This is your own unqiue identifier for the transaction.
+`variableReference` | _(Optional)_ This is your own unqiue identifier for the transaction.
+`comment1` | _(Optional)_ This is your own comment for the transaction.
+`comment2` | _(Optional)_ This is your own comment for the transaction.
+`merchantCustomerIdentification` | This field is mandatory for the ECOMMERCE_GOODS and ECOMMERCE_SERVICES types. The field should be a field that you use to uniquely identify each of your customers.
+`deliveryAddressLine1` | _(Optional)_ The first line of the delivery address.
+`deliveryAddressLine2` | _(Optional)_ The second line of the delivery address.
+`deliveryCity` |  The city is mandatory for ECOMMERCE_GOODS.
+`deliveryPostCode` | _(Optional)_ The post code.
+`deliveryCountry` | The delivery country is mandatory for ECOMMERCE_GOODS.
+
+
+### Returns
+
+A JSON object containing the following fields.
+
+Parameter | Description
+--------- | -----------
+`code` | The code for this request. Create a URL in this format: `https://payments.fire.com/<code>` and share to your customers.
+`type` | The type of Fire Open Payment that was created: `PARTY_TO_PARTY`, `BILL_PAYMENT`, `ECOMMERCE_GOODS`, `ECOMMERCE_SERVICES`, `OTHER` or `SHAREABLE`. 
+
+ Once the code is returned the payment can be viewed and paid by going to the following URL:
+
+`https://payments.fire.com/<code>`
+
+## Get list of ASPSPs / Banks
+
+```shell
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# An array of available banks will be returned
+{
+    "total": 1,
+    "aspsps": [
+        {
+            "aspspUuid": "4ADFB67A-0F5B-4A9A-9D74-34437250045C",
+            "alias": "Demo Bank",
+            "logoUrl": "https://modelobankauth2018.o3bank.co.uk:4101/img/o3.png",
+            "country": {
+                "code": "GB",
+                "description": "United Kingdom"
+            },
+            "currency": {
+                "code": "GBP",
+                "description": "Sterling"
+            },
+            "dateCreated": "2019-08-22T07:48:56.460Z",
+            "lastUpdated": "2019-08-22T07:48:56.460Z"
+        }  
+    ]
+}
+
+```
+
+<aside class="notice">
+This endpoint is only required if you intend to host the "Select ASPSP / bank" page yourself.
+</aside>
+
+Returns all ASPSPs (Account Servicing Payment Service Provider) / banks. 
+
+### HTTP Request
+
+`GET https://api.fire.com/business/v1/aspsps`
+
+The following query parameters can be used to filter the list:
+
+Parameter | Description
+--------- | -----------
+`currency` | The currency - either `EUR` or `GBP`
+
+
+### Returns
+
+A JSON object containing the following fields.
+
+Parameter | Description
+--------- | -----------
+`aspspUuid` | The UUID associated with the ASPSP / bank.
+`alias` | The name of the ASPSP / bank. 
+`logoUrl` | The URL where the logo is accessible. 
+`country` | A JSON entity with the country code (`country.code`) and the English name (`country.description`) of the country.
+`currency` | A JSON entity with the currency code (`currency.code`) and English name (`currency.description`) of the currency for the account - either `Euro` or `Sterling`.
+`dateCreated` | The date the ASPSP / bank was created.
+`lastUpdated` | The date the ASPSP / bank was last updated.
+
+## Get Redirect URL
+
+
+
+
+```shell
+# Sample Request with just the selected ASPSP/bank sent in the request. 
+
+{
+    	"aspspUuid":"105cbaf1-8a49-4c99-8205-928ea4014d9f"  
+}
+
+# Sample Request with the selected ASPSP/bank and order details sent in the request.
+
+{
+    	"aspspUuid":"105cbaf1-8a49-4c99-8205-928ea4014d9f"
+      "orderDetails": 
+              {
+                 "orderId":"6c28a47d-4502-4111",
+                 "productId":"ZFDAA-1221",
+                 "customerNumber":"123645",
+                 "variableReference":"John Doe",
+                 "comment1":"Additional comments about the transaction",
+                 "comment2":"Additional comments about the transaction",
+                 "merchantCustomerIdentification":"08303863544",
+                 "deliveryAddressLine1":"12 The Street",
+                 "deliveryAddressLine2":"The Way",
+                 "deliveryCity":"London",    
+                 "deliveryPostCode":"EC15155",
+                 "deliveryCountry":"GB"
+            }
+}
+
+
+# A redirect URL along with the status and paymentUuid will be returned to redirect your customer to. This call initiates the payment with the ASPSP / bank.
+
+{
+    "redirectUrl": "https://authorise-api.halifax-online.co.uk/prod01/lbg/hfx/personal/oidc-api/v1.1/authorize?request=eyJraWQiOiJ2VDVvd2hnUWNOcVllVW85ZXhlSmJickx0NTAiLCJ0eXAiOiJKV1QiLCJhbGciOiJQUzI1NiJ9.eyJhdWQiOiJodHRwczpcL1wvYXV0aG9yaXNlLWFwaS5oYWxpZmF4LW9ubGluZS5jby51a1wvcHJvZDAxXC9jaGFubmVsXC9oZngiLCJzY29wZSI6Im9wZW5pZCBwYXltZW50cyIsImlzcyI6IjY1Y2M0YjdjLTcyZTUtNDY0ZC1iYjg4LWI5N2I1NGNkMTM2YyIsImNsYWltcyI6eyJpZF90b2tlbiI6eyJhY3IiOnsidmFsdWUiOlsidXJuOm9wZW5iYW5raW5nOnBzZDI6c2NhIiwidXJuOm9wZW5iYW5raW5nOnBzZDI6Y2EiXSwiZXNzZW50aWFsIjp0cnVlfSwib3BlbmJhbmtpbmdfaW50ZW50X2lkIjp7InZhbHVlIjoiZWIzNzg2NmYtZjJlYy00YzdiLWJjZGYtNTJlODc1YjU2YzI2IiwiZXNzZW50aWFsIjp0cnVlfX0sInVzZXJpbmZvIjp7Im9wZW5iYW5raW5nX2ludGVudF9pZCI6eyJ2YWx1ZSI6ImViMzc4NjZmLWYyZWMtNGM3Yi1iY2RmLTUyZTg3NWI1NmMyNiIsImVzc2VudGlhbCI6dHJ1ZX19fSwicmVzcG9uc2VfdHlwZSI6ImNvZGUgaWRfdG9rZW4iLCJzdGF0ZSI6IjdFQkJBMDQ5LUEyNjctNDY5Ri05RTlFLTIxMzgyRUVDNzAwNSIsInJlZGlyZWN0X3VyaSI6Imh0dHBzOlwvXC9nYXRld2F5LmZpcmUuY29tXC9jYWxsYmFja1wvb3BlbmJhbmtpbmciLCJleHAiOjE1NzI5NjgwMjcsImlhdCI6MTU3Mjk2Nzk2Nywibm9uY2UiOiJkYjIyNDEwMy1kMTc3LTRmNmQtYTA3ZC02OGI3YWY5NTcwZTciLCJqdGkiOiJhNTRjOTgxNS0zNmUzLTRjMTgtYTc5NS0yYmVhYmZjNDE5OTciLCJjbGllbnRfaWQiOiI2NWNjNGI3Yy03MmU1LTQ2NGQtYmI4OC1iOTdiNTRjZDEzNmMifQ.yEqoUSI6_CHzXl3CXwKeJZBE206oVYJDj4o9GEtUUHZd3niYG3lwtwW0vRzxjZl67gqSscPlDfVnjJPkYEkP8mTt-o0Xz4TJiKYTztgFAFuYhfQPbt2ltu73pNjqUtoy_yB7Lasiddv03UrzawUv1kNiCCxSzLMOl3P05MY2nBJT45GcOUnASvulMs65QrO7SGDAVMGdCBKYQgwR-pKsxhzkUPJsXj8DWxpREGWYV90jaEc0mpFVTADLZvqBrsXoYsasIYS2AT6Zl6UyvRCOS2dEHk9GhVg57I8PITZH4sYCdL9ew96_RUcTWqtwnQRyOC7ilTgaGfsWsDzflzoArA&scope=openid+payments&response_type=code+id_token&redirect_uri=https%3A%2F%2Fgateway.fire.com%2Fcallback%2Fopenbanking&state=7EBBA049-A267-469F-9E9E-21382EEC7005&nonce=db224103-d177-4f6d-a07d-68b7af9570e7&client_id=65cc4b7c-72e5-464d-bb88-b97b54cd136c",
+    "status": "AWAITING_AUTHORISATION",
+    "paymentUuid": "7EBBA049-A267-469F-9E9E-21382EEC7005"
+}
+
+```
+
+Sets up the payment with the selected ASPSP / bank and returns a redirect URL for you to redirect your customer to.
+
+As the customer goes through the process of making the payment the status of the payment will change. 
+
+Status | Description
+-----|-----------
+AWAITING_AUTHORISATION | This is the initial status of all your payments.
+AUTHORISED | This is the status that your payment is set to after the customer has authorised the payment with their ASPSP / bank.
+AWAITING_MULTI_AUTHORISATION | Some business accounts such as charities require dual authorisation.
+NOT_AUTHORISED | Not authorised. Either your customer clicked on cancel or the payment was rejected by their ASPSP / bank.
+PAID | Funds were received into your fire.com GBP or EUR account from your customers ASPSP / bank.
+
+### HTTP Request
+
+`POST  https://api.fire.com/business/v1/paymentrequests/{code}/pay`
+
+### JSON Input 
+
+Parameter | Description
+--------- | -----------
+`aspspUuid` | (Mandatory) The UUID associated with the ASPSP (Account Servicing Payment Service Provider) / bank.
+
+### Returns
+
+A JSON object containing the following fields.
+
+Parameter | Description
+--------- | -----------
+`redirectUrl` | The URL to redirect your customer to for them to authenticate with their ASPSP / bank.
+`paymentUuid` | A unique id for the transaction. 
+`status` | The status of the transaction (AWAITING_AUTHORISATION, AUTHORISED, AWAITING_MULTI_AUTHORISATION, NOT_AUTHORISED or PAID). 
+
+
+## Get Payment Details
+
+```shell
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# The details of the specific payment request
+
+{
+    "type": "ECOMMERCE_SERVICES",
+    "paymentRequestCode": "dljmifz",
+    "paymentUuid": "0B28BA3F-E8C1-43DA-BE6F-F91B028E0737",
+    "status": "AWAITING_AUTHORISATION",
+    "returnUrl": "https://www.samplebusinesswebsite.com/response",
+    "amountBeforeCharges": 15000,
+    "currency": {
+        "code": "GBP",
+        "description": "Sterling"
+    },
+    "myRef": "John Doe",
+    "description": "Jeans",
+    "dateCreated": "2019-11-19T11:42:59.827Z",
+    "orderDetails": {
+        "orderId": "6c28a47d-4502-4111",
+        "productId": "ZFDAA-1221",
+        "customerNumber": "651151515",
+        "variableReference": "John Doe",
+        "comment1": "Anything else you want to add about the order ",
+        "comment2": "Anything else you want to add about the order",
+        "merchantCustomerIdentification": "08303863544",
+        "deliveryAddressLine1": "The Street",
+        "deliveryAddressLine2": "The Way",
+        "deliveryCity": "London",
+        "deliveryPostCode": "EC15155",
+        "deliveryCountry": {
+            "code": "GB",
+            "description": "United Kingdom"
+        }
+    },
+    "to": {
+        "type": "FIRE_ACCOUNT",
+        "account": {
+            "id": 2002,
+            "alias": "Sterling",
+            "nsc": "232221",
+            "accountNumber": "20929251"
+        }
+    },
+    "bank": {
+        "aspspUuid": "4ADFB67A-0F5B-4A9A-9D74-34437250045C",
+        "alias": "Modelo Bank (v3.1)",
+        "logoUrl": "https://modelobankauth2018.o3bank.co.uk:4101/img/o3.png",
+        "country": {
+            "code": "GB",
+            "description": "United Kingdom"
+        },
+        "currency": {
+            "code": "GBP",
+            "description": "Sterling"
+        }
+    }
+}
+
+```
+
+Returns the details of a specific payment.
+
+### HTTP Request
+
+`GET  https://api.fire.com/business/v1/paymentrequests/payments/{paymentUuid}`
+
+### Input
+
+Parameter | Description
+--------- | -----------
+`paymentUuid` | The unique id for the transaction. 
+
+### Returns
+
+A JSON object containing the following fields. Fields will not be returned unless they were sent when the transaction was created.
+
+Parameter | Description
+--------- | -----------
+`type` | The type of Fire Open Payment that was created (PARTY_TO_PARTY, BILL_PAYMENT, ECOMMERCE_GOODS, ECOMMERCE_SERVICES, OTHER).
+`paymentRequestCode` | The code that was returned when you created the payment request.
+`paymentUuid` | A unique id for the transaction. 
+`status` | The status of the transaction (AWAITING_AUTHORISATION, AUTHORISED, AWAITING_MULTI_AUTHORISATION, NOT_AUTHORISED or PAID). 
+`returnUrl` | The optional return URL that your customer is returned to at the end of the transaction.
+`amountBeforeCharges` | Amount of the transaction before the fees and taxes were applied. This will match the amount you sent in.
+`currency` | A JSON entity with the currency code (`currency.code`) and English name (`currency.description`) of the currency for the account - either `Euro` or `Sterling`
+`myRef` | (Optional) An internal description of the request.
+`description` | (Optional) A public facing description of the request. Will be shown to the user when they tap or scan the request.
+`dateCreated` | The date the transaction was created.
+`orderdetails` | A JSON entity with all of the fields as sent when creating the transaction.
+`to` | A JSON entity with all the details of the fire.com account where the funds are being lodged to.
+`bank` | A JSON entity with the details of  the ASPSP / bank that your customer selected for the transaction.
 
 
 # Users
 
-The fire.com users are the business users you have setup on your account. 
+The fire.com users are the business users you have set up on your account.
 
 ```shell
 # Full details of an individual user.
@@ -551,7 +1007,7 @@ The resource has the following attributes:
 Field | Description
 --------- | -----------
 `cardId` | card id assigned by fire.com
-`expiryDate` | card expiry dare
+`expiryDate` | card expiry date
 `maskedPan` |card number (masked)
 `status`| card status
 `userId` | card user id assigned by fire.com
@@ -1408,7 +1864,7 @@ Parameter | Description
 
 
 
-# Payment Initiation
+# Payment Batches
 
 The fire.com API allows businesses to automate payments between their accounts or to third parties across the UK and Europe.
 
@@ -2142,7 +2598,7 @@ Parameter | Description
 
 Parameter | Description
 --------- | -----------
-`code` | The code for this request. Create a URL using this code like this: `https://paywithfi.re/<code>` and share to your customers.
+`code` | The code for this request. Create a URL in this format: `https://paywithfi.re/<code>` and share to your customers.
 `type` | Either `DIRECT` or `SHAREABLE`. `DIRECT` is a one-to-one request to the specified mobile number. `SHAREABLE` is a public request that can be viewed and paid by anyone who receives it. 
 
 
@@ -2160,7 +2616,7 @@ Webhooks allow you to be notified of events as they happen on your fire.com acco
 A webhook is a URL that you set up on your backend. We can then send the details of various events to you at this URL as they happen. You can have many webhooks, and can configure each one to listen for different events in fire.com. 
 
 ## Configuring your webhook settings
-You can set up webhooks in the Business Account web application or use the API to configure them programmatically. 
+You can set up webhooks in the Business Account web application. 
 
 ## View Webhooks
 ```shell
