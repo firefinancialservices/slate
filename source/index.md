@@ -424,19 +424,19 @@ There are two implementation options you can use to display payment pages with F
 ```
 To implement the integrated Fire Open Payments option you need to do the following:
 
-1. Create your new API application with the appropriate permissions required in Firework Online, as outlined in the ["Authentication"](https://fire.com/docs/#authentication) steps. The permissions needed are:
+1. Create your new API application with the appropriate permissions required in Firework Online, as outlined in the ["Authentication"](/docs/#authentication) steps. The permissions needed are:
     * "Create a Payment Request"
     * "Pay a Payment Request"
     * "List All ASPSPs / banks"  
     * "Get Payment Details"
-2. Use the Refresh Token, Client ID and Client Key to create an access token as outlined in the ["Authentication"](https://fire.com/docs/#authentication) steps.
+2. Use the Refresh Token, Client ID and Client Key to create an access token as outlined in the ["Authentication"](/docs/#authentication) steps.
 3. On your website, create a "Pay by Bank" button alongside your other available payment methods, such as Cards and PayPal.
-4. Once the user clicks on "Pay by Bank", create a new Fire Open Payment request as outlined in the ["Create a Fire Open Payment"](https://fire.com/docs/#create-a-fire-open-payment-request) steps.
-5. Call the ["Get list of ASPSPs"](https://fire.com/docs/#get-list-of-aspsps-/-banks) endpoint and display the list of ASPSPs/Banks to your customer to allow them to choose their ASPSP/bank. 
-6. Call the ["Get Redirect URL"](https://fire.com/docs/#get-redirect-url) endpoint to set up the payment initiation with your customer's ASPSP/bank.
+4. Once the user clicks on "Pay by Bank", create a new Fire Open Payment request as outlined in the ["Create a Fire Open Payment"](/docs/#create-a-fire-open-payment-request) steps.
+5. Call the ["Get list of ASPSPs"](/docs/#get-list-of-aspsps-/-banks) endpoint and display the list of ASPSPs/Banks to your customer to allow them to choose their ASPSP/bank. 
+6. Call the ["Get Redirect URL"](/docs/#get-redirect-url) endpoint to set up the payment initiation with your customer's ASPSP/bank.
 7. At this point your customer is redirected from your website to their own bank to authenticate themselves. Once they have authorised the payment, fire.com will direct the customer to the returnUrl that you supplied when creating the Fire Open Payment request with the paymentUUID of the successful or failed transaction. 
-8. fire.com can also optionally send a ["webhook"](https://fire.com/docs/#webhooks) to your website notifying you of the outcome of the transaction. You can set up the "Payment Request Payment Authorised" webhook to notify you once the payment is authorised or cancelled.
-9. Once fire.com responds with the paymentUUID and/or the webhook to your website, you need to call the ["Get Payment Details"](https://fire.com/docs/#get-payment-details) endpoint to get the details of the transaction. This will let you know whether the transaction was successful or not.
+8. fire.com can also optionally send a ["webhook"](/docs/#webhooks) to your website notifying you of the outcome of the transaction. You can set up the "Payment Request Payment Authorised" webhook to notify you once the payment is authorised or cancelled.
+9. Once fire.com responds with the paymentUUID and/or the webhook to your website, you need to call the ["Get Payment Details"](/docs/#get-payment-details) endpoint to get the details of the transaction. This will let you know whether the transaction was successful or not.
 10. The funds will be received into your GBP or EUR account. Funding will typically occur on the same day as the transaction was initiated.
 
 ## Hosted Payment Pages Option
@@ -447,10 +447,10 @@ To implement the integrated Fire Open Payments option you need to do the followi
 COMING SOON - we are putting the final touches to our hosted payment pages to ensure the best customer experience. If you want to join the waitlist for our hosted payment payment pages option, email us at sales@fire.com.
 </aside>
 
-1. You can create a new Fire Open Payment payment request either within Firework Online or via the API. If you are creating it via the API, follow steps 1-4 from the ["Integrated Payment Pages"](https://fire.com/docs/#integrated-payment-pages-option) above.
+1. You can create a new Fire Open Payment payment request either within Firework Online or via the API. If you are creating it via the API, follow steps 1-4 from the ["Integrated Payment Pages"](/docs/#integrated-payment-pages-option) above.
 2. Create a URL using the code returned in this format: `https://payments.fire.com/<code>` and redirect your customer to this page.
-3. fire.com will host all the pages that the customer needs from here on. fire.com will respond to the returnUrl that you supplied when creating the Fire Open Payment request with the paymentUUID of the successful or failed transaction. fire.com can also optionally send a ["webhook"](https://fire.com/docs/#webhooks) to your website notifying you of the transaction's outcome.
-4. Once fire.com responds with the paymentUUID and/or the webhook to your website, you need to call the ["Get Payment Details"](https://fire.com/docs/#get-payment-details) endpoint to get the details of the transaction. This will let you know whether the transaction was successful or not. You can set up the "Payment Request Payment Authorised" webhook to notify you once the payment is authorised or cancelled.
+3. fire.com will host all the pages that the customer needs from here on. fire.com will respond to the returnUrl that you supplied when creating the Fire Open Payment request with the paymentUUID of the successful or failed transaction. fire.com can also optionally send a ["webhook"](/docs/#webhooks) to your website notifying you of the transaction's outcome.
+4. Once fire.com responds with the paymentUUID and/or the webhook to your website, you need to call the ["Get Payment Details"](/docs/#get-payment-details) endpoint to get the details of the transaction. This will let you know whether the transaction was successful or not. You can set up the "Payment Request Payment Authorised" webhook to notify you once the payment is authorised or cancelled.
 5. The funds will be received into your GBP or EUR account. Funding will typically occur on the same day as the transaction was initiated.
 
 ## Create a Fire Open Payment request
